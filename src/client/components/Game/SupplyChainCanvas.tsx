@@ -1,4 +1,15 @@
+import React from 'react';
 import { RoleType, PeerSummary } from '../../../core/types.js';
+import {
+  IconRetailer,
+  IconWholesaler,
+  IconDistributor,
+  IconFactory,
+  IconArrowRight,
+  IconArrowLeft,
+  IconCheck,
+  IconHourglass,
+} from '../Common/Icons.js';
 
 export interface SupplyChainCanvasProps {
   readonly myRole: RoleType;
@@ -9,48 +20,48 @@ export interface SupplyChainCanvasProps {
 interface NodeConfig {
   readonly role: RoleType;
   readonly name: string;
-  readonly icon: string;
+  readonly icon: React.ReactNode;
   readonly color: string;
   readonly bg: string;
   readonly border: string;
 }
 
-const CHAIN_NODES: readonly NodeConfig[] = [
-  {
-    role: 'retailer',
-    name: 'Retailer',
-    icon: '🛒',
-    color: 'var(--role-retailer)',
-    bg: 'var(--role-retailer-bg)',
-    border: 'var(--role-retailer-border)',
-  },
-  {
-    role: 'wholesaler',
-    name: 'Wholesaler',
-    icon: '🏢',
-    color: 'var(--role-wholesaler)',
-    bg: 'var(--role-wholesaler-bg)',
-    border: 'var(--role-wholesaler-border)',
-  },
-  {
-    role: 'distributor',
-    name: 'Distributor',
-    icon: '🚚',
-    color: 'var(--role-distributor)',
-    bg: 'var(--role-distributor-bg)',
-    border: 'var(--role-distributor-border)',
-  },
-  {
-    role: 'factory',
-    name: 'Factory',
-    icon: '🏭',
-    color: 'var(--role-factory)',
-    bg: 'var(--role-factory-bg)',
-    border: 'var(--role-factory-border)',
-  },
-];
-
 export function SupplyChainCanvas({ myRole, peers, currentRound }: SupplyChainCanvasProps) {
+  const chainNodes: readonly NodeConfig[] = [
+    {
+      role: 'retailer',
+      name: 'Retailer',
+      icon: <IconRetailer size={22} color="var(--role-retailer)" />,
+      color: 'var(--role-retailer)',
+      bg: 'var(--role-retailer-bg)',
+      border: 'var(--role-retailer-border)',
+    },
+    {
+      role: 'wholesaler',
+      name: 'Wholesaler',
+      icon: <IconWholesaler size={22} color="var(--role-wholesaler)" />,
+      color: 'var(--role-wholesaler)',
+      bg: 'var(--role-wholesaler-bg)',
+      border: 'var(--role-wholesaler-border)',
+    },
+    {
+      role: 'distributor',
+      name: 'Distributor',
+      icon: <IconDistributor size={22} color="var(--role-distributor)" />,
+      color: 'var(--role-distributor)',
+      bg: 'var(--role-distributor-bg)',
+      border: 'var(--role-distributor-border)',
+    },
+    {
+      role: 'factory',
+      name: 'Factory',
+      icon: <IconFactory size={22} color="var(--role-factory)" />,
+      color: 'var(--role-factory)',
+      bg: 'var(--role-factory-bg)',
+      border: 'var(--role-factory-border)',
+    },
+  ];
+
   return (
     <div
       className="glass-panel"
@@ -74,19 +85,26 @@ export function SupplyChainCanvas({ myRole, peers, currentRound }: SupplyChainCa
           fontSize: '0.85rem',
         }}
       >
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-          <span style={{ fontWeight: 700, color: 'var(--text-primary)' }}>Supply Chain Architecture</span>
-          <span style={{ color: 'var(--text-muted)' }}>• Round {currentRound}</span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
+          <span style={{ fontWeight: 700, color: 'var(--text-primary)', letterSpacing: '-0.01em' }}>
+            Supply Chain Network Topology
+          </span>
+          <span
+            className="badge"
+            style={{ background: 'rgba(255, 255, 255, 0.05)', color: 'var(--text-muted)', border: '1px solid var(--border-subtle)' }}
+          >
+            Round {currentRound}
+          </span>
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem', color: 'var(--text-secondary)' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
-            <span style={{ color: '#38bdf8', fontWeight: 700 }}>→</span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '1.75rem', color: 'var(--text-secondary)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.8rem' }}>
+            <span style={{ color: '#38bdf8', display: 'flex' }}><IconArrowRight size={14} /></span>
             <span>Orders Flow Upstream (Retailer → Factory)</span>
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
-            <span style={{ color: '#34d399', fontWeight: 700 }}>←</span>
-            <span>Shipments Flow Downstream (2-Round Lag)</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.8rem' }}>
+            <span style={{ color: '#34d399', display: 'flex' }}><IconArrowLeft size={14} /></span>
+            <span>Shipments Flow Downstream (2-Round Delay)</span>
           </div>
         </div>
       </div>
@@ -97,12 +115,12 @@ export function SupplyChainCanvas({ myRole, peers, currentRound }: SupplyChainCa
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-          minWidth: '780px',
+          minWidth: '820px',
           position: 'relative',
-          padding: '0.5rem 0',
+          padding: '0.75rem 0',
         }}
       >
-        {CHAIN_NODES.map((node, index) => {
+        {chainNodes.map((node, index) => {
           const peer = peers[node.role];
           const isMe = myRole === node.role;
           const hasSubmitted = peer?.hasSubmittedThisRound ?? false;
@@ -114,12 +132,12 @@ export function SupplyChainCanvas({ myRole, peers, currentRound }: SupplyChainCa
               <div
                 style={{
                   flex: 1,
-                  padding: '1rem 1.15rem',
+                  padding: '1.15rem 1.25rem',
                   borderRadius: 'var(--radius-md)',
                   background: isMe ? node.bg : 'rgba(255, 255, 255, 0.02)',
                   border: `2px solid ${isMe ? node.color : node.border}`,
-                  boxShadow: isMe ? `0 0 24px ${node.bg}` : 'none',
-                  transition: 'all var(--transition-normal)',
+                  boxShadow: isMe ? `0 0 28px ${node.bg}` : 'none',
+                  transition: 'all 200ms ease',
                   position: 'relative',
                 }}
               >
@@ -137,27 +155,40 @@ export function SupplyChainCanvas({ myRole, peers, currentRound }: SupplyChainCa
                       padding: '0.15rem 0.5rem',
                       borderRadius: 'var(--radius-full)',
                       letterSpacing: '0.05em',
-                      boxShadow: `0 2px 8px ${node.bg}`,
+                      boxShadow: `0 2px 10px ${node.bg}`,
                     }}
                   >
                     YOU
                   </span>
                 )}
 
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
-                  <span style={{ fontSize: '1.5rem' }}>{node.icon}</span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', marginBottom: '0.65rem' }}>
+                  <div
+                    style={{
+                      width: '36px',
+                      height: '36px',
+                      borderRadius: 'var(--radius-sm)',
+                      background: node.bg,
+                      border: `1px solid ${node.border}`,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
+                  >
+                    {node.icon}
+                  </div>
                   <div>
-                    <h4 style={{ fontSize: '1rem', color: isMe ? node.color : 'var(--text-primary)', fontWeight: 700 }}>
+                    <h4 style={{ fontSize: '0.975rem', color: isMe ? node.color : 'var(--text-primary)', fontWeight: 700 }}>
                       {node.name}
                     </h4>
-                    <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+                    <span style={{ fontSize: '0.725rem', color: 'var(--text-muted)' }}>
                       Node {index + 1}
                     </span>
                   </div>
                 </div>
 
                 {/* Status Badges */}
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem', marginTop: '0.75rem' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', marginTop: '0.75rem' }}>
                   {/* Submission Readiness */}
                   <div
                     style={{
@@ -172,8 +203,18 @@ export function SupplyChainCanvas({ myRole, peers, currentRound }: SupplyChainCa
                       fontWeight: 600,
                     }}
                   >
-                    <span>Order:</span>
-                    <span>{hasSubmitted ? 'Ready ✓' : 'Thinking...'}</span>
+                    <span>Turn status:</span>
+                    <span style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                      {hasSubmitted ? (
+                        <>
+                          <IconCheck size={12} /> Ready
+                        </>
+                      ) : (
+                        <>
+                          <IconHourglass size={12} /> Deciding
+                        </>
+                      )}
+                    </span>
                   </div>
 
                   {/* Presence Status */}
@@ -186,64 +227,67 @@ export function SupplyChainCanvas({ myRole, peers, currentRound }: SupplyChainCa
                         backgroundColor: isConnected ? 'var(--status-success)' : 'var(--status-danger)',
                         display: 'inline-block',
                       }}
+                      className={isConnected ? 'status-pulse' : ''}
                     />
-                    <span>{isConnected ? 'Online' : 'Disconnected'}</span>
+                    <span>{isConnected ? 'Connected' : 'Offline'}</span>
                   </div>
                 </div>
               </div>
 
-              {/* Connecting Pipeline Transit Arrows (between nodes) */}
-              {index < CHAIN_NODES.length - 1 && (
+              {/* Connecting Pipeline Transit Stream (between nodes) */}
+              {index < chainNodes.length - 1 && (
                 <div
                   style={{
                     display: 'flex',
                     flexDirection: 'column',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    width: '60px',
-                    padding: '0 0.5rem',
-                    gap: '0.35rem',
+                    width: '64px',
+                    padding: '0 0.4rem',
+                    gap: '0.45rem',
                   }}
                 >
                   {/* Order flow up (→) */}
                   <div
-                    title="Order placed upstream"
+                    title="Order signal transmitted upstream"
                     style={{
                       display: 'flex',
                       alignItems: 'center',
-                      fontSize: '0.7rem',
+                      fontSize: '0.675rem',
                       color: '#38bdf8',
                       fontWeight: 700,
-                      gap: '0.2rem',
+                      gap: '0.15rem',
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.05em',
                     }}
                   >
                     <span>Order</span>
-                    <span>→</span>
+                    <IconArrowRight size={10} color="#38bdf8" />
                   </div>
 
-                  {/* Transit line divider */}
-                  <div
-                    style={{
-                      width: '100%',
-                      height: '2px',
-                      background: 'linear-gradient(90deg, #38bdf8 0%, #34d399 100%)',
-                      opacity: 0.4,
-                    }}
-                  />
+                  {/* Animated SVG Stream Lines */}
+                  <svg width="48" height="12" viewBox="0 0 48 12" style={{ overflow: 'visible' }}>
+                    {/* Orders Top Stream Line */}
+                    <line x1="0" y1="3" x2="48" y2="3" stroke="#38bdf8" strokeWidth="2" className="flow-stream-orders" />
+                    {/* Shipments Bottom Stream Line */}
+                    <line x1="0" y1="9" x2="48" y2="9" stroke="#34d399" strokeWidth="2" className="flow-stream-shipments" />
+                  </svg>
 
                   {/* Shipment flow down (←) */}
                   <div
-                    title="Shipment arrives with 2-round delay"
+                    title="Goods delivered with 2-round lag"
                     style={{
                       display: 'flex',
                       alignItems: 'center',
-                      fontSize: '0.7rem',
+                      fontSize: '0.675rem',
                       color: '#34d399',
                       fontWeight: 700,
-                      gap: '0.2rem',
+                      gap: '0.15rem',
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.05em',
                     }}
                   >
-                    <span>←</span>
+                    <IconArrowLeft size={10} color="#34d399" />
                     <span>Ship</span>
                   </div>
                 </div>

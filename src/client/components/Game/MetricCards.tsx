@@ -1,4 +1,12 @@
 import { RoleState, RoundIntermediate } from '../../../core/types.js';
+import {
+  IconInventory,
+  IconBacklog,
+  IconArrived,
+  IconIncomingOrder,
+  IconDistributor,
+  IconCost,
+} from '../Common/Icons.js';
 
 export interface MetricCardsProps {
   readonly myState: RoleState;
@@ -30,17 +38,17 @@ export function MetricCards({ myState, intermediate }: MetricCardsProps) {
           justifyContent: 'space-between',
         }}
       >
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.5rem' }}>
-          <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.65rem' }}>
+          <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
             Current Inventory
           </span>
-          <span style={{ fontSize: '1.1rem' }}>📦</span>
+          <div style={{ color: '#34d399' }}><IconInventory size={18} /></div>
         </div>
-        <div style={{ fontSize: '1.85rem', fontWeight: 800, color: '#34d399', lineHeight: 1 }}>
+        <div className="metric-num" style={{ fontSize: '2rem', fontWeight: 800, color: '#34d399', lineHeight: 1 }}>
           {myState.inventory}
         </div>
-        <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '0.5rem' }}>
-          Cost: $0.50/unit (${(myState.inventory * 0.5).toFixed(2)})
+        <div style={{ fontSize: '0.725rem', color: 'var(--text-muted)', marginTop: '0.6rem' }}>
+          Holding: $0.50/unit (${(myState.inventory * 0.5).toFixed(2)})
         </div>
       </div>
 
@@ -55,15 +63,18 @@ export function MetricCards({ myState, intermediate }: MetricCardsProps) {
           justifyContent: 'space-between',
         }}
       >
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.5rem' }}>
-          <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.65rem' }}>
+          <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
             Unmet Backlog
           </span>
-          <span style={{ fontSize: '1.1rem' }}>⚠️</span>
+          <div style={{ color: myState.backlog > 0 ? '#f87171' : 'var(--text-muted)' }}>
+            <IconBacklog size={18} />
+          </div>
         </div>
         <div
+          className="metric-num"
           style={{
-            fontSize: '1.85rem',
+            fontSize: '2rem',
             fontWeight: 800,
             color: myState.backlog > 0 ? '#f87171' : 'var(--text-primary)',
             lineHeight: 1,
@@ -71,7 +82,7 @@ export function MetricCards({ myState, intermediate }: MetricCardsProps) {
         >
           {myState.backlog}
         </div>
-        <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '0.5rem' }}>
+        <div style={{ fontSize: '0.725rem', color: 'var(--text-muted)', marginTop: '0.6rem' }}>
           Penalty: $1.00/unit (${(myState.backlog * 1.0).toFixed(2)})
         </div>
       </div>
@@ -87,16 +98,16 @@ export function MetricCards({ myState, intermediate }: MetricCardsProps) {
           justifyContent: 'space-between',
         }}
       >
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.5rem' }}>
-          <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.65rem' }}>
+          <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
             Arrived Shipment
           </span>
-          <span style={{ fontSize: '1.1rem' }}>📥</span>
+          <div style={{ color: '#38bdf8' }}><IconArrived size={18} /></div>
         </div>
-        <div style={{ fontSize: '1.85rem', fontWeight: 800, color: '#38bdf8', lineHeight: 1 }}>
+        <div className="metric-num" style={{ fontSize: '2rem', fontWeight: 800, color: '#38bdf8', lineHeight: 1 }}>
           {arrived}
         </div>
-        <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '0.5rem' }}>
+        <div style={{ fontSize: '0.725rem', color: 'var(--text-muted)', marginTop: '0.6rem' }}>
           Received from upstream
         </div>
       </div>
@@ -112,16 +123,16 @@ export function MetricCards({ myState, intermediate }: MetricCardsProps) {
           justifyContent: 'space-between',
         }}
       >
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.5rem' }}>
-          <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-            Incoming Order
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.65rem' }}>
+          <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+            Incoming Demand
           </span>
-          <span style={{ fontSize: '1.1rem' }}>🛒</span>
+          <div style={{ color: '#fbbf24' }}><IconIncomingOrder size={18} /></div>
         </div>
-        <div style={{ fontSize: '1.85rem', fontWeight: 800, color: '#fbbf24', lineHeight: 1 }}>
+        <div className="metric-num" style={{ fontSize: '2rem', fontWeight: 800, color: '#fbbf24', lineHeight: 1 }}>
           {incoming}
         </div>
-        <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '0.5rem' }}>
+        <div style={{ fontSize: '0.725rem', color: 'var(--text-muted)', marginTop: '0.6rem' }}>
           Shipped downstream: {shipped}
         </div>
       </div>
@@ -137,18 +148,16 @@ export function MetricCards({ myState, intermediate }: MetricCardsProps) {
           justifyContent: 'space-between',
         }}
       >
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.5rem' }}>
-          <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-            In-Transit Pipeline
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.65rem' }}>
+          <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+            In-Transit Queue
           </span>
-          <span style={{ fontSize: '1.1rem' }}>🚚</span>
+          <div style={{ color: '#c084fc' }}><IconDistributor size={18} /></div>
         </div>
-        <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'baseline', marginTop: '0.25rem' }}>
-          <span style={{ fontSize: '1.35rem', fontWeight: 700, color: '#c084fc' }}>
-            [{myState.shipmentsInTransit.join(', ')}]
-          </span>
+        <div className="metric-num" style={{ fontSize: '1.45rem', fontWeight: 700, color: '#c084fc', lineHeight: 1.2 }}>
+          [{myState.shipmentsInTransit.join(', ')}]
         </div>
-        <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '0.5rem' }}>
+        <div style={{ fontSize: '0.725rem', color: 'var(--text-muted)', marginTop: '0.6rem' }}>
           [Due Next, Due in 2 Rounds]
         </div>
       </div>
@@ -164,16 +173,16 @@ export function MetricCards({ myState, intermediate }: MetricCardsProps) {
           justifyContent: 'space-between',
         }}
       >
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.5rem' }}>
-          <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.65rem' }}>
+          <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
             Cumulative Cost
           </span>
-          <span style={{ fontSize: '1.1rem' }}>💰</span>
+          <div style={{ color: '#f472b6' }}><IconCost size={18} /></div>
         </div>
-        <div style={{ fontSize: '1.85rem', fontWeight: 800, color: '#f472b6', lineHeight: 1 }}>
+        <div className="metric-num" style={{ fontSize: '2rem', fontWeight: 800, color: '#f472b6', lineHeight: 1 }}>
           ${myState.totalCost.toFixed(2)}
         </div>
-        <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '0.5rem' }}>
+        <div style={{ fontSize: '0.725rem', color: 'var(--text-muted)', marginTop: '0.6rem' }}>
           Round Cost: ${myState.roundCost.toFixed(2)}
         </div>
       </div>

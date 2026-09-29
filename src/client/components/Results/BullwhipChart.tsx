@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { RoundRecord, RoleType } from '../../../core/types.js';
+import { IconTrendingUp } from '../Common/Icons.js';
 
 export interface BullwhipChartProps {
   readonly history: readonly RoundRecord[];
@@ -47,10 +48,23 @@ export function BullwhipChart({ history, myRole }: BullwhipChartProps) {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem', marginBottom: '1.25rem' }}>
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.25rem' }}>
-            <span style={{ fontSize: '1.25rem' }}>📈</span>
-            <h3 style={{ fontSize: '1.25rem', fontWeight: 700 }}>Bullwhip Effect Analysis</h3>
+            <div
+              style={{
+                width: '28px',
+                height: '28px',
+                borderRadius: 'var(--radius-sm)',
+                background: 'rgba(99, 102, 241, 0.15)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: 'var(--text-accent)',
+              }}
+            >
+              <IconTrendingUp size={16} />
+            </div>
+            <h3 style={{ fontSize: '1.2rem', fontWeight: 800 }}>Bullwhip Effect Analysis</h3>
             <span
-              className="badge"
+              className="badge metric-num"
               style={{
                 background: parseFloat(bullwhipRatio) > 1.2 ? 'rgba(239, 68, 68, 0.15)' : 'rgba(16, 185, 129, 0.15)',
                 color: parseFloat(bullwhipRatio) > 1.2 ? '#f87171' : '#34d399',
@@ -103,6 +117,7 @@ export function BullwhipChart({ history, myRole }: BullwhipChartProps) {
                   y={y + 4}
                   fill="var(--text-muted)"
                   fontSize="10"
+                  fontFamily="var(--font-mono)"
                   textAnchor="end"
                 >
                   {val}
@@ -130,6 +145,7 @@ export function BullwhipChart({ history, myRole }: BullwhipChartProps) {
                 y={chartHeight - 10}
                 fill="var(--text-muted)"
                 fontSize="10"
+                fontFamily="var(--font-mono)"
                 textAnchor="middle"
               >
                 R{r}
@@ -182,21 +198,22 @@ export function BullwhipChart({ history, myRole }: BullwhipChartProps) {
         {/* Hover Tooltip Overlay */}
         {hoveredRecord && (
           <div
+            className="metric-num"
             style={{
               position: 'absolute',
               top: '10px',
               right: '20px',
               padding: '0.65rem 0.85rem',
-              backgroundColor: 'rgba(15, 23, 42, 0.95)',
+              backgroundColor: 'rgba(12, 16, 27, 0.95)',
               border: '1px solid var(--border-medium)',
               borderRadius: 'var(--radius-sm)',
-              boxShadow: '0 8px 24px rgba(0, 0, 0, 0.5)',
+              boxShadow: '0 8px 24px rgba(0, 0, 0, 0.6)',
               fontSize: '0.8rem',
               pointerEvents: 'none',
               zIndex: 10,
             }}
           >
-            <div style={{ fontWeight: 700, color: 'var(--text-primary)', marginBottom: '0.25rem' }}>
+            <div style={{ fontWeight: 700, color: 'var(--text-primary)', marginBottom: '0.25rem', fontFamily: 'var(--font-sans)' }}>
               Round {hoveredRecord.round} Metrics
             </div>
             <div style={{ color: '#38bdf8' }}>Customer Demand: {getCustomerDemand(hoveredRecord.round)}</div>

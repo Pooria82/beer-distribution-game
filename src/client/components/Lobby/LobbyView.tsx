@@ -2,6 +2,13 @@ import { RoleType, PeerSummary } from '../../../core/types.js';
 import { RoomCreate } from './RoomCreate.js';
 import { RoleSelection } from './RoleSelection.js';
 import { ReviewerQuickStart } from './ReviewerQuickStart.js';
+import {
+  IconBeer,
+  IconClipboard,
+  IconBacklog,
+  IconLogOut,
+  IconCheck,
+} from '../Common/Icons.js';
 
 export interface LobbyViewProps {
   readonly roomId: string | null;
@@ -50,18 +57,32 @@ export function LobbyView({
       >
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.25rem' }}>
-            <span style={{ fontSize: '2rem' }}>🍻</span>
-            <h1 style={{ fontSize: '1.75rem', fontWeight: 800 }}>
+            <div
+              style={{
+                width: '44px',
+                height: '44px',
+                borderRadius: 'var(--radius-md)',
+                background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.2) 0%, rgba(6, 182, 212, 0.2) 100%)',
+                border: '1px solid rgba(99, 102, 241, 0.4)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                boxShadow: '0 0 20px rgba(99, 102, 241, 0.25)',
+              }}
+            >
+              <IconBeer size={24} color="#818cf8" />
+            </div>
+            <h1 style={{ fontSize: '1.75rem', fontWeight: 800, letterSpacing: '-0.025em' }}>
               <span className="gradient-text">Beer Distribution Game</span>
             </h1>
             <span
               className="badge"
-              style={{ background: 'rgba(255, 255, 255, 0.08)', color: 'var(--text-secondary)', border: '1px solid var(--border-subtle)' }}
+              style={{ background: 'rgba(255, 255, 255, 0.05)', color: 'var(--text-secondary)', border: '1px solid var(--border-subtle)' }}
             >
               MIT Simulation Engine
             </span>
           </div>
-          <p style={{ color: 'var(--text-secondary)', fontSize: '0.925rem' }}>
+          <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginTop: '0.2rem' }}>
             Authoritative Turn-Based Supply Chain Simulation with Real-Time WebSockets & Fog-of-War.
           </p>
         </div>
@@ -71,12 +92,12 @@ export function LobbyView({
             <div
               className="badge"
               style={{
-                fontSize: '0.9rem',
-                padding: '0.5rem 0.85rem',
-                background: 'rgba(99, 102, 241, 0.15)',
+                fontSize: '0.85rem',
+                padding: '0.45rem 0.85rem',
+                background: 'rgba(99, 102, 241, 0.12)',
                 color: 'var(--text-primary)',
-                border: '1px solid rgba(99, 102, 241, 0.4)',
-                letterSpacing: '0.075em',
+                border: '1px solid rgba(99, 102, 241, 0.35)',
+                letterSpacing: '0.05em',
               }}
             >
               ROOM: <strong style={{ color: 'var(--text-accent)', marginLeft: '0.25rem' }}>{roomId}</strong>
@@ -86,9 +107,10 @@ export function LobbyView({
               type="button"
               onClick={onLeaveRoom}
               className="btn btn-ghost"
-              style={{ fontSize: '0.85rem', padding: '0.45rem 0.75rem' }}
+              style={{ fontSize: '0.825rem', padding: '0.45rem 0.75rem' }}
             >
-              Leave Room
+              <IconLogOut size={14} />
+              <span>Leave Room</span>
             </button>
           </div>
         )}
@@ -99,18 +121,19 @@ export function LobbyView({
         <div
           style={{
             padding: '1rem 1.25rem',
-            backgroundColor: 'rgba(239, 68, 68, 0.15)',
-            border: '1px solid rgba(239, 68, 68, 0.35)',
+            backgroundColor: 'rgba(239, 68, 68, 0.12)',
+            border: '1px solid rgba(239, 68, 68, 0.3)',
             borderRadius: 'var(--radius-md)',
             color: '#fca5a5',
-            fontSize: '0.925rem',
+            fontSize: '0.9rem',
             marginBottom: '2rem',
             display: 'flex',
             alignItems: 'center',
-            justifyContent: 'space-between',
+            gap: '0.65rem',
           }}
         >
-          <span>⚠️ {error}</span>
+          <IconBacklog size={18} color="#ef4444" />
+          <span>{error}</span>
         </div>
       )}
 
@@ -123,7 +146,7 @@ export function LobbyView({
           <div
             className="glass-panel"
             style={{
-              maxWidth: '640px',
+              maxWidth: '680px',
               margin: '2rem auto 0',
               padding: '1.5rem',
               fontSize: '0.875rem',
@@ -131,9 +154,12 @@ export function LobbyView({
               lineHeight: 1.6,
             }}
           >
-            <h4 style={{ color: 'var(--text-primary)', marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <span>📋</span> Game Principles & Costs
-            </h4>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.75rem' }}>
+              <IconClipboard size={18} color="var(--primary-500)" />
+              <h4 style={{ color: 'var(--text-primary)', fontWeight: 700 }}>
+                Game Principles & Invariants
+              </h4>
+            </div>
             <ul style={{ paddingLeft: '1.25rem', display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
               <li><strong>20 Rounds Total:</strong> Customer demand starts at 4 units and jumps to 8 units in Round 5.</li>
               <li><strong>2-Round Delays:</strong> Shipments and orders propagate with a strict 2-round transit delay.</li>
@@ -164,11 +190,11 @@ export function LobbyView({
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
               <div
                 style={{
-                  width: '12px',
-                  height: '12px',
+                  width: '10px',
+                  height: '10px',
                   borderRadius: '50%',
                   background: gameStarted || occupiedCount === 4 ? 'var(--status-success)' : 'var(--status-warning)',
-                  boxShadow: gameStarted || occupiedCount === 4 ? '0 0 10px var(--status-success)' : '0 0 8px var(--status-warning)',
+                  boxShadow: gameStarted || occupiedCount === 4 ? '0 0 12px var(--status-success)' : '0 0 10px var(--status-warning)',
                 }}
               />
               <div>
@@ -187,8 +213,10 @@ export function LobbyView({
 
             {currentRole && (
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>You are currently:</span>
-                <span className={`badge badge-${currentRole}`}>{currentRole}</span>
+                <span style={{ fontSize: '0.825rem', color: 'var(--text-secondary)' }}>Your role:</span>
+                <span className={`badge badge-${currentRole}`}>
+                  <IconCheck size={12} /> {currentRole}
+                </span>
               </div>
             )}
           </div>

@@ -1,5 +1,11 @@
-import { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { RoleState } from '../../../core/types.js';
+import {
+  IconOrderNote,
+  IconBot,
+  IconHourglass,
+  IconCheck,
+} from '../Common/Icons.js';
 
 export interface OrderFormProps {
   readonly currentRound: number;
@@ -59,17 +65,32 @@ export function OrderForm({
         padding: '1.5rem',
         marginBottom: '1.75rem',
         border: '1px solid rgba(99, 102, 241, 0.35)',
-        background: 'linear-gradient(180deg, rgba(30, 41, 59, 0.6) 0%, rgba(15, 23, 42, 0.75) 100%)',
+        background: 'linear-gradient(180deg, rgba(19, 27, 46, 0.75) 0%, rgba(12, 16, 27, 0.85) 100%)',
       }}
     >
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem', marginBottom: '1.25rem' }}>
         <div>
-          <h3 style={{ fontSize: '1.2rem', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <span>📝</span>
-            <span>Order Decision — Round {currentRound}</span>
-          </h3>
-          <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', marginTop: '0.2rem' }}>
-            Enter the number of units you wish to order from your upstream supplier. Orders take 2 rounds to arrive.
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <div
+              style={{
+                width: '28px',
+                height: '28px',
+                borderRadius: 'var(--radius-sm)',
+                background: 'rgba(99, 102, 241, 0.15)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: 'var(--text-accent)',
+              }}
+            >
+              <IconOrderNote size={16} />
+            </div>
+            <h3 style={{ fontSize: '1.15rem', fontWeight: 700 }}>
+              Order Decision — Round {currentRound}
+            </h3>
+          </div>
+          <p style={{ color: 'var(--text-secondary)', fontSize: '0.825rem', marginTop: '0.25rem' }}>
+            Submit order quantity to your upstream supplier. Shipped units take 2 rounds to arrive.
           </p>
         </div>
 
@@ -79,10 +100,10 @@ export function OrderForm({
             type="button"
             onClick={onSimulateRound}
             className="btn btn-secondary"
-            title="Automatically fills orders for any roles that haven't submitted yet"
-            style={{ fontSize: '0.825rem', padding: '0.45rem 0.85rem' }}
+            title="Automatically fills orders for any remaining unsubmitted roles"
+            style={{ fontSize: '0.8rem', padding: '0.45rem 0.85rem' }}
           >
-            <span>🤖</span>
+            <IconBot size={15} color="var(--primary-500)" />
             <span>Simulate Remaining Roles</span>
           </button>
         )}
@@ -92,9 +113,9 @@ export function OrderForm({
         /* Submitted State Banner */
         <div
           style={{
-            padding: '1.25rem',
-            background: 'rgba(16, 185, 129, 0.1)',
-            border: '1px solid rgba(16, 185, 129, 0.3)',
+            padding: '1.15rem 1.25rem',
+            background: 'rgba(16, 185, 129, 0.08)',
+            border: '1px solid rgba(16, 185, 129, 0.25)',
             borderRadius: 'var(--radius-md)',
             display: 'flex',
             alignItems: 'center',
@@ -104,13 +125,26 @@ export function OrderForm({
           }}
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-            <span style={{ fontSize: '1.5rem' }}>⏳</span>
+            <div
+              style={{
+                width: '36px',
+                height: '36px',
+                borderRadius: '50%',
+                background: 'rgba(16, 185, 129, 0.15)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: '#34d399',
+              }}
+            >
+              <IconHourglass size={18} />
+            </div>
             <div>
-              <div style={{ fontWeight: 700, color: '#34d399', fontSize: '0.95rem' }}>
-                Order Placed ({myState.lastOrderPlaced} units) — Waiting for Peers
+              <div style={{ fontWeight: 700, color: '#34d399', fontSize: '0.925rem' }}>
+                Order Registered ({myState.lastOrderPlaced} units) • Waiting for Peers
               </div>
               <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
-                Your order is registered. Round {currentRound} will automatically execute once all 4 roles have submitted.
+                Your order is locked. Round {currentRound} will automatically progress once all 4 roles complete their turn.
               </div>
             </div>
           </div>
@@ -119,14 +153,14 @@ export function OrderForm({
             className="badge"
             style={{ background: 'rgba(16, 185, 129, 0.2)', color: '#34d399', border: '1px solid rgba(16, 185, 129, 0.4)' }}
           >
-            Submitted ✓
+            <IconCheck size={12} /> Ready
           </span>
         </div>
       ) : (
         /* Active Order Input Form */
         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
-            <div style={{ width: '160px' }}>
+            <div style={{ width: '150px' }}>
               <input
                 ref={inputRef}
                 type="number"
@@ -136,7 +170,7 @@ export function OrderForm({
                 value={orderValue}
                 onChange={(e) => setOrderValue(e.target.value)}
                 onKeyDown={handleKeyDown}
-                className="input-field"
+                className="input-field metric-num"
                 placeholder="0"
                 disabled={isSubmitting}
                 style={{
@@ -149,20 +183,21 @@ export function OrderForm({
             </div>
 
             {/* Quick Pick Chips */}
-            <div style={{ display: 'flex', gap: '0.4rem', alignItems: 'center' }}>
-              <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginRight: '0.2rem' }}>Quick:</span>
+            <div style={{ display: 'flex', gap: '0.35rem', alignItems: 'center' }}>
+              <span style={{ fontSize: '0.775rem', color: 'var(--text-muted)', marginRight: '0.2rem' }}>Preset:</span>
               {[0, 4, 8, 12, 16].map((num) => (
                 <button
                   key={num}
                   type="button"
                   onClick={() => setQuickValue(num)}
                   disabled={isSubmitting}
-                  className="btn btn-ghost"
+                  className="btn btn-ghost metric-num"
                   style={{
-                    padding: '0.35rem 0.65rem',
+                    padding: '0.3rem 0.6rem',
                     fontSize: '0.85rem',
                     border: '1px solid var(--border-subtle)',
-                    minWidth: '36px',
+                    minWidth: '34px',
+                    borderRadius: 'var(--radius-sm)',
                   }}
                 >
                   {num}
@@ -175,15 +210,16 @@ export function OrderForm({
               type="submit"
               disabled={isSubmitting || !orderValue.trim()}
               className="btn btn-primary"
-              style={{ padding: '0.65rem 1.5rem', marginLeft: 'auto' }}
+              style={{ padding: '0.65rem 1.35rem', marginLeft: 'auto', gap: '0.5rem' }}
             >
-              {isSubmitting ? 'Submitting...' : 'Submit Order (Enter ↵)'}
+              <span>{isSubmitting ? 'Locking Order...' : 'Submit Order'}</span>
+              <kbd style={{ fontSize: '0.7rem', padding: '0.1rem 0.35rem' }}>↵ Enter</kbd>
             </button>
           </div>
 
-          <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', display: 'flex', justifyContent: 'space-between' }}>
-            <span>Tip: Press <strong>Enter</strong> to instantly submit.</span>
-            <span>Last order placed: {myState.lastOrderPlaced} units</span>
+          <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.5rem' }}>
+            <span>Press <kbd>Enter</kbd> to submit immediately.</span>
+            <span>Last order placed: <strong className="metric-num" style={{ color: 'var(--text-primary)' }}>{myState.lastOrderPlaced}</strong> units</span>
           </div>
         </form>
       )}

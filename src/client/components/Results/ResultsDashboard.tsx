@@ -2,6 +2,7 @@ import { PlayerView } from '../../../core/types.js';
 import { CostSummary } from './CostSummary.js';
 import { BullwhipChart } from './BullwhipChart.js';
 import { HistoryTable } from '../Game/HistoryTable.js';
+import { IconTrophy, IconRefresh } from '../Common/Icons.js';
 
 export interface ResultsDashboardProps {
   readonly view: PlayerView;
@@ -28,7 +29,20 @@ export function ResultsDashboard({ view, onPlayAgain }: ResultsDashboardProps) {
       >
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.25rem' }}>
-            <span style={{ fontSize: '2rem' }}>🏆</span>
+            <div
+              style={{
+                width: 40,
+                height: 40,
+                borderRadius: '10px',
+                background: 'rgba(245, 158, 11, 0.12)',
+                border: '1px solid rgba(245, 158, 11, 0.3)',
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              <IconTrophy size={22} color="#fbbf24" />
+            </div>
             <h1 style={{ fontSize: '1.75rem', fontWeight: 800 }}>
               <span className="gradient-text">Simulation Complete</span>
             </h1>
@@ -47,16 +61,16 @@ export function ResultsDashboard({ view, onPlayAgain }: ResultsDashboardProps) {
         <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
           <div style={{ textAlign: 'right' }}>
             <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', display: 'block' }}>Session ID</span>
-            <strong style={{ fontSize: '0.9rem', color: 'var(--text-primary)' }}>{gameId}</strong>
+            <strong style={{ fontSize: '0.9rem', color: 'var(--text-primary)', fontFamily: 'var(--font-mono)' }}>{gameId}</strong>
           </div>
 
           <button
             type="button"
             onClick={onPlayAgain}
             className="btn btn-primary"
-            style={{ padding: '0.65rem 1.25rem' }}
+            style={{ padding: '0.65rem 1.25rem', display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}
           >
-            🔄 New Session / Play Again
+            <IconRefresh size={16} /> New Session / Play Again
           </button>
         </div>
       </header>

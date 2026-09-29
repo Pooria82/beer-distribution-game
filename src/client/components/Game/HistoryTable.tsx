@@ -1,4 +1,5 @@
 import { RoundRecord } from '../../../core/types.js';
+import { IconTrendingUp } from '../Common/Icons.js';
 
 export interface HistoryTableProps {
   readonly history: readonly RoundRecord[];
@@ -10,14 +11,28 @@ export function HistoryTable({ history }: HistoryTableProps) {
       <div
         className="glass-panel"
         style={{
-          padding: '2rem',
+          padding: '2.5rem',
           textAlign: 'center',
           color: 'var(--text-muted)',
-          fontSize: '0.9rem',
+          fontSize: '0.875rem',
         }}
       >
-        <span style={{ fontSize: '1.5rem', display: 'block', marginBottom: '0.5rem' }}>📊</span>
-        <span>No completed rounds yet. Submit your order for Round 1 to start building your ledger history.</span>
+        <div
+          style={{
+            width: '40px',
+            height: '40px',
+            borderRadius: '50%',
+            background: 'rgba(255, 255, 255, 0.04)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            margin: '0 auto 0.75rem',
+            color: 'var(--text-muted)',
+          }}
+        >
+          <IconTrendingUp size={20} />
+        </div>
+        <div>No completed rounds yet. Submit your order for Round 1 to start building your ledger history.</div>
       </div>
     );
   }
@@ -27,13 +42,31 @@ export function HistoryTable({ history }: HistoryTableProps) {
 
   return (
     <div className="glass-panel" style={{ padding: '1.5rem', overflow: 'hidden' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-        <h4 style={{ fontSize: '1.1rem', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-          <span>📊</span>
-          <span>Round History Ledger</span>
-        </h4>
-        <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
-          {history.length} round{history.length === 1 ? '' : 's'} recorded
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.15rem' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+          <div
+            style={{
+              width: '28px',
+              height: '28px',
+              borderRadius: 'var(--radius-sm)',
+              background: 'rgba(99, 102, 241, 0.15)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              color: 'var(--text-accent)',
+            }}
+          >
+            <IconTrendingUp size={16} />
+          </div>
+          <h4 style={{ fontSize: '1.05rem', fontWeight: 700 }}>
+            Round History Ledger
+          </h4>
+        </div>
+        <span
+          className="badge metric-num"
+          style={{ background: 'rgba(255, 255, 255, 0.05)', color: 'var(--text-secondary)', border: '1px solid var(--border-subtle)', textTransform: 'none' }}
+        >
+          {history.length} round{history.length === 1 ? '' : 's'} completed
         </span>
       </div>
 
@@ -42,7 +75,7 @@ export function HistoryTable({ history }: HistoryTableProps) {
           style={{
             width: '100%',
             borderCollapse: 'collapse',
-            fontSize: '0.875rem',
+            fontSize: '0.85rem',
             textAlign: 'right',
           }}
         >
@@ -51,10 +84,10 @@ export function HistoryTable({ history }: HistoryTableProps) {
               style={{
                 borderBottom: '1px solid var(--border-medium)',
                 color: 'var(--text-secondary)',
-                fontSize: '0.75rem',
+                fontSize: '0.725rem',
                 textTransform: 'uppercase',
-                letterSpacing: '0.05em',
-                background: 'rgba(15, 23, 42, 0.95)',
+                letterSpacing: '0.06em',
+                background: 'rgba(12, 16, 27, 0.95)',
                 position: 'sticky',
                 top: 0,
                 zIndex: 1,
@@ -77,17 +110,18 @@ export function HistoryTable({ history }: HistoryTableProps) {
                 key={rec.round}
                 style={{
                   borderBottom: '1px solid var(--border-subtle)',
-                  transition: 'background var(--transition-fast)',
+                  transition: 'background 150ms ease',
                 }}
               >
                 <td style={{ padding: '0.65rem 1rem', textAlign: 'left', fontWeight: 700, color: 'var(--text-primary)' }}>
                   Round {rec.round}
                 </td>
-                <td style={{ padding: '0.65rem 1rem', color: '#38bdf8' }}>{rec.shipmentArrived}</td>
-                <td style={{ padding: '0.65rem 1rem', color: '#fbbf24' }}>{rec.incomingOrder}</td>
-                <td style={{ padding: '0.65rem 1rem', color: 'var(--text-secondary)' }}>{rec.shipped}</td>
-                <td style={{ padding: '0.65rem 1rem', color: '#34d399', fontWeight: 600 }}>{rec.inventory}</td>
+                <td className="metric-num" style={{ padding: '0.65rem 1rem', color: '#38bdf8' }}>{rec.shipmentArrived}</td>
+                <td className="metric-num" style={{ padding: '0.65rem 1rem', color: '#fbbf24' }}>{rec.incomingOrder}</td>
+                <td className="metric-num" style={{ padding: '0.65rem 1rem', color: 'var(--text-secondary)' }}>{rec.shipped}</td>
+                <td className="metric-num" style={{ padding: '0.65rem 1rem', color: '#34d399', fontWeight: 600 }}>{rec.inventory}</td>
                 <td
+                  className="metric-num"
                   style={{
                     padding: '0.65rem 1rem',
                     color: rec.backlog > 0 ? '#f87171' : 'var(--text-muted)',
@@ -96,11 +130,11 @@ export function HistoryTable({ history }: HistoryTableProps) {
                 >
                   {rec.backlog}
                 </td>
-                <td style={{ padding: '0.65rem 1rem', fontWeight: 700, color: '#c084fc' }}>{rec.orderPlaced}</td>
-                <td style={{ padding: '0.65rem 1rem', color: 'var(--text-secondary)' }}>
+                <td className="metric-num" style={{ padding: '0.65rem 1rem', fontWeight: 700, color: '#c084fc' }}>{rec.orderPlaced}</td>
+                <td className="metric-num" style={{ padding: '0.65rem 1rem', color: 'var(--text-secondary)' }}>
                   ${rec.roundCost.toFixed(2)}
                 </td>
-                <td style={{ padding: '0.65rem 1rem', fontWeight: 700, color: '#f472b6' }}>
+                <td className="metric-num" style={{ padding: '0.65rem 1rem', fontWeight: 700, color: '#f472b6' }}>
                   ${rec.totalCost.toFixed(2)}
                 </td>
               </tr>

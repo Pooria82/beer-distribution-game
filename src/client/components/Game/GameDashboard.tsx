@@ -4,6 +4,12 @@ import { SupplyChainCanvas } from './SupplyChainCanvas.js';
 import { MetricCards } from './MetricCards.js';
 import { OrderForm } from './OrderForm.js';
 import { HistoryTable } from './HistoryTable.js';
+import {
+  IconBeer,
+  IconZap,
+  IconBacklog,
+  IconLogOut,
+} from '../Common/Icons.js';
 
 export interface GameDashboardProps {
   readonly view: PlayerView;
@@ -42,30 +48,46 @@ export function GameDashboard({
         }}
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-          <span style={{ fontSize: '2rem' }}>🍺</span>
+          <div
+            style={{
+              width: '42px',
+              height: '42px',
+              borderRadius: 'var(--radius-md)',
+              background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.2) 0%, rgba(6, 182, 212, 0.2) 100%)',
+              border: '1px solid rgba(99, 102, 241, 0.4)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            <IconBeer size={22} color="#818cf8" />
+          </div>
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
-              <h2 style={{ fontSize: '1.5rem', fontWeight: 800 }}>
-                Round {currentRound} <span style={{ color: 'var(--text-muted)', fontSize: '1.1rem' }}>/ {totalRounds}</span>
+              <h2 style={{ fontSize: '1.45rem', fontWeight: 800, letterSpacing: '-0.02em' }}>
+                Round {currentRound} <span style={{ color: 'var(--text-muted)', fontSize: '1.05rem', fontWeight: 500 }}>/ {totalRounds}</span>
               </h2>
               <span className={`badge badge-${myRole}`}>
                 {myRole}
               </span>
             </div>
             <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', display: 'flex', gap: '0.75rem', marginTop: '0.2rem' }}>
-              <span>Room: <strong>{view.gameId}</strong></span>
+              <span>Room: <strong style={{ color: 'var(--text-secondary)' }}>{view.gameId}</strong></span>
               <span>•</span>
               <span style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
                 <span
                   style={{
-                    width: '8px',
-                    height: '8px',
+                    width: '7px',
+                    height: '7px',
                     borderRadius: '50%',
                     backgroundColor: connectionStatus === 'connected' ? 'var(--status-success)' : 'var(--status-warning)',
                     display: 'inline-block',
                   }}
+                  className={connectionStatus === 'connected' ? 'status-pulse' : ''}
                 />
-                {connectionStatus === 'connected' ? 'Connected' : connectionStatus}
+                <span style={{ textTransform: 'capitalize' }}>
+                  {connectionStatus === 'connected' ? 'Live Synchronized' : connectionStatus}
+                </span>
               </span>
             </div>
           </div>
@@ -76,9 +98,10 @@ export function GameDashboard({
             type="button"
             onClick={onLeaveRoom}
             className="btn btn-ghost"
-            style={{ fontSize: '0.85rem' }}
+            style={{ fontSize: '0.825rem', gap: '0.4rem' }}
           >
-            Exit to Lobby
+            <IconLogOut size={14} />
+            <span>Exit to Lobby</span>
           </button>
         </div>
       </header>
@@ -89,19 +112,19 @@ export function GameDashboard({
           className="animate-fade-in"
           style={{
             padding: '0.75rem 1.25rem',
-            background: 'linear-gradient(90deg, rgba(99, 102, 241, 0.2) 0%, rgba(139, 92, 246, 0.2) 100%)',
-            border: '1px solid rgba(99, 102, 241, 0.4)',
+            background: 'linear-gradient(90deg, rgba(99, 102, 241, 0.15) 0%, rgba(139, 92, 246, 0.15) 100%)',
+            border: '1px solid rgba(99, 102, 241, 0.35)',
             borderRadius: 'var(--radius-md)',
             color: 'var(--text-primary)',
-            fontSize: '0.9rem',
+            fontSize: '0.875rem',
             fontWeight: 600,
             marginBottom: '1.5rem',
             display: 'flex',
             alignItems: 'center',
-            gap: '0.5rem',
+            gap: '0.65rem',
           }}
         >
-          <span>🎉</span>
+          <div style={{ color: 'var(--text-accent)' }}><IconZap size={16} /></div>
           <span>Round {roundAdvancedNotice} has commenced! All roles submitted orders in lockstep.</span>
         </div>
       )}
@@ -111,15 +134,19 @@ export function GameDashboard({
         <div
           style={{
             padding: '0.75rem 1.25rem',
-            backgroundColor: 'rgba(239, 68, 68, 0.15)',
-            border: '1px solid rgba(239, 68, 68, 0.35)',
+            backgroundColor: 'rgba(239, 68, 68, 0.12)',
+            border: '1px solid rgba(239, 68, 68, 0.3)',
             borderRadius: 'var(--radius-md)',
             color: '#fca5a5',
-            fontSize: '0.9rem',
+            fontSize: '0.875rem',
             marginBottom: '1.5rem',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.5rem',
           }}
         >
-          ⚠️ {error}
+          <IconBacklog size={16} color="#ef4444" />
+          <span>{error}</span>
         </div>
       )}
 
