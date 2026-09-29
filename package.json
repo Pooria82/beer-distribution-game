@@ -1,15 +1,43 @@
 {
   "name": "beer-game",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "private": true,
-  "description": "Take-home task: a small multiplayer supply-chain game. Keep the script names below working; replace their bodies.",
+  "description": "Multiplayer Beer Distribution Game - Senior Full-Stack Implementation",
+  "type": "module",
   "engines": {
-    "node": ">=24"
+    "node": ">=22"
   },
   "scripts": {
-    "dev": "echo 'TODO: start the server and the client for local development' && exit 1",
-    "build": "echo 'TODO: produce a production build' && exit 1",
-    "start": "echo 'TODO: run the production build' && exit 1",
-    "test": "echo 'TODO: run the automated tests' && exit 1"
+    "dev": "concurrently -k -p \"[{name}]\" -n \"SERVER,CLIENT\" -c \"blue,magenta\" \"tsx watch src/server/index.ts\" \"vite\"",
+    "build": "npm run build:client && npm run build:server",
+    "build:client": "vite build",
+    "build:server": "tsup src/server/index.ts --format esm --target node22 --out-dir dist/server --clean",
+    "start": "node dist/server/index.js",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "better-sqlite3": "^11.8.1",
+    "express": "^4.21.2",
+    "nanoid": "^5.1.2",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "ws": "^8.18.1"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "^7.6.12",
+    "@types/express": "^5.0.0",
+    "@types/node": "^22.13.9",
+    "@types/react": "^19.0.10",
+    "@types/react-dom": "^19.0.4",
+    "@types/ws": "^8.5.14",
+    "@vitejs/plugin-react": "^4.3.4",
+    "concurrently": "^9.1.2",
+    "tsup": "^8.4.0",
+    "tsx": "^4.19.3",
+    "typescript": "^5.8.2",
+    "vite": "^6.2.0",
+    "vitest": "^3.0.7"
   }
 }
