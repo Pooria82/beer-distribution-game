@@ -34,12 +34,19 @@ export interface RoleState {
   readonly hasSubmittedThisRound: boolean;
 }
 
+export interface RoundIntermediate {
+  readonly shipmentArrived: number;
+  readonly incomingOrder: number;
+  readonly shipped: number;
+}
+
 export interface GameState {
   readonly id: string;
   readonly status: GameStatus;
   readonly currentRound: number;
   readonly totalRounds: number;
   readonly roles: Readonly<Record<RoleType, RoleState>>;
+  readonly currentRoundIntermediates?: Readonly<Record<RoleType, RoundIntermediate>> | undefined;
   readonly createdAt: number;
   readonly updatedAt: number;
 }
