@@ -3,8 +3,8 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 export interface DatabaseOptions {
-  readonly dbPath?: string;
-  readonly verbose?: boolean;
+  readonly dbPath?: string | undefined;
+  readonly verbose?: boolean | undefined;
 }
 
 export function createDatabase(options: DatabaseOptions = {}): Database.Database {

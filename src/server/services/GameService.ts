@@ -112,11 +112,20 @@ export class GameService {
     return mutex.runExclusive(() => {
       const game = this.getGame(gameId);
 
-      // Verify or generate token
-      let playerToken = existingToken;
-      if (!playerToken) {
-        playerToken = `tok_${nanoid(16)}`;
+      // Verify if player is reconnecting with an existing valid session token for this role
+      if (existingToken) {
+        const session = this.repository.findPlayerByToken(existingToken);
+        if (session && session.gameId === gameId && session.role === role) {
+          return {
+            playerToken: existingToken,
+            game,
+            started: false,
+          };
+        }
       }
+
+      // Generate new token if not provided
+      const playerToken = existingToken ?? `tok_${nanoid(16)}`;
 
       // Claim role on domain engine
       const started = game.claimRole(role);
