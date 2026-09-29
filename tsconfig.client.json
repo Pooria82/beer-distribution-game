@@ -24,6 +24,6 @@
     "forceConsistentCasingInFileNames": true,
     "isolatedModules": true
   },
-  "include": ["src/client/**/*", "src/core/**/*", "vite.config.ts"],
+  "include": ["src/client/**/*", "src/core/**/*", "src/server/protocol.ts", "vite.config.ts"],
   "exclude": ["node_modules", "dist"]
 }
