@@ -65,6 +65,7 @@ export interface PlayerView {
   readonly totalRounds: number;
   readonly myRole: RoleType;
   readonly myState: RoleState;
+  readonly currentIntermediate?: RoundIntermediate | undefined;
   readonly peers: Readonly<Record<RoleType, PeerSummary>>;
   readonly finalScores?: Readonly<Record<RoleType, number>> | undefined;
   readonly totalChainCost?: number | undefined;

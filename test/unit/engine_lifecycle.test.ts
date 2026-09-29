@@ -12,6 +12,7 @@ describe('BeerGameEngine Lifecycle & Pipeline', () => {
     expect(engine.getRole('retailer').getIsOccupied()).toBe(true);
 
     expect(() => engine.claimRole('retailer')).toThrow(RoleAlreadyTakenError);
+    expect(() => engine.submitOrder('retailer', 4)).toThrow(GameNotStartedError);
   });
 
   it('should auto-start when all 4 roles are occupied and run round 1 steps 1–4', () => {
@@ -61,6 +62,23 @@ describe('BeerGameEngine Lifecycle & Pipeline', () => {
     expect(history.length).toBe(1);
     expect(history[0]?.round).toBe(1);
     expect(history[0]?.orderPlaced).toBe(4);
+  });
+
+  it('should complete game after totalRounds and prevent further submissions', () => {
+    const engine = new BeerGameEngine('game-fast', 1);
+    engine.claimRole('retailer');
+    engine.claimRole('wholesaler');
+    engine.claimRole('distributor');
+    engine.claimRole('factory');
+
+    engine.submitOrder('retailer', 4);
+    engine.submitOrder('wholesaler', 4);
+    engine.submitOrder('distributor', 4);
+    const result = engine.submitOrder('factory', 4);
+
+    expect(result).toEqual({ roundAdvanced: false, gameCompleted: true });
+    expect(engine.getStatus()).toBe('completed');
+    expect(() => engine.submitOrder('retailer', 4)).toThrow(GameFinishedError);
   });
 
   it('should serialize to snapshot and reconstitute identically', () => {
