@@ -3,7 +3,12 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { BeerGameEngine } from '../../src/core/BeerGameEngine.js';
-import { ALL_ROLES, RoleType } from '../../src/core/types.js';
+import { ALL_ROLES } from '../../src/core/types.js';
+
+
+
+
+
 
 interface ExpectedRoleRound {
   shipmentArrived: number;
