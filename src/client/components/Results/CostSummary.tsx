@@ -5,7 +5,7 @@ import {
   IconWholesaler,
   IconDistributor,
   IconFactory,
-  IconCost,
+  IconGauge,
 } from '../Common/Icons.js';
 
 export interface CostSummaryProps {
@@ -17,10 +17,10 @@ export interface CostSummaryProps {
 
 interface RoleScoreMeta {
   readonly role: RoleType;
+  readonly callsign: string;
   readonly name: string;
   readonly icon: React.ReactNode;
   readonly color: string;
-  readonly bg: string;
 }
 
 export function CostSummary({
@@ -32,108 +32,146 @@ export function CostSummary({
   const displayTotal = totalChainCost ?? myTotalCost;
 
   const roleMetas: readonly RoleScoreMeta[] = [
-    { role: 'retailer', name: 'Retailer', icon: <IconRetailer size={20} color="var(--role-retailer)" />, color: 'var(--role-retailer)', bg: 'var(--role-retailer-bg)' },
-    { role: 'wholesaler', name: 'Wholesaler', icon: <IconWholesaler size={20} color="var(--role-wholesaler)" />, color: 'var(--role-wholesaler)', bg: 'var(--role-wholesaler-bg)' },
-    { role: 'distributor', name: 'Distributor', icon: <IconDistributor size={20} color="var(--role-distributor)" />, color: 'var(--role-distributor)', bg: 'var(--role-distributor-bg)' },
-    { role: 'factory', name: 'Factory', icon: <IconFactory size={20} color="var(--role-factory)" />, color: 'var(--role-factory)', bg: 'var(--role-factory-bg)' },
+    { role: 'retailer', callsign: 'NODE_01', name: 'Retailer', icon: <IconRetailer size={18} color="var(--role-retailer)" />, color: 'var(--role-retailer)' },
+    { role: 'wholesaler', callsign: 'NODE_02', name: 'Wholesaler', icon: <IconWholesaler size={18} color="var(--role-wholesaler)" />, color: 'var(--role-wholesaler)' },
+    { role: 'distributor', callsign: 'NODE_03', name: 'Distributor', icon: <IconDistributor size={18} color="var(--role-distributor)" />, color: 'var(--role-distributor)' },
+    { role: 'factory', callsign: 'NODE_04', name: 'Factory', icon: <IconFactory size={18} color="var(--role-factory)" />, color: 'var(--role-factory)' },
   ];
 
   return (
-    <div style={{ marginBottom: '2rem' }}>
-      {/* Total Supply Chain Cost Banner */}
-      <div
-        className="glass-panel"
-        style={{
-          padding: '2.25rem',
-          textAlign: 'center',
-          background: 'linear-gradient(135deg, rgba(19, 27, 46, 0.85) 0%, rgba(12, 16, 27, 0.95) 100%)',
-          border: '1px solid rgba(99, 102, 241, 0.35)',
-          marginBottom: '1.5rem',
-          boxShadow: '0 16px 48px -10px rgba(0, 0, 0, 0.8)',
-        }}
-      >
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.4rem', marginBottom: '0.75rem' }}>
-          <IconCost size={18} color="var(--text-accent)" />
-          <span
-            className="badge"
-            style={{ background: 'rgba(99, 102, 241, 0.15)', color: 'var(--text-accent)', fontSize: '0.8rem' }}
-          >
-            Supply Chain Aggregate Ledger
-          </span>
+    <div className="scada-panel" style={{ width: '100%', marginBottom: '1rem' }}>
+      {/* Panel Header */}
+      <div className="scada-panel-header">
+        <div className="scada-panel-title">
+          <IconGauge size={15} color="var(--scada-amber)" />
+          <span>MISSION DEBRIEF // CUMULATIVE FINANCIAL BURDEN</span>
         </div>
-
-        <h2 style={{ fontSize: '1.15rem', color: 'var(--text-secondary)', fontWeight: 600, marginBottom: '0.4rem' }}>
-          Total Supply Chain Cost
-        </h2>
-
-        <div
-          className="metric-num"
-          style={{
-            fontSize: '3.25rem',
-            fontWeight: 800,
-            letterSpacing: '-0.03em',
-            lineHeight: 1.1,
-            color: '#f8fafc',
-            textShadow: '0 0 35px rgba(99, 102, 241, 0.4)',
-          }}
-        >
-          ${displayTotal.toFixed(2)}
-        </div>
-
-        <p style={{ color: 'var(--text-muted)', fontSize: '0.825rem', marginTop: '0.65rem' }}>
-          Combined cost across all 20 rounds (Holding: $0.50/unit • Backlog: $1.00/unit)
-        </p>
+        <span className="scada-badge" style={{ color: 'var(--scada-amber)', borderColor: 'rgba(245, 158, 11, 0.4)' }}>
+          TOTAL LOSS AUDIT
+        </span>
       </div>
 
-      {/* 4 Roles Individual Cost Breakdown */}
-      {finalScores && (
+      <div className="scada-panel-body" style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+        {/* Total Chain Loss Hero Readout */}
         <div
           style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+            padding: '1.25rem',
+            background: 'var(--bg-panel-inset)',
+            border: '1px solid var(--border-panel-bright)',
+            borderRadius: 'var(--radius-xs)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            flexWrap: 'wrap',
             gap: '1rem',
           }}
         >
-          {roleMetas.map((meta) => {
-            const cost = finalScores[meta.role] ?? 0;
-            const isMe = myRole === meta.role;
-            const percentage = displayTotal > 0 ? ((cost / displayTotal) * 100).toFixed(1) : '0';
+          <div>
+            <div style={{ fontSize: '0.72rem', fontFamily: 'var(--font-hud)', color: 'var(--text-muted)', letterSpacing: '0.1em' }}>
+              TOTAL 4-NODE SUPPLY CHAIN LOSS
+            </div>
+            <div
+              className="metric-num"
+              style={{
+                fontSize: '2.5rem',
+                fontWeight: 800,
+                color: 'var(--scada-amber)',
+                lineHeight: 1.1,
+              }}
+            >
+              ${displayTotal.toFixed(2)}
+            </div>
+            <div style={{ fontSize: '0.75rem', fontFamily: 'var(--font-mono)', color: 'var(--text-secondary)', marginTop: '0.2rem' }}>
+              Sum of Holding Penalties ($0.50/u) + Backlog Deficit Charges ($1.00/u) Across All 20 Rounds
+            </div>
+          </div>
 
-            return (
-              <div
-                key={meta.role}
-                className="glass-panel"
-                style={{
-                  padding: '1.25rem',
-                  borderTop: `4px solid ${meta.color}`,
-                  background: isMe ? meta.bg : undefined,
-                  boxShadow: isMe ? `0 0 24px ${meta.bg}` : undefined,
-                }}
-              >
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.65rem' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                    <div style={{ display: 'flex' }}>{meta.icon}</div>
-                    <span style={{ fontWeight: 700, color: meta.color, fontSize: '0.95rem' }}>{meta.name}</span>
-                  </div>
-                  {isMe && (
-                    <span className="badge" style={{ background: meta.color, color: '#fff', fontSize: '0.65rem' }}>
-                      YOU
-                    </span>
-                  )}
-                </div>
-
-                <div className="metric-num" style={{ fontSize: '1.85rem', fontWeight: 800, color: 'var(--text-primary)', margin: '0.4rem 0' }}>
-                  ${cost.toFixed(2)}
-                </div>
-
-                <div className="metric-num" style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-                  {percentage}% of total chain cost
-                </div>
-              </div>
-            );
-          })}
+          <div
+            style={{
+              padding: '0.75rem 1.25rem',
+              background: 'var(--bg-panel)',
+              border: '1px solid var(--border-panel)',
+              borderRadius: 'var(--radius-xs)',
+              textAlign: 'right',
+            }}
+          >
+            <div style={{ fontSize: '0.7rem', fontFamily: 'var(--font-hud)', color: 'var(--text-muted)' }}>YOUR STATION CONTRIBUTION</div>
+            <div className="metric-num" style={{ fontSize: '1.75rem', fontWeight: 800, color: 'var(--scada-cyan)' }}>
+              ${myTotalCost.toFixed(2)}
+            </div>
+            <div style={{ fontSize: '0.72rem', fontFamily: 'var(--font-mono)', color: 'var(--text-muted)' }}>
+              {displayTotal > 0 ? `${((myTotalCost / displayTotal) * 100).toFixed(1)}% of chain total` : '0%'}
+            </div>
+          </div>
         </div>
-      )}
+
+        {/* 4 Station Individual Breakdown */}
+        {finalScores && (
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(4, 1fr)',
+              gap: '0.65rem',
+            }}
+          >
+            {roleMetas.map((meta) => {
+              const score = finalScores[meta.role] ?? 0;
+              const isMe = meta.role === myRole;
+              const pct = displayTotal > 0 ? ((score / displayTotal) * 100).toFixed(1) : '0';
+
+              return (
+                <div
+                  key={meta.role}
+                  style={{
+                    padding: '0.65rem 0.85rem',
+                    background: isMe ? 'rgba(0, 240, 255, 0.05)' : 'var(--bg-panel-inset)',
+                    border: isMe ? `1px solid ${meta.color}` : '1px solid var(--border-panel)',
+                    borderRadius: 'var(--radius-xs)',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '0.35rem',
+                  }}
+                >
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
+                      {meta.icon}
+                      <span style={{ fontFamily: 'var(--font-hud)', fontSize: '0.85rem', fontWeight: 700, color: meta.color }}>
+                        {meta.name.toUpperCase()}
+                      </span>
+                    </div>
+                    {isMe && (
+                      <span className="scada-badge" style={{ fontSize: '0.6rem', padding: '0.05rem 0.35rem', color: 'var(--scada-cyan)' }}>
+                        YOU
+                      </span>
+                    )}
+                  </div>
+
+                  <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.35rem' }}>
+                    <span className="metric-num" style={{ fontSize: '1.4rem', fontWeight: 800, color: 'var(--text-primary)' }}>
+                      ${score.toFixed(2)}
+                    </span>
+                    <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
+                      ({pct}%)
+                    </span>
+                  </div>
+
+                  {/* Segmented Loss Share Bar */}
+                  <div className="scada-segment-meter" style={{ height: '6px' }}>
+                    <div
+                      style={{
+                        width: `${pct}%`,
+                        background: meta.color,
+                        boxShadow: `0 0 6px ${meta.color}`,
+                        borderRadius: '1px',
+                      }}
+                    />
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </div>
     </div>
   );
 }

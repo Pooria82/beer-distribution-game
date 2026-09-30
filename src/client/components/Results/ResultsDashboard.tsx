@@ -2,7 +2,12 @@ import { PlayerView } from '../../../core/types.js';
 import { CostSummary } from './CostSummary.js';
 import { BullwhipChart } from './BullwhipChart.js';
 import { HistoryTable } from '../Game/HistoryTable.js';
-import { IconTrophy, IconRefresh } from '../Common/Icons.js';
+import { ControlRoomHeader } from '../Common/ControlRoomHeader.js';
+import { ControlRoomFooter } from '../Common/ControlRoomFooter.js';
+import {
+  IconRefresh,
+  IconCheck,
+} from '../Common/Icons.js';
 
 export interface ResultsDashboardProps {
   readonly view: PlayerView;
@@ -13,83 +18,122 @@ export function ResultsDashboard({ view, onPlayAgain }: ResultsDashboardProps) {
   const { totalChainCost, finalScores, myRole, myState, gameId } = view;
 
   return (
-    <div style={{ maxWidth: '1100px', margin: '0 auto', padding: '2rem 1.5rem', width: '100%' }}>
-      {/* Top Completion Header */}
-      <header
+    <div
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        width: '100%',
+        minHeight: '100vh',
+        backgroundColor: 'var(--bg-app)',
+      }}
+    >
+      {/* Top SCADA Control Room Header */}
+      <ControlRoomHeader
+        roomId={gameId}
+        currentRole={myRole}
+        currentRound={20}
+        totalRounds={20}
+        connectionStatus="connected"
+        onLeave={onPlayAgain}
+      />
+
+      {/* Main Full-Width Post-Mission Analysis Workspace */}
+      <main
         style={{
+          flex: 1,
+          width: '100%',
+          padding: '0.85rem 1rem',
           display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          flexWrap: 'wrap',
-          gap: '1rem',
-          marginBottom: '2.5rem',
-          paddingBottom: '1.25rem',
-          borderBottom: '1px solid var(--border-subtle)',
+          flexDirection: 'column',
+          gap: '0.85rem',
         }}
       >
-        <div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.25rem' }}>
+        {/* Debrief Top Action Bar */}
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            flexWrap: 'wrap',
+            gap: '1rem',
+            padding: '0.75rem 1.25rem',
+            backgroundColor: 'var(--bg-panel-inset)',
+            border: '1px solid var(--border-panel-bright)',
+            borderRadius: 'var(--radius-xs)',
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
             <div
               style={{
-                width: 40,
-                height: 40,
-                borderRadius: '10px',
-                background: 'rgba(245, 158, 11, 0.12)',
-                border: '1px solid rgba(245, 158, 11, 0.3)',
-                display: 'inline-flex',
+                width: '32px',
+                height: '32px',
+                borderRadius: 'var(--radius-xs)',
+                background: 'rgba(0, 255, 157, 0.1)',
+                border: '1px solid rgba(0, 255, 157, 0.4)',
+                display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
               }}
             >
-              <IconTrophy size={22} color="#fbbf24" />
+              <IconCheck size={18} color="var(--scada-green)" />
             </div>
-            <h1 style={{ fontSize: '1.75rem', fontWeight: 800 }}>
-              <span className="gradient-text">Simulation Complete</span>
-            </h1>
-            <span
-              className="badge"
-              style={{ background: 'rgba(16, 185, 129, 0.15)', color: '#34d399', border: '1px solid rgba(16, 185, 129, 0.3)' }}
-            >
-              20 Rounds Concluded
-            </span>
-          </div>
-          <p style={{ color: 'var(--text-secondary)', fontSize: '0.925rem' }}>
-            Fog-of-war has been lifted. Full supply chain performance metrics and costs are revealed below.
-          </p>
-        </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-          <div style={{ textAlign: 'right' }}>
-            <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', display: 'block' }}>Session ID</span>
-            <strong style={{ fontSize: '0.9rem', color: 'var(--text-primary)', fontFamily: 'var(--font-mono)' }}>{gameId}</strong>
+            <div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <span
+                  style={{
+                    fontFamily: 'var(--font-hud)',
+                    fontSize: '1.25rem',
+                    fontWeight: 800,
+                    letterSpacing: '0.08em',
+                    color: '#ffffff',
+                    textTransform: 'uppercase',
+                  }}
+                >
+                  SIMULATION PROTOCOL CONCLUDED // 20 ROUNDS EXECUTED
+                </span>
+                <span
+                  className="scada-badge"
+                  style={{ color: 'var(--scada-green)', borderColor: 'rgba(0, 255, 157, 0.4)' }}
+                >
+                  FOG-OF-WAR LIFTED
+                </span>
+              </div>
+              <p style={{ color: 'var(--text-secondary)', fontSize: '0.78rem', fontFamily: 'var(--font-mono)' }}>
+                Authoritative multi-station consensus complete. Full supply chain telemetry and bullwhip metrics revealed.
+              </p>
+            </div>
           </div>
 
+          {/* Re-Commission Simulation Button */}
           <button
             type="button"
             onClick={onPlayAgain}
-            className="btn btn-primary"
-            style={{ padding: '0.65rem 1.25rem', display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}
+            className="btn-scada btn-scada-primary"
+            style={{ padding: '0.65rem 1.25rem', fontSize: '0.9rem' }}
           >
-            <IconRefresh size={16} /> New Session / Play Again
+            <IconRefresh size={15} />
+            <span>RE-COMMISSION FACILITY [NEW SESSION]</span>
           </button>
         </div>
-      </header>
 
-      {/* 1. Final Cost Breakdown Across Roles */}
-      <CostSummary
-        totalChainCost={totalChainCost}
-        finalScores={finalScores}
-        myRole={myRole}
-        myTotalCost={myState.totalCost}
-      />
+        {/* 1. Cumulative Financial Loss Debrief Across 4 Stations */}
+        <CostSummary
+          totalChainCost={totalChainCost}
+          finalScores={finalScores}
+          myRole={myRole}
+          myTotalCost={myState.totalCost}
+        />
 
-      {/* 2. Interactive Bullwhip Effect Variance Line Chart */}
-      <BullwhipChart history={myState.history} myRole={myRole} />
+        {/* 2. Oscilloscope Bullwhip Waveform Analyzer */}
+        <BullwhipChart history={myState.history} myRole={myRole} />
 
-      {/* 3. Detailed Round-by-Round Ledger */}
-      <div style={{ marginTop: '2rem' }}>
+        {/* 3. Black Box 20-Round Flight Recorder Ledger */}
         <HistoryTable history={myState.history} />
-      </div>
+      </main>
+
+      {/* Bottom Industrial Status Ticker */}
+      <ControlRoomFooter />
     </div>
   );
 }

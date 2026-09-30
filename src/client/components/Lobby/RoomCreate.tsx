@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { IconBeer, IconDice } from '../Common/Icons.js';
+import { IconCpu, IconDice, IconRadio, IconTerminal } from '../Common/Icons.js';
 
 export interface RoomCreateProps {
   readonly onRoomCreated: (roomId: string) => void;
@@ -14,7 +14,7 @@ export function RoomCreate({ onRoomCreated, onRoomJoined, isCreating = false }: 
 
   const generateRandomCode = () => {
     const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-    let code = 'BEER-';
+    let code = 'FACILITY-';
     for (let i = 0; i < 4; i++) {
       code += chars.charAt(Math.floor(Math.random() * chars.length));
     }
@@ -50,7 +50,7 @@ export function RoomCreate({ onRoomCreated, onRoomJoined, isCreating = false }: 
     e.preventDefault();
     const cleanId = joinRoomId.trim().toUpperCase();
     if (!cleanId) {
-      setError('Please enter a valid room code');
+      setError('Please enter a valid authorization key');
       return;
     }
     setError(null);
@@ -58,136 +58,112 @@ export function RoomCreate({ onRoomCreated, onRoomJoined, isCreating = false }: 
   };
 
   return (
-    <div style={{ maxWidth: '680px', margin: '0 auto', width: '100%' }}>
-      <div className="glass-panel" style={{ padding: '2.25rem' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.5rem' }}>
-          <div
-            style={{
-              width: '40px',
-              height: '40px',
-              borderRadius: 'var(--radius-md)',
-              background: 'rgba(99, 102, 241, 0.12)',
-              border: '1px solid rgba(99, 102, 241, 0.3)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              color: 'var(--text-accent)',
-            }}
-          >
-            <IconBeer size={22} color="var(--primary-500)" />
-          </div>
-          <div>
-            <h2 style={{ fontSize: '1.4rem', fontWeight: 800 }}>Start or Join a Session</h2>
-            <p style={{ color: 'var(--text-secondary)', fontSize: '0.875rem' }}>
-              Create a new 4-node multiplayer room or join an existing simulation.
-            </p>
-          </div>
+    <div className="scada-panel" style={{ width: '100%', height: '100%' }}>
+      {/* Panel Header */}
+      <div className="scada-panel-header">
+        <div className="scada-panel-title">
+          <IconTerminal size={15} color="var(--scada-cyan)" />
+          <span>SECTOR-01 // SESSION COMMISSIONING</span>
         </div>
+        <span className="scada-badge" style={{ color: 'var(--scada-cyan)' }}>
+          BAY DISPATCH
+        </span>
+      </div>
+
+      <div className="scada-panel-body" style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+        <p style={{ color: 'var(--text-secondary)', fontSize: '0.8rem', lineHeight: 1.4 }}>
+          Initialize an authoritative 4-station SCADA simulation room or connect to an active distributed node network.
+        </p>
 
         {error && (
           <div
             style={{
-              padding: '0.75rem 1rem',
-              backgroundColor: 'rgba(239, 68, 68, 0.12)',
-              border: '1px solid rgba(239, 68, 68, 0.3)',
-              borderRadius: 'var(--radius-md)',
+              padding: '0.5rem 0.75rem',
+              backgroundColor: 'rgba(255, 51, 102, 0.12)',
+              border: '1px solid rgba(255, 51, 102, 0.4)',
+              borderRadius: 'var(--radius-xs)',
               color: '#fca5a5',
-              fontSize: '0.875rem',
-              margin: '1.25rem 0',
+              fontSize: '0.75rem',
+              fontFamily: 'var(--font-mono)',
             }}
           >
-            {error}
+            [ALERT] {error}
           </div>
         )}
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '1.25rem', marginTop: '1.5rem' }}>
-          {/* Create Room Box */}
-          <form
-            onSubmit={handleCreate}
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '1rem',
-              background: 'rgba(255, 255, 255, 0.02)',
-              padding: '1.25rem',
-              borderRadius: 'var(--radius-md)',
-              border: '1px solid var(--border-subtle)',
-            }}
-          >
-            <div>
-              <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, marginBottom: '0.45rem', color: 'var(--text-primary)' }}>
-                Create New Room
-              </label>
-              <div style={{ display: 'flex', gap: '0.45rem' }}>
-                <input
-                  type="text"
-                  placeholder="Code (e.g. BEER-42)"
-                  value={customRoomId}
-                  onChange={(e) => setCustomRoomId(e.target.value.toUpperCase())}
-                  className="input-field"
-                  style={{ textTransform: 'uppercase', letterSpacing: '0.05em' }}
-                  maxLength={16}
-                />
-                <button
-                  type="button"
-                  onClick={generateRandomCode}
-                  className="btn btn-secondary"
-                  title="Generate Random Code"
-                  style={{ padding: '0.65rem 0.85rem' }}
-                >
-                  <IconDice size={18} />
-                </button>
-              </div>
-            </div>
+        {/* Action Bay 1: Commission Room */}
+        <form onSubmit={handleCreate} style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
+          <label style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontFamily: 'var(--font-hud)', letterSpacing: '0.08em', textTransform: 'uppercase' }}>
+            A. COMMISSION NEW ROOM // ACCESS KEY
+          </label>
 
+          <div style={{ display: 'flex', gap: '0.5rem' }}>
+            <input
+              type="text"
+              className="scada-input"
+              placeholder="AUTO-GENERATED (OR TYPE CUSTOM)"
+              value={customRoomId}
+              onChange={(e) => setCustomRoomId(e.target.value.toUpperCase())}
+              maxLength={20}
+              style={{ fontSize: '0.875rem' }}
+            />
             <button
-              type="submit"
-              disabled={isCreating}
-              className="btn btn-primary"
-              style={{ width: '100%', marginTop: 'auto' }}
+              type="button"
+              onClick={generateRandomCode}
+              className="btn-scada"
+              title="Generate Random Access Key"
+              style={{ padding: '0.5rem 0.75rem', flexShrink: 0 }}
             >
-              {isCreating ? 'Creating Room...' : 'Create Room'}
+              <IconDice size={15} color="var(--scada-amber)" />
+              <span style={{ fontSize: '0.78rem' }}>RND</span>
             </button>
-          </form>
+          </div>
 
-          {/* Join Room Box */}
-          <form
-            onSubmit={handleJoin}
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '1rem',
-              background: 'rgba(255, 255, 255, 0.02)',
-              padding: '1.25rem',
-              borderRadius: 'var(--radius-md)',
-              border: '1px solid var(--border-subtle)',
-            }}
+          <button
+            type="submit"
+            disabled={isCreating}
+            className="btn-scada btn-scada-primary"
+            style={{ width: '100%', padding: '0.65rem', marginTop: '0.25rem' }}
           >
-            <div>
-              <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, marginBottom: '0.45rem', color: 'var(--text-primary)' }}>
-                Enter Existing Room
-              </label>
-              <input
-                type="text"
-                placeholder="Enter Room Code"
-                value={joinRoomId}
-                onChange={(e) => setJoinRoomId(e.target.value.toUpperCase())}
-                className="input-field"
-                style={{ textTransform: 'uppercase', letterSpacing: '0.05em' }}
-                maxLength={16}
-              />
-            </div>
+            <IconCpu size={16} />
+            <span>COMMISSION SESSION BAY</span>
+          </button>
+        </form>
 
-            <button
-              type="submit"
-              disabled={!joinRoomId.trim()}
-              className="btn btn-secondary"
-              style={{ width: '100%', marginTop: 'auto' }}
-            >
-              Join Session
-            </button>
-          </form>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', margin: '0.25rem 0' }}>
+          <div style={{ flex: 1, height: '1px', background: 'var(--border-panel)' }} />
+          <span style={{ fontSize: '0.68rem', fontFamily: 'var(--font-hud)', color: 'var(--text-muted)', letterSpacing: '0.1em' }}>
+            OR JOIN ACTIVE
+          </span>
+          <div style={{ flex: 1, height: '1px', background: 'var(--border-panel)' }} />
         </div>
+
+        {/* Action Bay 2: Join Room */}
+        <form onSubmit={handleJoin} style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
+          <label style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontFamily: 'var(--font-hud)', letterSpacing: '0.08em', textTransform: 'uppercase' }}>
+            B. CONNECT TO REMOTE TELEMETRY BAY
+          </label>
+
+          <div style={{ display: 'flex', gap: '0.5rem' }}>
+            <input
+              type="text"
+              className="scada-input"
+              placeholder="ENTER EXISTING BAY CODE"
+              value={joinRoomId}
+              onChange={(e) => setJoinRoomId(e.target.value.toUpperCase())}
+              maxLength={20}
+              style={{ fontSize: '0.875rem' }}
+            />
+            <button
+              type="submit"
+              className="btn-scada"
+              style={{ padding: '0.5rem 1rem', flexShrink: 0 }}
+            >
+              <IconRadio size={14} color="var(--scada-green)" />
+              <span>LINK</span>
+            </button>
+          </div>
+        </form>
       </div>
     </div>
   );

@@ -1,11 +1,11 @@
 import { RoleState, RoundIntermediate } from '../../../core/types.js';
 import {
-  IconInventory,
-  IconBacklog,
-  IconArrived,
-  IconIncomingOrder,
-  IconDistributor,
-  IconCost,
+  IconTank,
+  IconAlertTriangle,
+  IconValve,
+  IconActivity,
+  IconGauge,
+  IconPipeline,
 } from '../Common/Icons.js';
 
 export interface MetricCardsProps {
@@ -17,173 +17,224 @@ export function MetricCards({ myState, intermediate }: MetricCardsProps) {
   const arrived = intermediate?.shipmentArrived ?? 0;
   const incoming = intermediate?.incomingOrder ?? 0;
   const shipped = intermediate?.shipped ?? 0;
+  const transitList = myState.shipmentsInTransit ?? [];
+  const transitTotal = transitList.reduce((acc: number, qty: number) => acc + qty, 0);
+
+  // Helper for visual segmented meter bars
+  const renderMeter = (value: number, max: number, type: 'green' | 'red' | 'cyan' | 'amber') => {
+    const segments = 10;
+    const activeCount = Math.min(segments, Math.max(0, Math.round((value / max) * segments)));
+
+    return (
+      <div className="scada-segment-meter" style={{ marginTop: '0.4rem' }}>
+        {Array.from({ length: segments }).map((_, i) => (
+          <div
+            key={i}
+            className={`scada-segment ${i < activeCount ? `active-${type}` : ''}`}
+          />
+        ))}
+      </div>
+    );
+  };
 
   return (
     <div
       style={{
         display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
-        gap: '1rem',
-        marginBottom: '1.75rem',
+        gridTemplateColumns: 'repeat(3, 1fr)',
+        gap: '0.65rem',
+        width: '100%',
       }}
     >
-      {/* 1. Inventory Card */}
-      <div
-        className="glass-panel"
-        style={{
-          padding: '1.25rem',
-          borderLeft: '4px solid #10b981',
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'space-between',
-        }}
-      >
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.65rem' }}>
-          <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
-            Current Inventory
+      {/* 1. Inventory Silo */}
+      <div className="scada-panel" style={{ padding: '0.65rem 0.85rem' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <span style={{ fontSize: '0.68rem', fontFamily: 'var(--font-hud)', letterSpacing: '0.08em', color: 'var(--text-muted)' }}>
+            SILO // INVENTORY
           </span>
-          <div style={{ color: '#34d399' }}><IconInventory size={18} /></div>
+          <IconTank size={15} color="var(--scada-green)" />
         </div>
-        <div className="metric-num" style={{ fontSize: '2rem', fontWeight: 800, color: '#34d399', lineHeight: 1 }}>
-          {myState.inventory}
+
+        <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.45rem', marginTop: '0.2rem' }}>
+          <span
+            className="metric-num"
+            style={{
+              fontSize: '1.85rem',
+              fontWeight: 800,
+              color: 'var(--scada-green)',
+              lineHeight: 1,
+            }}
+          >
+            {myState.inventory}
+          </span>
+          <span style={{ fontSize: '0.68rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>UNITS</span>
         </div>
-        <div style={{ fontSize: '0.725rem', color: 'var(--text-muted)', marginTop: '0.6rem' }}>
-          Holding: $0.50/unit (${(myState.inventory * 0.5).toFixed(2)})
+
+        {renderMeter(myState.inventory, 30, 'green')}
+
+        <div style={{ fontSize: '0.65rem', fontFamily: 'var(--font-mono)', color: 'var(--text-muted)', marginTop: '0.35rem' }}>
+          RATE: $0.50/u (${(myState.inventory * 0.5).toFixed(2)})
         </div>
       </div>
 
-      {/* 2. Backlog Card */}
+      {/* 2. Backlog Deficit */}
       <div
-        className="glass-panel"
+        className="scada-panel"
         style={{
-          padding: '1.25rem',
-          borderLeft: `4px solid ${myState.backlog > 0 ? '#ef4444' : 'var(--border-subtle)'}`,
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'space-between',
+          padding: '0.65rem 0.85rem',
+          borderColor: myState.backlog > 0 ? 'rgba(255, 51, 102, 0.4)' : undefined,
         }}
       >
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.65rem' }}>
-          <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
-            Unmet Backlog
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <span style={{ fontSize: '0.68rem', fontFamily: 'var(--font-hud)', letterSpacing: '0.08em', color: myState.backlog > 0 ? 'var(--scada-red)' : 'var(--text-muted)' }}>
+            DEFICIT // BACKLOG
           </span>
-          <div style={{ color: myState.backlog > 0 ? '#f87171' : 'var(--text-muted)' }}>
-            <IconBacklog size={18} />
-          </div>
+          <IconAlertTriangle size={15} color={myState.backlog > 0 ? 'var(--scada-red)' : 'var(--text-muted)'} />
         </div>
-        <div
-          className="metric-num"
-          style={{
-            fontSize: '2rem',
-            fontWeight: 800,
-            color: myState.backlog > 0 ? '#f87171' : 'var(--text-primary)',
-            lineHeight: 1,
-          }}
-        >
-          {myState.backlog}
+
+        <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.45rem', marginTop: '0.2rem' }}>
+          <span
+            className="metric-num"
+            style={{
+              fontSize: '1.85rem',
+              fontWeight: 800,
+              color: myState.backlog > 0 ? 'var(--scada-red)' : 'var(--text-muted)',
+              lineHeight: 1,
+            }}
+          >
+            {myState.backlog}
+          </span>
+          <span style={{ fontSize: '0.68rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>UNMET</span>
         </div>
-        <div style={{ fontSize: '0.725rem', color: 'var(--text-muted)', marginTop: '0.6rem' }}>
-          Penalty: $1.00/unit (${(myState.backlog * 1.0).toFixed(2)})
+
+        {renderMeter(myState.backlog, 20, 'red')}
+
+        <div style={{ fontSize: '0.65rem', fontFamily: 'var(--font-mono)', color: myState.backlog > 0 ? 'var(--scada-red)' : 'var(--text-muted)', marginTop: '0.35rem' }}>
+          PENALTY: $1.00/u (${(myState.backlog * 1.0).toFixed(2)})
         </div>
       </div>
 
-      {/* 3. Arrived Shipment Card */}
-      <div
-        className="glass-panel"
-        style={{
-          padding: '1.25rem',
-          borderLeft: '4px solid #06b6d4',
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'space-between',
-        }}
-      >
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.65rem' }}>
-          <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
-            Arrived Shipment
+      {/* 3. Inbound Flow (Shipment Arrived) */}
+      <div className="scada-panel" style={{ padding: '0.65rem 0.85rem' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <span style={{ fontSize: '0.68rem', fontFamily: 'var(--font-hud)', letterSpacing: '0.08em', color: 'var(--text-muted)' }}>
+            INFLOW // SHIPMENT
           </span>
-          <div style={{ color: '#38bdf8' }}><IconArrived size={18} /></div>
+          <IconValve size={15} color="var(--scada-cyan)" />
         </div>
-        <div className="metric-num" style={{ fontSize: '2rem', fontWeight: 800, color: '#38bdf8', lineHeight: 1 }}>
-          {arrived}
+
+        <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.45rem', marginTop: '0.2rem' }}>
+          <span
+            className="metric-num"
+            style={{
+              fontSize: '1.85rem',
+              fontWeight: 800,
+              color: 'var(--scada-cyan)',
+              lineHeight: 1,
+            }}
+          >
+            +{arrived}
+          </span>
+          <span style={{ fontSize: '0.68rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>RECEIVED</span>
         </div>
-        <div style={{ fontSize: '0.725rem', color: 'var(--text-muted)', marginTop: '0.6rem' }}>
-          Received from upstream
+
+        {renderMeter(arrived, 16, 'cyan')}
+
+        <div style={{ fontSize: '0.65rem', fontFamily: 'var(--font-mono)', color: 'var(--text-muted)', marginTop: '0.35rem' }}>
+          UPSTREAM LEAD DRAIN: NOMINAL
         </div>
       </div>
 
-      {/* 4. Incoming Order Card */}
-      <div
-        className="glass-panel"
-        style={{
-          padding: '1.25rem',
-          borderLeft: '4px solid #f59e0b',
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'space-between',
-        }}
-      >
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.65rem' }}>
-          <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
-            Incoming Demand
+      {/* 4. Outbound Demand Inflow */}
+      <div className="scada-panel" style={{ padding: '0.65rem 0.85rem' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <span style={{ fontSize: '0.68rem', fontFamily: 'var(--font-hud)', letterSpacing: '0.08em', color: 'var(--text-muted)' }}>
+            DEMAND // INCOMING
           </span>
-          <div style={{ color: '#fbbf24' }}><IconIncomingOrder size={18} /></div>
+          <IconActivity size={15} color="var(--scada-amber)" />
         </div>
-        <div className="metric-num" style={{ fontSize: '2rem', fontWeight: 800, color: '#fbbf24', lineHeight: 1 }}>
-          {incoming}
+
+        <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.45rem', marginTop: '0.2rem' }}>
+          <span
+            className="metric-num"
+            style={{
+              fontSize: '1.85rem',
+              fontWeight: 800,
+              color: 'var(--scada-amber)',
+              lineHeight: 1,
+            }}
+          >
+            {incoming}
+          </span>
+          <span style={{ fontSize: '0.68rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>ORDERED</span>
         </div>
-        <div style={{ fontSize: '0.725rem', color: 'var(--text-muted)', marginTop: '0.6rem' }}>
-          Shipped downstream: {shipped}
+
+        {renderMeter(incoming, 16, 'amber')}
+
+        <div style={{ fontSize: '0.65rem', fontFamily: 'var(--font-mono)', color: 'var(--text-muted)', marginTop: '0.35rem' }}>
+          DISPATCHED THIS ROUND: {shipped}
         </div>
       </div>
 
-      {/* 5. In-Transit Pipeline Card */}
-      <div
-        className="glass-panel"
-        style={{
-          padding: '1.25rem',
-          borderLeft: '4px solid #8b5cf6',
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'space-between',
-        }}
-      >
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.65rem' }}>
-          <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
-            In-Transit Queue
+      {/* 5. Pipeline Transit Pipeline */}
+      <div className="scada-panel" style={{ padding: '0.65rem 0.85rem' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <span style={{ fontSize: '0.68rem', fontFamily: 'var(--font-hud)', letterSpacing: '0.08em', color: 'var(--text-muted)' }}>
+            TRANSIT // PIPELINE
           </span>
-          <div style={{ color: '#c084fc' }}><IconDistributor size={18} /></div>
+          <IconPipeline size={15} color="#c084fc" />
         </div>
-        <div className="metric-num" style={{ fontSize: '1.45rem', fontWeight: 700, color: '#c084fc', lineHeight: 1.2 }}>
-          [{myState.shipmentsInTransit.join(', ')}]
+
+        <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.45rem', marginTop: '0.2rem' }}>
+          <span
+            className="metric-num"
+            style={{
+              fontSize: '1.85rem',
+              fontWeight: 800,
+              color: '#c084fc',
+              lineHeight: 1,
+            }}
+          >
+            {transitTotal}
+          </span>
+          <span style={{ fontSize: '0.68rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>IN QUEUE</span>
         </div>
-        <div style={{ fontSize: '0.725rem', color: 'var(--text-muted)', marginTop: '0.6rem' }}>
-          [Due Next, Due in 2 Rounds]
+
+        {renderMeter(transitTotal, 20, 'cyan')}
+
+        <div style={{ fontSize: '0.65rem', fontFamily: 'var(--font-mono)', color: 'var(--text-muted)', marginTop: '0.35rem' }}>
+          STAGES: [{transitList.join(' → ')}]
         </div>
       </div>
 
-      {/* 6. Cumulative Cost Card */}
-      <div
-        className="glass-panel"
-        style={{
-          padding: '1.25rem',
-          borderLeft: '4px solid #ec4899',
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'space-between',
-        }}
-      >
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.65rem' }}>
-          <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
-            Cumulative Cost
+      {/* 6. Total Loss Accumulator */}
+      <div className="scada-panel" style={{ padding: '0.65rem 0.85rem' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <span style={{ fontSize: '0.68rem', fontFamily: 'var(--font-hud)', letterSpacing: '0.08em', color: 'var(--text-muted)' }}>
+            LOSS // FINANCIAL
           </span>
-          <div style={{ color: '#f472b6' }}><IconCost size={18} /></div>
+          <IconGauge size={15} color="var(--text-primary)" />
         </div>
-        <div className="metric-num" style={{ fontSize: '2rem', fontWeight: 800, color: '#f472b6', lineHeight: 1 }}>
-          ${myState.totalCost.toFixed(2)}
+
+        <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.45rem', marginTop: '0.2rem' }}>
+          <span
+            className="metric-num"
+            style={{
+              fontSize: '1.85rem',
+              fontWeight: 800,
+              color: 'var(--text-primary)',
+              lineHeight: 1,
+            }}
+          >
+            ${myState.totalCost.toFixed(1)}
+          </span>
+          <span style={{ fontSize: '0.68rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>TOTAL</span>
         </div>
-        <div style={{ fontSize: '0.725rem', color: 'var(--text-muted)', marginTop: '0.6rem' }}>
-          Round Cost: ${myState.roundCost.toFixed(2)}
+
+        {renderMeter(myState.totalCost, 100, 'amber')}
+
+        <div style={{ fontSize: '0.65rem', fontFamily: 'var(--font-mono)', color: 'var(--text-muted)', marginTop: '0.35rem' }}>
+          LAST ROUND: +${myState.roundCost.toFixed(1)}
         </div>
       </div>
     </div>

@@ -1,10 +1,11 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { RoleState } from '../../../core/types.js';
 import {
-  IconOrderNote,
   IconBot,
   IconHourglass,
   IconCheck,
+  IconRadio,
+  IconSliders,
 } from '../Common/Icons.js';
 
 export interface OrderFormProps {
@@ -53,176 +54,207 @@ export function OrderForm({
     }
   };
 
-  const setQuickValue = (val: number) => {
+  const adjustValue = (delta: number) => {
+    const current = parseInt(orderValue, 10) || 0;
+    const next = Math.max(0, current + delta);
+    setOrderValue(next.toString());
+    inputRef.current?.focus();
+  };
+
+  const setPreset = (val: number) => {
     setOrderValue(val.toString());
     inputRef.current?.focus();
   };
 
+  const isLocked = myState.hasSubmittedThisRound;
+
   return (
-    <div
-      className="glass-panel"
-      style={{
-        padding: '1.5rem',
-        marginBottom: '1.75rem',
-        border: '1px solid rgba(99, 102, 241, 0.35)',
-        background: 'linear-gradient(180deg, rgba(19, 27, 46, 0.75) 0%, rgba(12, 16, 27, 0.85) 100%)',
-      }}
-    >
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem', marginBottom: '1.25rem' }}>
-        <div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <div
-              style={{
-                width: '28px',
-                height: '28px',
-                borderRadius: 'var(--radius-sm)',
-                background: 'rgba(99, 102, 241, 0.15)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                color: 'var(--text-accent)',
-              }}
-            >
-              <IconOrderNote size={16} />
-            </div>
-            <h3 style={{ fontSize: '1.15rem', fontWeight: 700 }}>
-              Order Decision — Round {currentRound}
-            </h3>
-          </div>
-          <p style={{ color: 'var(--text-secondary)', fontSize: '0.825rem', marginTop: '0.25rem' }}>
-            Submit order quantity to your upstream supplier. Shipped units take 2 rounds to arrive.
-          </p>
+    <div className="scada-panel" style={{ width: '100%' }}>
+      {/* Panel Header */}
+      <div className="scada-panel-header">
+        <div className="scada-panel-title">
+          <IconSliders size={15} color="var(--scada-amber)" />
+          <span>ORDER ACTUATION CONSOLE // TRANSMISSION BAY</span>
         </div>
-
-        {/* Reviewer / Bot Simulator Button */}
-        {onSimulateRound && (
-          <button
-            type="button"
-            onClick={onSimulateRound}
-            className="btn btn-secondary"
-            title="Automatically fills orders for any remaining unsubmitted roles"
-            style={{ fontSize: '0.8rem', padding: '0.45rem 0.85rem' }}
-          >
-            <IconBot size={15} color="var(--primary-500)" />
-            <span>Simulate Remaining Roles</span>
-          </button>
-        )}
-      </div>
-
-      {myState.hasSubmittedThisRound ? (
-        /* Submitted State Banner */
-        <div
+        <span
+          className="scada-badge"
           style={{
-            padding: '1.15rem 1.25rem',
-            background: 'rgba(16, 185, 129, 0.08)',
-            border: '1px solid rgba(16, 185, 129, 0.25)',
-            borderRadius: 'var(--radius-md)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            flexWrap: 'wrap',
-            gap: '1rem',
+            color: isLocked ? 'var(--scada-green)' : 'var(--scada-amber)',
+            borderColor: isLocked ? 'rgba(0, 255, 157, 0.4)' : 'rgba(245, 158, 11, 0.4)',
           }}
         >
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-            <div
-              style={{
-                width: '36px',
-                height: '36px',
-                borderRadius: '50%',
-                background: 'rgba(16, 185, 129, 0.15)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                color: '#34d399',
-              }}
-            >
-              <IconHourglass size={18} />
-            </div>
-            <div>
-              <div style={{ fontWeight: 700, color: '#34d399', fontSize: '0.925rem' }}>
-                Order Registered ({myState.lastOrderPlaced} units) • Waiting for Peers
-              </div>
-              <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
-                Your order is locked. Round {currentRound} will automatically progress once all 4 roles complete their turn.
-              </div>
-            </div>
-          </div>
+          {isLocked ? 'ORDER LOCKED' : 'TRANSMITTER ARMED'}
+        </span>
+      </div>
 
-          <span
-            className="badge"
-            style={{ background: 'rgba(16, 185, 129, 0.2)', color: '#34d399', border: '1px solid rgba(16, 185, 129, 0.4)' }}
-          >
-            <IconCheck size={12} /> Ready
-          </span>
-        </div>
-      ) : (
-        /* Active Order Input Form */
-        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
-            <div style={{ width: '150px' }}>
+      <div className="scada-panel-body" style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
+        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+          {/* Main Numeric Actuator Controls */}
+          <div style={{ display: 'flex', alignItems: 'stretch', gap: '0.5rem' }}>
+            {/* Decrement Steppers */}
+            <button
+              type="button"
+              disabled={isLocked || isSubmitting}
+              onClick={() => adjustValue(-5)}
+              className="btn-scada"
+              style={{ padding: '0.5rem 0.65rem', flexShrink: 0 }}
+            >
+              -5
+            </button>
+            <button
+              type="button"
+              disabled={isLocked || isSubmitting}
+              onClick={() => adjustValue(-1)}
+              className="btn-scada"
+              style={{ padding: '0.5rem 0.65rem', flexShrink: 0 }}
+            >
+              -1
+            </button>
+
+            {/* Central Big Number Input */}
+            <div style={{ flex: 1, position: 'relative' }}>
               <input
                 ref={inputRef}
                 type="number"
-                min={0}
-                max={10000}
-                step={1}
+                min="0"
+                max="10000"
+                step="1"
+                disabled={isLocked || isSubmitting}
                 value={orderValue}
                 onChange={(e) => setOrderValue(e.target.value)}
                 onKeyDown={handleKeyDown}
-                className="input-field metric-num"
-                placeholder="0"
-                disabled={isSubmitting}
+                className="scada-input"
                 style={{
-                  fontSize: '1.25rem',
-                  fontWeight: 700,
+                  height: '100%',
                   textAlign: 'center',
-                  padding: '0.65rem 0.75rem',
+                  fontSize: '1.75rem',
+                  color: isLocked ? 'var(--scada-green)' : 'var(--scada-amber)',
+                  letterSpacing: '0.05em',
                 }}
               />
             </div>
 
-            {/* Quick Pick Chips */}
-            <div style={{ display: 'flex', gap: '0.35rem', alignItems: 'center' }}>
-              <span style={{ fontSize: '0.775rem', color: 'var(--text-muted)', marginRight: '0.2rem' }}>Preset:</span>
-              {[0, 4, 8, 12, 16].map((num) => (
-                <button
-                  key={num}
-                  type="button"
-                  onClick={() => setQuickValue(num)}
-                  disabled={isSubmitting}
-                  className="btn btn-ghost metric-num"
-                  style={{
-                    padding: '0.3rem 0.6rem',
-                    fontSize: '0.85rem',
-                    border: '1px solid var(--border-subtle)',
-                    minWidth: '34px',
-                    borderRadius: 'var(--radius-sm)',
-                  }}
-                >
-                  {num}
-                </button>
-              ))}
-            </div>
-
-            {/* Submit Button */}
+            {/* Increment Steppers */}
             <button
-              type="submit"
-              disabled={isSubmitting || !orderValue.trim()}
-              className="btn btn-primary"
-              style={{ padding: '0.65rem 1.35rem', marginLeft: 'auto', gap: '0.5rem' }}
+              type="button"
+              disabled={isLocked || isSubmitting}
+              onClick={() => adjustValue(+1)}
+              className="btn-scada"
+              style={{ padding: '0.5rem 0.65rem', flexShrink: 0 }}
             >
-              <span>{isSubmitting ? 'Locking Order...' : 'Submit Order'}</span>
-              <kbd style={{ fontSize: '0.7rem', padding: '0.1rem 0.35rem' }}>↵ Enter</kbd>
+              +1
+            </button>
+            <button
+              type="button"
+              disabled={isLocked || isSubmitting}
+              onClick={() => adjustValue(+5)}
+              className="btn-scada"
+              style={{ padding: '0.5rem 0.65rem', flexShrink: 0 }}
+            >
+              +5
+            </button>
+            <button
+              type="button"
+              disabled={isLocked || isSubmitting}
+              onClick={() => adjustValue(+10)}
+              className="btn-scada"
+              style={{ padding: '0.5rem 0.65rem', flexShrink: 0 }}
+            >
+              +10
             </button>
           </div>
 
-          <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.5rem' }}>
-            <span>Press <kbd>Enter</kbd> to submit immediately.</span>
-            <span>Last order placed: <strong className="metric-num" style={{ color: 'var(--text-primary)' }}>{myState.lastOrderPlaced}</strong> units</span>
+          {/* Quick Presets Bar */}
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.35rem' }}>
+            <span style={{ fontSize: '0.68rem', fontFamily: 'var(--font-hud)', color: 'var(--text-muted)', letterSpacing: '0.05em' }}>
+              BATCH PRESETS:
+            </span>
+            <div style={{ display: 'flex', gap: '0.35rem' }}>
+              {[0, 4, 8, 12, 16, 20].map((val) => (
+                <button
+                  key={val}
+                  type="button"
+                  disabled={isLocked || isSubmitting}
+                  onClick={() => setPreset(val)}
+                  className="btn-scada"
+                  style={{
+                    padding: '0.2rem 0.5rem',
+                    fontSize: '0.72rem',
+                    fontFamily: 'var(--font-mono)',
+                    borderColor: orderValue === val.toString() ? 'var(--scada-cyan)' : undefined,
+                  }}
+                >
+                  {val}
+                </button>
+              ))}
+            </div>
           </div>
+
+          {/* Primary Big Actuator Submit Button */}
+          <button
+            type="submit"
+            disabled={isLocked || isSubmitting}
+            className={`btn-scada ${isLocked ? '' : 'btn-scada-warning'}`}
+            style={{
+              padding: '0.85rem',
+              fontSize: '1.05rem',
+              letterSpacing: '0.1em',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '0.65rem',
+            }}
+          >
+            {isLocked ? (
+              <>
+                <IconCheck size={18} color="var(--scada-green)" />
+                <span style={{ color: 'var(--scada-green)' }}>
+                  ORDER TRANSMITTED ({myState.lastOrderPlaced} UNITS) • AWAITING PEER LOCKSTEP
+                </span>
+              </>
+            ) : isSubmitting ? (
+              <>
+                <IconHourglass size={18} />
+                <span>ENCRYPTING & TRANSMITTING TELEMETRY...</span>
+              </>
+            ) : (
+              <>
+                <IconRadio size={18} />
+                <span>TRANSMIT ORDER // ROUND {currentRound}</span>
+                <kbd style={{ marginLeft: '0.5rem' }}>↵ ENTER</kbd>
+              </>
+            )}
+          </button>
         </form>
-      )}
+
+        {/* Evaluator Sim Simulator Trigger */}
+        {onSimulateRound && !isLocked && (
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              padding: '0.45rem 0.75rem',
+              background: 'var(--bg-panel-inset)',
+              border: '1px solid var(--border-panel)',
+              borderRadius: 'var(--radius-xs)',
+            }}
+          >
+            <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
+              EVALUATOR HARNESS // INSTANT STEP ADVANCE:
+            </span>
+            <button
+              type="button"
+              onClick={onSimulateRound}
+              className="btn-scada"
+              style={{ padding: '0.25rem 0.6rem', fontSize: '0.72rem' }}
+            >
+              <IconBot size={12} color="var(--scada-cyan)" />
+              <span>AUTO-COMPLETE ROUND</span>
+            </button>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

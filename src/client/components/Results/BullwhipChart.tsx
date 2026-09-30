@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { RoundRecord, RoleType } from '../../../core/types.js';
-import { IconTrendingUp } from '../Common/Icons.js';
+import { IconActivity, IconCrosshair } from '../Common/Icons.js';
 
 export interface BullwhipChartProps {
   readonly history: readonly RoundRecord[];
@@ -18,10 +18,10 @@ export function BullwhipChart({ history, myRole }: BullwhipChartProps) {
   // Compute scale boundaries
   const orderValues = history.map((h) => h.orderPlaced);
   const maxOrder = Math.max(16, ...orderValues, ...rounds.map(getCustomerDemand));
-  const chartHeight = 260;
-  const chartWidth = 720;
+  const chartHeight = 240;
+  const chartWidth = 780;
   const paddingX = 50;
-  const paddingY = 30;
+  const paddingY = 25;
 
   const getX = (round: number) => paddingX + ((round - 1) / 19) * (chartWidth - paddingX * 2);
   const getY = (val: number) => chartHeight - paddingY - (val / (maxOrder * 1.15)) * (chartHeight - paddingY * 2);
@@ -44,201 +44,205 @@ export function BullwhipChart({ history, myRole }: BullwhipChartProps) {
   const hoveredRecord = hoveredRound ? history.find((h) => h.round === hoveredRound) : null;
 
   return (
-    <div className="glass-panel" style={{ padding: '1.75rem', marginBottom: '2rem' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem', marginBottom: '1.25rem' }}>
-        <div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.25rem' }}>
-            <div
-              style={{
-                width: '28px',
-                height: '28px',
-                borderRadius: 'var(--radius-sm)',
-                background: 'rgba(99, 102, 241, 0.15)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                color: 'var(--text-accent)',
-              }}
-            >
-              <IconTrendingUp size={16} />
-            </div>
-            <h3 style={{ fontSize: '1.2rem', fontWeight: 800 }}>Bullwhip Effect Analysis</h3>
-            <span
-              className="badge metric-num"
-              style={{
-                background: parseFloat(bullwhipRatio) > 1.2 ? 'rgba(239, 68, 68, 0.15)' : 'rgba(16, 185, 129, 0.15)',
-                color: parseFloat(bullwhipRatio) > 1.2 ? '#f87171' : '#34d399',
-                border: `1px solid ${parseFloat(bullwhipRatio) > 1.2 ? 'rgba(239, 68, 68, 0.3)' : 'rgba(16, 185, 129, 0.3)'}`,
-              }}
-            >
-              Variance Ratio: {bullwhipRatio}x
-            </span>
-          </div>
-          <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem' }}>
-            Contrasting Customer Demand against orders placed by {myRole} across all 20 rounds.
-          </p>
+    <div className="scada-panel" style={{ width: '100%', marginBottom: '1rem' }}>
+      {/* Panel Header */}
+      <div className="scada-panel-header">
+        <div className="scada-panel-title">
+          <IconActivity size={15} color="var(--scada-green)" />
+          <span>OSCILLOSCOPE // BULLWHIP EFFECT WAVEFORM ANALYZER</span>
+          <span className="scada-badge" style={{ fontSize: '0.65rem', marginLeft: '0.4rem' }}>
+            STATION // {myRole.toUpperCase()}
+          </span>
         </div>
-
-        {/* Legend */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem', fontSize: '0.8rem' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-            <span style={{ width: '16px', height: '3px', background: '#38bdf8', display: 'inline-block' }} />
-            <span style={{ color: 'var(--text-secondary)' }}>Customer Demand</span>
-          </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-            <span style={{ width: '16px', height: '3px', background: '#a855f7', display: 'inline-block' }} />
-            <span style={{ color: 'var(--text-secondary)' }}>Your Orders ({myRole})</span>
-          </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
+          <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>AMPLIFICATION FACTOR:</span>
+          <span
+            className="metric-num"
+            style={{
+              color: parseFloat(bullwhipRatio) > 2 ? 'var(--scada-amber)' : 'var(--scada-green)',
+              fontWeight: 800,
+              fontSize: '0.9rem',
+            }}
+          >
+            {bullwhipRatio}x VARIANCE
+          </span>
         </div>
       </div>
 
-      {/* Responsive SVG Chart */}
-      <div style={{ width: '100%', overflowX: 'auto', position: 'relative' }}>
-        <svg
-          viewBox={`0 0 ${chartWidth} ${chartHeight}`}
-          style={{ width: '100%', minWidth: '600px', height: 'auto', display: 'block' }}
+      <div className="scada-panel-body" style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+        {/* Oscilloscope Phosphor Display */}
+        <div
+          style={{
+            position: 'relative',
+            background: '#04070a',
+            border: '1px solid var(--border-panel-bright)',
+            borderRadius: 'var(--radius-xs)',
+            overflow: 'hidden',
+          }}
         >
-          {/* Horizontal Grid lines */}
-          {[0, 4, 8, 12, 16, 20].map((val) => {
-            if (val > maxOrder * 1.1) return null;
-            const y = getY(val);
-            return (
+          {/* Technical Scope Grid Background */}
+          <div
+            style={{
+              position: 'absolute',
+              inset: 0,
+              backgroundImage:
+                'linear-gradient(rgba(0, 255, 157, 0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 255, 157, 0.05) 1px, transparent 1px)',
+              backgroundSize: '39px 30px',
+              pointerEvents: 'none',
+            }}
+          />
+
+          <svg
+            viewBox={`0 0 ${chartWidth} ${chartHeight}`}
+            style={{ width: '100%', height: 'auto', display: 'block', position: 'relative', zIndex: 1 }}
+          >
+            <defs>
+              <linearGradient id="orderScadaGlow" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="#00f0ff" stopOpacity="0.3" />
+                <stop offset="100%" stopColor="#00f0ff" stopOpacity="0.0" />
+              </linearGradient>
+            </defs>
+
+            {/* Horizontal Division Lines */}
+            {[0, Math.round(maxOrder / 2), Math.round(maxOrder)].map((val) => (
               <g key={val}>
                 <line
                   x1={paddingX}
-                  y1={y}
+                  y1={getY(val)}
                   x2={chartWidth - paddingX}
-                  y2={y}
-                  stroke="rgba(255, 255, 255, 0.07)"
-                  strokeDasharray="4 4"
+                  y2={getY(val)}
+                  stroke="rgba(255, 255, 255, 0.08)"
+                  strokeWidth="1"
+                  strokeDasharray="2 2"
                 />
                 <text
                   x={paddingX - 10}
-                  y={y + 4}
+                  y={getY(val) + 4}
+                  textAnchor="end"
                   fill="var(--text-muted)"
                   fontSize="10"
                   fontFamily="var(--font-mono)"
-                  textAnchor="end"
                 >
                   {val}
                 </text>
               </g>
-            );
-          })}
+            ))}
 
-          {/* X Axis line */}
-          <line
-            x1={paddingX}
-            y1={chartHeight - paddingY}
-            x2={chartWidth - paddingX}
-            y2={chartHeight - paddingY}
-            stroke="rgba(255, 255, 255, 0.2)"
-          />
-
-          {/* X Axis Round Labels */}
-          {rounds.map((r) => {
-            if (r % 2 !== 0 && r !== 20) return null;
-            return (
-              <text
-                key={r}
-                x={getX(r)}
-                y={chartHeight - 10}
-                fill="var(--text-muted)"
-                fontSize="10"
-                fontFamily="var(--font-mono)"
-                textAnchor="middle"
-              >
-                R{r}
-              </text>
-            );
-          })}
-
-          {/* Customer Demand Line */}
-          <polyline
-            fill="none"
-            stroke="#38bdf8"
-            strokeWidth="2.5"
-            strokeDasharray="5 5"
-            points={demandPoints}
-          />
-
-          {/* Orders Placed Line */}
-          {orderValues.length > 0 && (
+            {/* Customer Demand Signal Line (Green Stepped Line) */}
             <polyline
+              points={demandPoints}
               fill="none"
-              stroke="#a855f7"
-              strokeWidth="3"
-              points={orderPoints}
+              stroke="var(--scada-green)"
+              strokeWidth="2"
+              strokeDasharray="4 4"
             />
-          )}
 
-          {/* Interactive Data Dots for Orders */}
-          {history.map((h) => {
-            const x = getX(h.round);
-            const y = getY(h.orderPlaced);
-            const isHovered = hoveredRound === h.round;
-
-            return (
-              <circle
-                key={h.round}
-                cx={x}
-                cy={y}
-                r={isHovered ? 6 : 4}
-                fill={isHovered ? '#ffffff' : '#a855f7'}
-                stroke="#6b21a8"
-                strokeWidth={isHovered ? 3 : 1.5}
-                style={{ cursor: 'pointer', transition: 'r 0.15s ease' }}
-                onMouseEnter={() => setHoveredRound(h.round)}
-                onMouseLeave={() => setHoveredRound(null)}
+            {/* Orders Area Glow */}
+            {history.length > 0 && (
+              <polygon
+                points={`${getX(1)},${getY(0)} ${orderPoints} ${getX(history[history.length - 1]!.round)},${getY(0)}`}
+                fill="url(#orderScadaGlow)"
               />
-            );
-          })}
-        </svg>
-
-        {/* Hover Tooltip Overlay */}
-        {hoveredRecord && (
-          <div
-            className="metric-num"
-            style={{
-              position: 'absolute',
-              top: '10px',
-              right: '20px',
-              padding: '0.65rem 0.85rem',
-              backgroundColor: 'rgba(12, 16, 27, 0.95)',
-              border: '1px solid var(--border-medium)',
-              borderRadius: 'var(--radius-sm)',
-              boxShadow: '0 8px 24px rgba(0, 0, 0, 0.6)',
-              fontSize: '0.8rem',
-              pointerEvents: 'none',
-              zIndex: 10,
-            }}
-          >
-            <div style={{ fontWeight: 700, color: 'var(--text-primary)', marginBottom: '0.25rem', fontFamily: 'var(--font-sans)' }}>
-              Round {hoveredRecord.round} Metrics
-            </div>
-            <div style={{ color: '#38bdf8' }}>Customer Demand: {getCustomerDemand(hoveredRecord.round)}</div>
-            <div style={{ color: '#c084fc', fontWeight: 600 }}>Your Order: {hoveredRecord.orderPlaced}</div>
-            <div style={{ color: '#34d399' }}>Ending Inventory: {hoveredRecord.inventory}</div>
-            {hoveredRecord.backlog > 0 && (
-              <div style={{ color: '#f87171' }}>Ending Backlog: {hoveredRecord.backlog}</div>
             )}
-          </div>
-        )}
-      </div>
 
-      <div
-        style={{
-          marginTop: '1rem',
-          padding: '0.85rem 1rem',
-          backgroundColor: 'rgba(255, 255, 255, 0.02)',
-          borderRadius: 'var(--radius-sm)',
-          fontSize: '0.825rem',
-          color: 'var(--text-secondary)',
-          lineHeight: 1.5,
-          border: '1px solid var(--border-subtle)',
-        }}
-      >
-        <strong>The Bullwhip Effect Phenomenon:</strong> When customer demand jumped from 4 to 8 units in Round 5, order variability amplified as signals propagated upstream due to 2-round pipeline delays and lack of centralized visibility.
+            {/* Orders Placed Waveform (Cyan Solid Line) */}
+            {history.length > 0 && (
+              <polyline
+                points={orderPoints}
+                fill="none"
+                stroke="var(--scada-cyan)"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            )}
+
+            {/* Interactive Data Probe Dots */}
+            {history.map((h) => {
+              const cx = getX(h.round);
+              const cy = getY(h.orderPlaced);
+              const isHovered = hoveredRound === h.round;
+
+              return (
+                <g key={h.round}>
+                  <circle
+                    cx={cx}
+                    cy={cy}
+                    r={isHovered ? 6 : 3.5}
+                    fill={isHovered ? '#ffffff' : 'var(--scada-cyan)'}
+                    stroke="var(--bg-app)"
+                    strokeWidth="1.5"
+                  />
+                  {/* Invisible Hover Anchor */}
+                  <rect
+                    x={cx - 15}
+                    y={0}
+                    width={30}
+                    height={chartHeight}
+                    fill="transparent"
+                    style={{ cursor: 'crosshair' }}
+                    onMouseEnter={() => setHoveredRound(h.round)}
+                    onMouseLeave={() => setHoveredRound(null)}
+                  />
+                </g>
+              );
+            })}
+
+            {/* Cursor Crosshair Line when hovered */}
+            {hoveredRound && (
+              <line
+                x1={getX(hoveredRound)}
+                y1={paddingY}
+                x2={getX(hoveredRound)}
+                y2={chartHeight - paddingY}
+                stroke="var(--scada-amber)"
+                strokeWidth="1"
+                strokeDasharray="3 3"
+              />
+            )}
+          </svg>
+        </div>
+
+        {/* Legend & Probe Inspector Readout */}
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            flexWrap: 'wrap',
+            gap: '0.75rem',
+            padding: '0.45rem 0.65rem',
+            background: 'var(--bg-panel-inset)',
+            border: '1px solid var(--border-panel)',
+            borderRadius: 'var(--radius-xs)',
+            fontSize: '0.72rem',
+            fontFamily: 'var(--font-mono)',
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
+              <span style={{ width: '12px', height: '2px', background: 'var(--scada-green)', display: 'inline-block' }} />
+              <span style={{ color: 'var(--scada-green)' }}>EXOGENOUS CUSTOMER DEMAND (4 → 8)</span>
+            </div>
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
+              <span style={{ width: '12px', height: '2.5px', background: 'var(--scada-cyan)', display: 'inline-block' }} />
+              <span style={{ color: 'var(--scada-cyan)' }}>STATION TRANSMITTED ORDERS</span>
+            </div>
+          </div>
+
+          {hoveredRecord ? (
+            <div style={{ color: 'var(--scada-amber)', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+              <IconCrosshair size={13} color="var(--scada-amber)" />
+              <span>[PROBE RND #{hoveredRecord.round}]: DEMAND={getCustomerDemand(hoveredRecord.round)} | ORDER={hoveredRecord.orderPlaced} | BACKLOG={hoveredRecord.backlog}</span>
+            </div>
+          ) : (
+            <div style={{ color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+              <IconCrosshair size={13} color="var(--text-muted)" />
+              <span>HOVER OVER WAVEFORM TO PROBE TELEMETRY</span>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

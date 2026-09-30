@@ -1,265 +1,412 @@
+/* ==========================================================================
+   BEER DISTRIBUTION GAME - INDUSTRIAL CONTROL ROOM & SCADA COCKPIT DESIGN SYSTEM
+   ========================================================================== */
+
 :root {
-  /* Ultra-Premium Obsidian Dark Palette */
-  --bg-app: #07090e;
-  --bg-surface: #0c101b;
-  --bg-surface-elevated: #131b2e;
-  --bg-card: rgba(12, 16, 27, 0.82);
-  --bg-glass: rgba(19, 27, 46, 0.65);
-  --bg-glass-hover: rgba(30, 41, 68, 0.8);
+  /* Carbon & Gunmetal Chassis Palette */
+  --bg-app: #06090e;
+  --bg-cockpit: #090e15;
+  --bg-panel: #0d141f;
+  --bg-panel-elevated: #131c2a;
+  --bg-panel-inset: #080c13;
+  --bg-panel-header: #101826;
 
-  /* Precise Specular Borders */
-  --border-subtle: rgba(255, 255, 255, 0.06);
-  --border-medium: rgba(255, 255, 255, 0.12);
-  --border-strong: rgba(255, 255, 255, 0.22);
-  --border-focus: #6366f1;
-  --border-glass: rgba(255, 255, 255, 0.08);
+  /* Industrial Metal & Specular Trim */
+  --border-chassis: #1e293b;
+  --border-panel: #1b2636;
+  --border-panel-bright: #2d3f58;
+  --border-focus: #00f0ff;
+  --border-hazard: #f59e0b;
 
-  /* Typography Colors */
-  --text-primary: #f8fafc;
+  /* High-Contrast SCADA Signal Lamps */
+  --scada-cyan: #00f0ff;
+  --scada-cyan-glow: 0 0 16px rgba(0, 240, 255, 0.45);
+  --scada-amber: #f59e0b;
+  --scada-amber-glow: 0 0 16px rgba(245, 158, 11, 0.45);
+  --scada-green: #00ff9d;
+  --scada-green-glow: 0 0 16px rgba(0, 255, 157, 0.45);
+  --scada-red: #ff3366;
+  --scada-red-glow: 0 0 16px rgba(255, 51, 102, 0.5);
+  --scada-purple: #a855f7;
+  --scada-purple-glow: 0 0 16px rgba(168, 85, 247, 0.4);
+
+  /* Tactical Typography */
+  --text-primary: #f1f5f9;
   --text-secondary: #94a3b8;
-  --text-muted: #64748b;
-  --text-accent: #818cf8;
+  --text-muted: #475569;
+  --text-cyan: #38bdf8;
+  --text-amber: #fbbf24;
+  --text-green: #34d399;
+  --text-red: #f87171;
 
-  /* Linear-Style Brand Gradients */
-  --primary-gradient: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #06b6d4 100%);
-  --primary-gradient-hover: linear-gradient(135deg, #4f46e5 0%, #7c3aed 50%, #0891b2 100%);
-  --accent-glow: 0 0 28px rgba(99, 102, 241, 0.35);
+  /* Supply Chain Node Identity */
+  --role-retailer: #00ff9d;
+  --role-retailer-bg: rgba(0, 255, 157, 0.08);
+  --role-retailer-border: rgba(0, 255, 157, 0.35);
 
-  /* Distinct Supply Chain Role Color System */
-  --role-retailer: #10b981;
-  --role-retailer-bg: rgba(16, 185, 129, 0.1);
-  --role-retailer-border: rgba(16, 185, 129, 0.3);
-  --role-retailer-glow: rgba(16, 185, 129, 0.25);
-
-  --role-wholesaler: #06b6d4;
-  --role-wholesaler-bg: rgba(6, 182, 212, 0.1);
-  --role-wholesaler-border: rgba(6, 182, 212, 0.3);
-  --role-wholesaler-glow: rgba(6, 182, 212, 0.25);
+  --role-wholesaler: #00f0ff;
+  --role-wholesaler-bg: rgba(0, 240, 255, 0.08);
+  --role-wholesaler-border: rgba(0, 240, 255, 0.35);
 
   --role-distributor: #f59e0b;
-  --role-distributor-bg: rgba(245, 158, 11, 0.1);
-  --role-distributor-border: rgba(245, 158, 11, 0.3);
-  --role-distributor-glow: rgba(245, 158, 11, 0.25);
+  --role-distributor-bg: rgba(245, 158, 11, 0.08);
+  --role-distributor-border: rgba(245, 158, 11, 0.35);
 
-  --role-factory: #f43f5e;
-  --role-factory-bg: rgba(244, 63, 94, 0.1);
-  --role-factory-border: rgba(244, 63, 94, 0.3);
-  --role-factory-glow: rgba(244, 63, 94, 0.25);
+  --role-factory: #ff3366;
+  --role-factory-bg: rgba(255, 51, 102, 0.08);
+  --role-factory-border: rgba(255, 51, 102, 0.35);
 
-  /* Semantic Status Colors */
-  --status-success: #10b981;
-  --status-warning: #f59e0b;
-  --status-danger: #ef4444;
-  --status-info: #3b82f6;
+  /* Fonts */
+  --font-hud: 'Rajdhani', 'Chakra Petch', sans-serif;
+  --font-mono: 'JetBrains Mono', 'Share Tech Mono', monospace;
+  --font-sans: 'Inter', sans-serif;
 
-  /* Shadows & Specular Insets */
-  --shadow-card: 0 16px 40px -10px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.08);
-  --shadow-elevated: 0 24px 50px -12px rgba(0, 0, 0, 0.8), inset 0 1px 0 rgba(255, 255, 255, 0.12);
-
-  /* Radius */
-  --radius-sm: 6px;
-  --radius-md: 10px;
-  --radius-lg: 16px;
-  --radius-xl: 24px;
-  --radius-full: 9999px;
-
-  /* Font Families */
-  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  --font-mono: 'JetBrains Mono', monospace;
+  /* Corner Radius */
+  --radius-xs: 2px;
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
 }
 
-/* Global Reset & Base Typography */
+/* Global Reset */
 *, *::before, *::after {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
 }
 
-body {
-  font-family: var(--font-sans);
+html, body {
+  width: 100%;
+  height: 100%;
+  overflow-x: hidden;
   background-color: var(--bg-app);
   color: var(--text-primary);
-  line-height: 1.5;
+  font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  overflow-x: hidden;
-  position: relative;
-  /* Ambient Background Lighting */
+}
+
+/* Subtle Technical Grid Overlay Background */
+body {
+  background-color: var(--bg-app);
   background-image: 
-    radial-gradient(at 15% 15%, rgba(99, 102, 241, 0.14) 0px, transparent 45%),
-    radial-gradient(at 85% 85%, rgba(6, 182, 212, 0.1) 0px, transparent 45%),
-    radial-gradient(at 50% 30%, rgba(139, 92, 246, 0.08) 0px, transparent 55%),
-    radial-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px);
-  background-size: 100% 100%, 100% 100%, 100% 100%, 28px 28px;
+    linear-gradient(rgba(0, 240, 255, 0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 240, 255, 0.02) 1px, transparent 1px),
+    radial-gradient(ellipse at 50% 0%, rgba(14, 28, 48, 0.5) 0%, transparent 75%);
+  background-size: 32px 32px, 32px 32px, 100% 100%;
   background-attachment: fixed;
 }
 
 #root {
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
-  width: 100%;
 }
 
-/* Tabular Numbers for all metrics and counters */
+/* Tabular Technical Numerics */
 .metric-num,
 .tabular-nums {
   font-family: var(--font-mono);
   font-variant-numeric: tabular-nums;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.01em;
 }
 
-/* Glass Surface Container */
-.glass-panel {
-  background: var(--bg-card);
-  backdrop-filter: blur(20px) saturate(180%);
-  -webkit-backdrop-filter: blur(20px) saturate(180%);
-  border: 1px solid var(--border-glass);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-card);
-  transition: all 250ms cubic-bezier(0.4, 0, 0.2, 1);
+/* SCADA Instrument Panel */
+.scada-panel {
+  background: var(--bg-panel);
+  border: 1px solid var(--border-panel);
+  border-radius: var(--radius-sm);
   position: relative;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  display: flex;
+  flex-direction: column;
 }
 
-.glass-panel:hover {
-  border-color: rgba(255, 255, 255, 0.14);
+/* Corner Technical Markings / Crosshairs */
+.scada-panel::before,
+.scada-panel::after {
+  content: '';
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  pointer-events: none;
+}
+.scada-panel::before {
+  top: -1px;
+  left: -1px;
+  border-top: 2px solid var(--border-panel-bright);
+  border-left: 2px solid var(--border-panel-bright);
+}
+.scada-panel::after {
+  bottom: -1px;
+  right: -1px;
+  border-bottom: 2px solid var(--border-panel-bright);
+  border-right: 2px solid var(--border-panel-bright);
 }
 
-/* Gradient Typography */
-.gradient-text {
-  background: var(--primary-gradient);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-/* Buttons */
-.btn {
-  display: inline-flex;
+/* SCADA Panel Header with Technical Label */
+.scada-panel-header {
+  background: var(--bg-panel-header);
+  border-bottom: 1px solid var(--border-panel);
+  padding: 0.5rem 0.85rem;
+  display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 0.55rem;
-  padding: 0.65rem 1.25rem;
-  font-size: 0.9rem;
-  font-weight: 600;
-  border-radius: var(--radius-md);
-  border: 1px solid transparent;
-  cursor: pointer;
-  transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
-  text-decoration: none;
-  user-select: none;
-  position: relative;
-  overflow: hidden;
-}
-
-.btn:active:not(:disabled) {
-  transform: scale(0.98);
-}
-
-.btn:disabled {
-  opacity: 0.45;
-  cursor: not-allowed;
-  filter: grayscale(0.5);
-}
-
-.btn-primary {
-  background: var(--primary-gradient);
-  color: #ffffff;
-  box-shadow: 0 4px 16px rgba(99, 102, 241, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.2);
-}
-
-.btn-primary:hover:not(:disabled) {
-  background: var(--primary-gradient-hover);
-  box-shadow: 0 6px 24px rgba(99, 102, 241, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.3);
-  transform: translateY(-1px);
-}
-
-.btn-secondary {
-  background: var(--bg-glass);
-  color: var(--text-primary);
-  border-color: var(--border-medium);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
-}
-
-.btn-secondary:hover:not(:disabled) {
-  background: var(--bg-glass-hover);
-  border-color: rgba(255, 255, 255, 0.25);
-  transform: translateY(-1px);
-}
-
-.btn-ghost {
-  background: transparent;
+  justify-content: space-between;
+  gap: 0.5rem;
+  font-family: var(--font-hud);
+  font-size: 0.825rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
   color: var(--text-secondary);
 }
 
-.btn-ghost:hover:not(:disabled) {
-  background: rgba(255, 255, 255, 0.05);
+.scada-panel-title {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
   color: var(--text-primary);
 }
 
-/* Inputs */
-.input-field {
-  width: 100%;
-  padding: 0.75rem 1rem;
-  background: rgba(12, 16, 27, 0.8);
-  border: 1px solid var(--border-medium);
-  border-radius: var(--radius-md);
-  color: var(--text-primary);
+.scada-panel-body {
+  padding: 1rem;
+  flex: 1;
+}
+
+/* Hazard Warning Stripes (Industrial Caution Bar) */
+.hazard-stripes {
+  background: repeating-linear-gradient(
+    -45deg,
+    rgba(245, 158, 11, 0.25),
+    rgba(245, 158, 11, 0.25) 8px,
+    rgba(10, 15, 22, 0.95) 8px,
+    rgba(10, 15, 22, 0.95) 16px
+  );
+  border: 1px solid rgba(245, 158, 11, 0.5);
+}
+
+.hazard-stripes-danger {
+  background: repeating-linear-gradient(
+    -45deg,
+    rgba(255, 51, 102, 0.25),
+    rgba(255, 51, 102, 0.25) 8px,
+    rgba(10, 15, 22, 0.95) 8px,
+    rgba(10, 15, 22, 0.95) 16px
+  );
+  border: 1px solid rgba(255, 51, 102, 0.5);
+}
+
+/* SCADA Status LEDs */
+.scada-led {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+  position: relative;
+}
+
+.scada-led::after {
+  content: '';
+  position: absolute;
+  inset: -3px;
+  border-radius: 50%;
+  opacity: 0.4;
+  animation: ledPulse 2s infinite ease-in-out;
+}
+
+.scada-led-nominal {
+  background-color: var(--scada-green);
+  box-shadow: 0 0 8px var(--scada-green);
+}
+.scada-led-nominal::after {
+  background-color: var(--scada-green);
+}
+
+.scada-led-warn {
+  background-color: var(--scada-amber);
+  box-shadow: 0 0 8px var(--scada-amber);
+}
+.scada-led-warn::after {
+  background-color: var(--scada-amber);
+}
+
+.scada-led-alarm {
+  background-color: var(--scada-red);
+  box-shadow: 0 0 10px var(--scada-red);
+  animation: alarmFlash 0.8s infinite alternate ease-in-out;
+}
+.scada-led-alarm::after {
+  background-color: var(--scada-red);
+}
+
+@keyframes ledPulse {
+  0%, 100% { transform: scale(1); opacity: 0.4; }
+  50% { transform: scale(1.6); opacity: 0.1; }
+}
+
+@keyframes alarmFlash {
+  from { opacity: 0.3; }
+  to { opacity: 1; }
+}
+
+/* Mechanical Push Button (Tactile SCADA Switch) */
+.btn-scada {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1.15rem;
+  font-family: var(--font-hud);
   font-size: 0.95rem;
-  font-family: inherit;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  border-radius: var(--radius-xs);
+  border: 1px solid var(--border-panel-bright);
+  background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: all 120ms ease;
+  user-select: none;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  position: relative;
+}
+
+.btn-scada:hover:not(:disabled) {
+  border-color: var(--scada-cyan);
+  box-shadow: 0 0 12px rgba(0, 240, 255, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+  color: #ffffff;
+  transform: translateY(-1px);
+}
+
+.btn-scada:active:not(:disabled) {
+  transform: translateY(1px);
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.6);
+}
+
+.btn-scada:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  filter: grayscale(0.8);
+}
+
+/* Primary Transmit Action Button (Warning Amber / Cyber Cyan) */
+.btn-scada-primary {
+  background: linear-gradient(180deg, #0284c7 0%, #0369a1 100%);
+  border-color: #38bdf8;
+  color: #ffffff;
+  box-shadow: 0 4px 14px rgba(2, 132, 199, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+.btn-scada-primary:hover:not(:disabled) {
+  background: linear-gradient(180deg, #0369a1 0%, #0284c7 100%);
+  border-color: #00f0ff;
+  box-shadow: 0 0 20px rgba(0, 240, 255, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+}
+
+/* Warning / Alert Action Button */
+.btn-scada-warning {
+  background: linear-gradient(180deg, #b45309 0%, #78350f 100%);
+  border-color: #fbbf24;
+  color: #fffbeb;
+  box-shadow: 0 4px 14px rgba(180, 83, 9, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.btn-scada-warning:hover:not(:disabled) {
+  border-color: #f59e0b;
+  box-shadow: 0 0 20px rgba(245, 158, 11, 0.6);
+}
+
+/* SCADA Inputs */
+.scada-input {
+  background: var(--bg-panel-inset);
+  border: 1px solid var(--border-panel-bright);
+  border-radius: var(--radius-xs);
+  color: var(--scada-cyan);
+  font-family: var(--font-mono);
+  font-size: 1.15rem;
+  font-weight: 700;
+  padding: 0.6rem 0.85rem;
+  width: 100%;
   outline: none;
-  transition: all 200ms ease;
-  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.4);
+  box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.7);
+  transition: border-color 150ms ease, box-shadow 150ms ease;
 }
 
-.input-field:focus {
-  border-color: var(--border-focus);
-  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.25), inset 0 1px 2px rgba(0, 0, 0, 0.4);
-  background: rgba(15, 23, 42, 0.95);
+.scada-input:focus {
+  border-color: var(--scada-cyan);
+  box-shadow: 0 0 12px rgba(0, 240, 255, 0.3), inset 0 2px 6px rgba(0, 0, 0, 0.7);
 }
 
-.input-field::placeholder {
-  color: var(--text-muted);
-}
-
-/* Modern Badges */
-.badge {
+/* Badges */
+.scada-badge {
   display: inline-flex;
   align-items: center;
   gap: 0.35rem;
-  padding: 0.25rem 0.65rem;
+  padding: 0.2rem 0.55rem;
+  font-family: var(--font-hud);
   font-size: 0.75rem;
-  font-weight: 600;
+  font-weight: 700;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
-  border-radius: var(--radius-full);
+  border-radius: var(--radius-xs);
+  border: 1px solid var(--border-panel);
+  background: rgba(15, 23, 42, 0.8);
 }
 
-.badge-retailer {
-  background: var(--role-retailer-bg);
+.scada-badge-retailer {
   color: var(--role-retailer);
-  border: 1px solid var(--role-retailer-border);
+  border-color: var(--role-retailer-border);
+  background: var(--role-retailer-bg);
 }
-
-.badge-wholesaler {
-  background: var(--role-wholesaler-bg);
+.scada-badge-wholesaler {
   color: var(--role-wholesaler);
-  border: 1px solid var(--role-wholesaler-border);
+  border-color: var(--role-wholesaler-border);
+  background: var(--role-wholesaler-bg);
 }
-
-.badge-distributor {
-  background: var(--role-distributor-bg);
+.scada-badge-distributor {
   color: var(--role-distributor);
-  border: 1px solid var(--role-distributor-border);
+  border-color: var(--role-distributor-border);
+  background: var(--role-distributor-bg);
+}
+.scada-badge-factory {
+  color: var(--role-factory);
+  border-color: var(--role-factory-border);
+  background: var(--role-factory-bg);
 }
 
-.badge-factory {
-  background: var(--role-factory-bg);
-  color: var(--role-factory);
-  border: 1px solid var(--role-factory-border);
+/* VU Meter / Segmented Meter Bar */
+.scada-segment-meter {
+  display: flex;
+  gap: 2px;
+  height: 10px;
+  width: 100%;
+  background: #080c13;
+  padding: 2px;
+  border: 1px solid var(--border-panel);
+  border-radius: var(--radius-xs);
+}
+
+.scada-segment {
+  flex: 1;
+  background: #1e293b;
+  border-radius: 1px;
+}
+
+.scada-segment.active-green {
+  background: var(--scada-green);
+  box-shadow: 0 0 6px var(--scada-green);
+}
+.scada-segment.active-cyan {
+  background: var(--scada-cyan);
+  box-shadow: 0 0 6px var(--scada-cyan);
+}
+.scada-segment.active-amber {
+  background: var(--scada-amber);
+  box-shadow: 0 0 6px var(--scada-amber);
+}
+.scada-segment.active-red {
+  background: var(--scada-red);
+  box-shadow: 0 0 6px var(--scada-red);
 }
 
 /* Keyboard Shortcut Tag */
@@ -271,13 +418,13 @@ kbd {
   font-size: 0.75rem;
   padding: 0.15rem 0.45rem;
   color: var(--text-secondary);
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid var(--border-medium);
-  border-radius: var(--radius-sm);
-  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.5);
+  background: #111827;
+  border: 1px solid var(--border-panel-bright);
+  border-radius: var(--radius-xs);
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.8);
 }
 
-/* SVG Flow Stream Animation (Supply Chain Pipelines) */
+/* Fluid Pipeline Animated Chevrons */
 @keyframes flowOrdersUpstream {
   0% { stroke-dashoffset: 24; }
   100% { stroke-dashoffset: 0; }
@@ -290,15 +437,15 @@ kbd {
 
 .flow-stream-orders {
   stroke-dasharray: 6 6;
-  animation: flowOrdersUpstream 1s linear infinite;
+  animation: flowOrdersUpstream 0.9s linear infinite;
 }
 
 .flow-stream-shipments {
   stroke-dasharray: 6 6;
-  animation: flowShipmentsDownstream 1s linear infinite;
+  animation: flowShipmentsDownstream 0.9s linear infinite;
 }
 
-/* Pulsing Status Dot */
+/* Pulse Animations */
 @keyframes pulseDot {
   0%, 100% { opacity: 1; transform: scale(1); }
   50% { opacity: 0.4; transform: scale(0.85); }
@@ -309,10 +456,26 @@ kbd {
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(8px); }
+  from { opacity: 0; transform: translateY(6px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
 .animate-fade-in {
-  animation: fadeIn 250ms cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  animation: fadeIn 200ms cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+/* Bottom Industrial Ticker Animation */
+@keyframes tickerSlide {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.scada-ticker-track {
+  display: flex;
+  white-space: nowrap;
+  animation: tickerSlide 40s linear infinite;
+}
+
+.scada-ticker-track:hover {
+  animation-play-state: paused;
 }

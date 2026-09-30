@@ -1,5 +1,5 @@
 import { RoundRecord } from '../../../core/types.js';
-import { IconTrendingUp } from '../Common/Icons.js';
+import { IconTerminal, IconDatabase, IconActivity } from '../Common/Icons.js';
 
 export interface HistoryTableProps {
   readonly history: readonly RoundRecord[];
@@ -8,137 +8,184 @@ export interface HistoryTableProps {
 export function HistoryTable({ history }: HistoryTableProps) {
   if (history.length === 0) {
     return (
-      <div
-        className="glass-panel"
-        style={{
-          padding: '2.5rem',
-          textAlign: 'center',
-          color: 'var(--text-muted)',
-          fontSize: '0.875rem',
-        }}
-      >
+      <div className="scada-panel" style={{ width: '100%', height: '100%' }}>
+        <div className="scada-panel-header">
+          <div className="scada-panel-title">
+            <IconTerminal size={15} color="var(--scada-cyan)" />
+            <span>BLACK BOX // TELEMETRY RECORDER</span>
+          </div>
+          <span className="scada-badge">STANDBY</span>
+        </div>
         <div
+          className="scada-panel-body"
           style={{
-            width: '40px',
-            height: '40px',
-            borderRadius: '50%',
-            background: 'rgba(255, 255, 255, 0.04)',
             display: 'flex',
+            flexDirection: 'column',
             alignItems: 'center',
             justifyContent: 'center',
-            margin: '0 auto 0.75rem',
+            minHeight: '160px',
             color: 'var(--text-muted)',
+            fontFamily: 'var(--font-mono)',
+            fontSize: '0.75rem',
+            textAlign: 'center',
+            gap: '0.5rem',
           }}
         >
-          <IconTrendingUp size={20} />
+          <IconActivity size={24} color="var(--border-panel-bright)" />
+          <span>AWAITING ROUND 01 TELEMETRY TRANSMISSION...</span>
+          <span style={{ fontSize: '0.68rem', color: 'var(--text-muted)' }}>
+            Full state history will be logged here in chronological sequence.
+          </span>
         </div>
-        <div>No completed rounds yet. Submit your order for Round 1 to start building your ledger history.</div>
       </div>
     );
   }
 
-  // Reverse history so latest round is at the top for immediate visibility
+  // Latest round at the top
   const reversedHistory = [...history].reverse();
 
   return (
-    <div className="glass-panel" style={{ padding: '1.5rem', overflow: 'hidden' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.15rem' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-          <div
-            style={{
-              width: '28px',
-              height: '28px',
-              borderRadius: 'var(--radius-sm)',
-              background: 'rgba(99, 102, 241, 0.15)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              color: 'var(--text-accent)',
-            }}
-          >
-            <IconTrendingUp size={16} />
-          </div>
-          <h4 style={{ fontSize: '1.05rem', fontWeight: 700 }}>
-            Round History Ledger
-          </h4>
+    <div className="scada-panel" style={{ width: '100%', height: '100%' }}>
+      {/* Panel Header */}
+      <div className="scada-panel-header">
+        <div className="scada-panel-title">
+          <IconDatabase size={15} color="var(--scada-cyan)" />
+          <span>BLACK BOX // TELEMETRY RECORDER</span>
         </div>
-        <span
-          className="badge metric-num"
-          style={{ background: 'rgba(255, 255, 255, 0.05)', color: 'var(--text-secondary)', border: '1px solid var(--border-subtle)', textTransform: 'none' }}
-        >
-          {history.length} round{history.length === 1 ? '' : 's'} completed
+        <span className="scada-badge" style={{ color: 'var(--scada-green)' }}>
+          {history.length} ROUNDS LOGGED
         </span>
       </div>
 
-      <div style={{ overflowX: 'auto', maxHeight: '360px', overflowY: 'auto' }}>
+      <div className="scada-panel-body" style={{ padding: 0, overflowX: 'auto', maxHeight: '420px', overflowY: 'auto' }}>
         <table
           style={{
             width: '100%',
             borderCollapse: 'collapse',
-            fontSize: '0.85rem',
+            fontSize: '0.72rem',
+            fontFamily: 'var(--font-mono)',
             textAlign: 'right',
           }}
         >
           <thead>
             <tr
               style={{
-                borderBottom: '1px solid var(--border-medium)',
-                color: 'var(--text-secondary)',
-                fontSize: '0.725rem',
-                textTransform: 'uppercase',
+                backgroundColor: 'var(--bg-panel-inset)',
+                color: 'var(--text-muted)',
+                fontFamily: 'var(--font-hud)',
                 letterSpacing: '0.06em',
-                background: 'rgba(12, 16, 27, 0.95)',
+                fontSize: '0.7rem',
+                borderBottom: '1px solid var(--border-panel)',
                 position: 'sticky',
                 top: 0,
-                zIndex: 1,
+                zIndex: 10,
               }}
             >
-              <th style={{ padding: '0.75rem 1rem', textAlign: 'left' }}>Round</th>
-              <th style={{ padding: '0.75rem 1rem' }}>Arrived</th>
-              <th style={{ padding: '0.75rem 1rem' }}>Demand</th>
-              <th style={{ padding: '0.75rem 1rem' }}>Shipped</th>
-              <th style={{ padding: '0.75rem 1rem' }}>Inventory</th>
-              <th style={{ padding: '0.75rem 1rem' }}>Backlog</th>
-              <th style={{ padding: '0.75rem 1rem' }}>Your Order</th>
-              <th style={{ padding: '0.75rem 1rem' }}>Round Cost</th>
-              <th style={{ padding: '0.75rem 1rem' }}>Total Cost</th>
+              <th style={{ padding: '0.5rem 0.6rem', textAlign: 'left' }}>RND</th>
+              <th style={{ padding: '0.5rem 0.6rem' }}>ARRIVED</th>
+              <th style={{ padding: '0.5rem 0.6rem' }}>DEMAND</th>
+              <th style={{ padding: '0.5rem 0.6rem' }}>SHIPPED</th>
+              <th style={{ padding: '0.5rem 0.6rem' }}>DEFICIT</th>
+              <th style={{ padding: '0.5rem 0.6rem', color: 'var(--scada-cyan)' }}>ORDER</th>
+              <th style={{ padding: '0.5rem 0.6rem' }}>STOCK</th>
+              <th style={{ padding: '0.5rem 0.6rem' }}>ROUND $</th>
+              <th style={{ padding: '0.5rem 0.6rem' }}>TOTAL $</th>
             </tr>
           </thead>
           <tbody>
-            {reversedHistory.map((rec) => (
-              <tr
-                key={rec.round}
-                style={{
-                  borderBottom: '1px solid var(--border-subtle)',
-                  transition: 'background 150ms ease',
-                }}
-              >
-                <td style={{ padding: '0.65rem 1rem', textAlign: 'left', fontWeight: 700, color: 'var(--text-primary)' }}>
-                  Round {rec.round}
-                </td>
-                <td className="metric-num" style={{ padding: '0.65rem 1rem', color: '#38bdf8' }}>{rec.shipmentArrived}</td>
-                <td className="metric-num" style={{ padding: '0.65rem 1rem', color: '#fbbf24' }}>{rec.incomingOrder}</td>
-                <td className="metric-num" style={{ padding: '0.65rem 1rem', color: 'var(--text-secondary)' }}>{rec.shipped}</td>
-                <td className="metric-num" style={{ padding: '0.65rem 1rem', color: '#34d399', fontWeight: 600 }}>{rec.inventory}</td>
-                <td
-                  className="metric-num"
+            {reversedHistory.map((row, index) => {
+              const isLatest = index === 0;
+              const hasBacklog = row.backlog > 0;
+
+              return (
+                <tr
+                  key={row.round}
                   style={{
-                    padding: '0.65rem 1rem',
-                    color: rec.backlog > 0 ? '#f87171' : 'var(--text-muted)',
-                    fontWeight: rec.backlog > 0 ? 700 : 400,
+                    backgroundColor: isLatest
+                      ? 'rgba(0, 240, 255, 0.05)'
+                      : index % 2 === 0
+                        ? 'transparent'
+                        : 'rgba(255, 255, 255, 0.015)',
+                    borderBottom: '1px solid var(--border-panel)',
+                    color: 'var(--text-secondary)',
                   }}
                 >
-                  {rec.backlog}
-                </td>
-                <td className="metric-num" style={{ padding: '0.65rem 1rem', fontWeight: 700, color: '#c084fc' }}>{rec.orderPlaced}</td>
-                <td className="metric-num" style={{ padding: '0.65rem 1rem', color: 'var(--text-secondary)' }}>
-                  ${rec.roundCost.toFixed(2)}
-                </td>
-                <td className="metric-num" style={{ padding: '0.65rem 1rem', fontWeight: 700, color: '#f472b6' }}>
-                  ${rec.totalCost.toFixed(2)}
-                </td>
-              </tr>
-            ))}
+                  {/* Round number */}
+                  <td style={{ padding: '0.45rem 0.6rem', textAlign: 'left', fontWeight: 700, color: 'var(--text-primary)' }}>
+                    <span style={{ color: isLatest ? 'var(--scada-cyan)' : 'var(--text-muted)' }}>
+                      #{String(row.round).padStart(2, '0')}
+                    </span>
+                  </td>
+
+                  {/* Shipment Arrived */}
+                  <td style={{ padding: '0.45rem 0.6rem', color: 'var(--scada-green)' }}>
+                    +{row.shipmentArrived}
+                  </td>
+
+                  {/* Demand / Incoming Order */}
+                  <td style={{ padding: '0.45rem 0.6rem', color: 'var(--scada-amber)' }}>
+                    {row.incomingOrder}
+                  </td>
+
+                  {/* Shipped */}
+                  <td style={{ padding: '0.45rem 0.6rem' }}>{row.shipped}</td>
+
+                  {/* Ending Backlog */}
+                  <td
+                    style={{
+                      padding: '0.45rem 0.6rem',
+                      color: hasBacklog ? 'var(--scada-red)' : 'var(--text-muted)',
+                      fontWeight: hasBacklog ? 700 : 400,
+                    }}
+                  >
+                    {row.backlog}
+                  </td>
+
+                  {/* Order Placed */}
+                  <td
+                    style={{
+                      padding: '0.45rem 0.6rem',
+                      color: 'var(--scada-cyan)',
+                      fontWeight: 700,
+                    }}
+                  >
+                    {row.orderPlaced}
+                  </td>
+
+                  {/* Ending Inventory */}
+                  <td
+                    style={{
+                      padding: '0.45rem 0.6rem',
+                      color: row.inventory > 0 ? 'var(--scada-green)' : 'var(--text-muted)',
+                      fontWeight: 600,
+                    }}
+                  >
+                    {row.inventory}
+                  </td>
+
+                  {/* Cost this round */}
+                  <td
+                    style={{
+                      padding: '0.45rem 0.6rem',
+                      color: hasBacklog ? 'var(--scada-red)' : 'var(--text-primary)',
+                      fontWeight: 600,
+                    }}
+                  >
+                    +${row.roundCost.toFixed(2)}
+                  </td>
+
+                  {/* Total Cost */}
+                  <td
+                    style={{
+                      padding: '0.45rem 0.6rem',
+                      color: 'var(--text-muted)',
+                    }}
+                  >
+                    ${row.totalCost.toFixed(1)}
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>
