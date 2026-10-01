@@ -7,6 +7,7 @@ import {
   IconCheck,
   IconRadio,
   IconCrosshair,
+  IconLock,
 } from '../Common/Icons.js';
 
 export interface RoleSelectionProps {
@@ -191,7 +192,7 @@ export function RoleSelection({
                             : 'var(--text-muted)',
                       }}
                     >
-                      {isSelected ? 'YOU' : isOccupiedByOther ? 'TAKEN' : 'VACANT'}
+                      {isSelected ? 'YOUR STATION' : isOccupiedByOther ? 'OCCUPIED' : 'VACANT'}
                     </span>
                   </div>
                 </div>
@@ -229,24 +230,31 @@ export function RoleSelection({
                 <button
                   type="button"
                   onClick={() => onSelectRole(r.role)}
-                  disabled={disabled}
+                  disabled={disabled || isOccupiedByOther}
                   className={`btn-scada ${isSelected ? 'btn-scada-primary' : ''}`}
                   style={{
                     width: '100%',
                     padding: '0.45rem',
                     fontSize: '0.8rem',
                     borderColor: isSelected ? r.color : undefined,
+                    cursor: isOccupiedByOther ? 'not-allowed' : undefined,
+                    opacity: isOccupiedByOther ? 0.5 : 1,
                   }}
                 >
                   {isSelected ? (
                     <>
                       <IconCheck size={14} color="#ffffff" />
-                      <span>STATION ENGAGED</span>
+                      <span>YOUR STATION</span>
+                    </>
+                  ) : isOccupiedByOther ? (
+                    <>
+                      <IconLock size={13} color="var(--scada-amber)" />
+                      <span style={{ color: 'var(--scada-amber)' }}>SLOT OCCUPIED</span>
                     </>
                   ) : (
                     <>
                       <IconRadio size={13} />
-                      <span>{isOccupiedByOther ? 'TAKEOVER STATION' : 'OCCUPY STATION'}</span>
+                      <span>OCCUPY STATION</span>
                     </>
                   )}
                 </button>
