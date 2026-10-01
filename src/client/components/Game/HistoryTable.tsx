@@ -57,10 +57,20 @@ export function HistoryTable({ history }: HistoryTableProps) {
         </span>
       </div>
 
-      <div className="scada-panel-body" style={{ padding: 0, overflowX: 'auto', maxHeight: '420px', overflowY: 'auto' }}>
+      <div
+        className="scada-panel-body"
+        style={{
+          padding: 0,
+          overflowX: 'hidden',
+          maxHeight: '440px',
+          overflowY: 'auto',
+          width: '100%',
+        }}
+      >
         <table
           style={{
             width: '100%',
+            tableLayout: 'fixed',
             borderCollapse: 'collapse',
             fontSize: '0.72rem',
             fontFamily: 'var(--font-mono)',
@@ -73,23 +83,23 @@ export function HistoryTable({ history }: HistoryTableProps) {
                 backgroundColor: 'var(--bg-panel-inset)',
                 color: 'var(--text-muted)',
                 fontFamily: 'var(--font-hud)',
-                letterSpacing: '0.06em',
-                fontSize: '0.7rem',
+                letterSpacing: '0.04em',
+                fontSize: '0.68rem',
                 borderBottom: '1px solid var(--border-panel)',
                 position: 'sticky',
                 top: 0,
                 zIndex: 10,
               }}
             >
-              <th style={{ padding: '0.5rem 0.6rem', textAlign: 'left' }}>RND</th>
-              <th style={{ padding: '0.5rem 0.6rem' }}>ARRIVED</th>
-              <th style={{ padding: '0.5rem 0.6rem' }}>DEMAND</th>
-              <th style={{ padding: '0.5rem 0.6rem' }}>SHIPPED</th>
-              <th style={{ padding: '0.5rem 0.6rem' }}>DEFICIT</th>
-              <th style={{ padding: '0.5rem 0.6rem', color: 'var(--scada-cyan)' }}>ORDER</th>
-              <th style={{ padding: '0.5rem 0.6rem' }}>STOCK</th>
-              <th style={{ padding: '0.5rem 0.6rem' }}>ROUND $</th>
-              <th style={{ padding: '0.5rem 0.6rem' }}>TOTAL $</th>
+              <th style={{ width: '40px', padding: '0.5rem 0.3rem', textAlign: 'left' }} title="Round Number">RND</th>
+              <th style={{ width: '46px', padding: '0.5rem 0.3rem' }} title="Inbound Shipment Received">INFLOW</th>
+              <th style={{ width: '48px', padding: '0.5rem 0.3rem' }} title="Incoming Demand Order">DEMAND</th>
+              <th style={{ width: '44px', padding: '0.5rem 0.3rem' }} title="Units Shipped Downstream">SHIPPED</th>
+              <th style={{ width: '44px', padding: '0.5rem 0.3rem' }} title="Backlog Deficit">DEFICIT</th>
+              <th style={{ width: '46px', padding: '0.5rem 0.3rem', color: 'var(--scada-cyan)' }} title="Order Placed Upstream">ORDER</th>
+              <th style={{ width: '44px', padding: '0.5rem 0.3rem' }} title="Ending Inventory Stock">STOCK</th>
+              <th style={{ width: '56px', padding: '0.5rem 0.3rem' }} title="Cost This Round">RND $</th>
+              <th style={{ width: '56px', padding: '0.5rem 0.3rem' }} title="Cumulative Total Loss">TOTAL $</th>
             </tr>
           </thead>
           <tbody>
@@ -111,29 +121,29 @@ export function HistoryTable({ history }: HistoryTableProps) {
                   }}
                 >
                   {/* Round number */}
-                  <td style={{ padding: '0.45rem 0.6rem', textAlign: 'left', fontWeight: 700, color: 'var(--text-primary)' }}>
+                  <td style={{ padding: '0.4rem 0.3rem', textAlign: 'left', fontWeight: 700, color: 'var(--text-primary)' }}>
                     <span style={{ color: isLatest ? 'var(--scada-cyan)' : 'var(--text-muted)' }}>
                       #{String(row.round).padStart(2, '0')}
                     </span>
                   </td>
 
                   {/* Shipment Arrived */}
-                  <td style={{ padding: '0.45rem 0.6rem', color: 'var(--scada-green)' }}>
+                  <td style={{ padding: '0.4rem 0.3rem', color: 'var(--scada-green)' }}>
                     +{row.shipmentArrived}
                   </td>
 
                   {/* Demand / Incoming Order */}
-                  <td style={{ padding: '0.45rem 0.6rem', color: 'var(--scada-amber)' }}>
+                  <td style={{ padding: '0.4rem 0.3rem', color: 'var(--scada-amber)' }}>
                     {row.incomingOrder}
                   </td>
 
                   {/* Shipped */}
-                  <td style={{ padding: '0.45rem 0.6rem' }}>{row.shipped}</td>
+                  <td style={{ padding: '0.4rem 0.3rem' }}>{row.shipped}</td>
 
                   {/* Ending Backlog */}
                   <td
                     style={{
-                      padding: '0.45rem 0.6rem',
+                      padding: '0.4rem 0.3rem',
                       color: hasBacklog ? 'var(--scada-red)' : 'var(--text-muted)',
                       fontWeight: hasBacklog ? 700 : 400,
                     }}
@@ -144,7 +154,7 @@ export function HistoryTable({ history }: HistoryTableProps) {
                   {/* Order Placed */}
                   <td
                     style={{
-                      padding: '0.45rem 0.6rem',
+                      padding: '0.4rem 0.3rem',
                       color: 'var(--scada-cyan)',
                       fontWeight: 700,
                     }}
@@ -155,7 +165,7 @@ export function HistoryTable({ history }: HistoryTableProps) {
                   {/* Ending Inventory */}
                   <td
                     style={{
-                      padding: '0.45rem 0.6rem',
+                      padding: '0.4rem 0.3rem',
                       color: row.inventory > 0 ? 'var(--scada-green)' : 'var(--text-muted)',
                       fontWeight: 600,
                     }}
@@ -166,9 +176,10 @@ export function HistoryTable({ history }: HistoryTableProps) {
                   {/* Cost this round */}
                   <td
                     style={{
-                      padding: '0.45rem 0.6rem',
+                      padding: '0.4rem 0.3rem',
                       color: hasBacklog ? 'var(--scada-red)' : 'var(--text-primary)',
                       fontWeight: 600,
+                      fontSize: '0.7rem',
                     }}
                   >
                     +${row.roundCost.toFixed(2)}
@@ -177,8 +188,9 @@ export function HistoryTable({ history }: HistoryTableProps) {
                   {/* Total Cost */}
                   <td
                     style={{
-                      padding: '0.45rem 0.6rem',
+                      padding: '0.4rem 0.3rem',
                       color: 'var(--text-muted)',
+                      fontSize: '0.7rem',
                     }}
                   >
                     ${row.totalCost.toFixed(1)}

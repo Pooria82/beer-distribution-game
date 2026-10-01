@@ -479,3 +479,76 @@ kbd {
 .scada-ticker-track:hover {
   animation-play-state: paused;
 }
+
+/* ==========================================================================
+   INPUT HARDENING & SPINNER SUPPRESSION
+   ========================================================================== */
+
+/* Universal elimination of browser default number spinners */
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none !important;
+  margin: 0 !important;
+  display: none !important;
+}
+
+input[type="number"] {
+  -moz-appearance: textfield !important;
+  appearance: textfield !important;
+}
+
+/* SCADA Tactical Number Input */
+.scada-input {
+  width: 100%;
+  background: var(--bg-panel-inset);
+  border: 1px solid var(--border-panel);
+  border-radius: var(--radius-xs);
+  padding: 0.5rem 0.75rem;
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-weight: 700;
+  outline: none;
+  transition: all 0.2s ease;
+  -moz-appearance: textfield !important;
+  appearance: textfield !important;
+}
+
+.scada-input:focus {
+  border-color: var(--scada-cyan);
+  box-shadow: 0 0 12px rgba(0, 240, 255, 0.3);
+}
+
+/* ==========================================================================
+   INDUSTRIAL SCADA DARK SCROLLBAR DESIGN
+   ========================================================================== */
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-panel-inset);
+  border-radius: var(--radius-xs);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border-panel-bright);
+  border-radius: var(--radius-xs);
+  border: 1px solid rgba(0, 240, 255, 0.2);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--scada-cyan);
+  box-shadow: 0 0 8px rgba(0, 240, 255, 0.5);
+}
+
+::-webkit-scrollbar-corner {
+  background: var(--bg-panel-inset);
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-panel-bright) var(--bg-panel-inset);
+}
+

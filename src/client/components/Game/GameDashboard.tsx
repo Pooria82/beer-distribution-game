@@ -113,7 +113,7 @@ export function GameDashboard({
           style={{
             flex: 1,
             display: 'grid',
-            gridTemplateColumns: '320px 1fr 380px',
+            gridTemplateColumns: '350px 1fr 450px',
             gap: '0.85rem',
             alignItems: 'stretch',
           }}
