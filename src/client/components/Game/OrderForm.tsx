@@ -11,7 +11,7 @@ import {
 export interface OrderFormProps {
   readonly currentRound: number;
   readonly myState: RoleState;
-  readonly onSubmitOrder: (order: number) => void;
+  readonly onSubmitOrder: (order: number) => boolean | void;
   readonly onSimulateRound?: (() => void) | undefined;
 }
 
@@ -39,12 +39,15 @@ export function OrderForm({
     if (isSubmitting || myState.hasSubmittedThisRound) return;
 
     const parsed = parseInt(orderValue, 10);
-    if (Number.isNaN(parsed) || parsed < 0) {
+    if (Number.isNaN(parsed)) {
       return;
     }
 
     setIsSubmitting(true);
-    onSubmitOrder(parsed);
+    const sent = onSubmitOrder(parsed);
+    if (sent === false) {
+      setIsSubmitting(false);
+    }
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {

@@ -58,8 +58,8 @@ export function useGameSocket(options: UseGameSocketOptions) {
   }, []);
 
   const submitOrder = useCallback((order: number) => {
-    if (!Number.isInteger(order) || order < 0) {
-      setError('Order must be a non-negative whole integer');
+    if (!Number.isInteger(order) || order < 0 || order > 10000) {
+      setError('Order must be an integer between 0 and 10,000 units');
       return false;
     }
     return send({ type: 'SUBMIT_ORDER', order });

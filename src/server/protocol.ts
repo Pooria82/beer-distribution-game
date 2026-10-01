@@ -121,7 +121,8 @@ export function parseClientMessage(raw: unknown): ClientMessage | null {
         if (
           typeof parsed.order === 'number' &&
           Number.isInteger(parsed.order) &&
-          parsed.order >= 0
+          parsed.order >= 0 &&
+          parsed.order <= 10000
         ) {
           return {
             type: 'SUBMIT_ORDER',

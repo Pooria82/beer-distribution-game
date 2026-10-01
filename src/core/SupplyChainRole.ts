@@ -79,8 +79,8 @@ export class SupplyChainRole {
    * Step 5: Player submits their integer order (>= 0).
    */
   placeOrder(amount: number): void {
-    if (!Number.isInteger(amount) || amount < 0) {
-      throw new InvalidOrderError(`Order must be an integer >= 0, received: ${amount}`);
+    if (!Number.isInteger(amount) || amount < 0 || amount > 10000) {
+      throw new InvalidOrderError(`Order must be an integer between 0 and 10,000 units, received: ${amount}`);
     }
     if (this.hasSubmittedThisRound) {
       throw new RoundAlreadySubmittedError(`Role ${this.role} has already placed an order for this round`);

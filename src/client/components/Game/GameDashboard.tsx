@@ -15,7 +15,7 @@ export interface GameDashboardProps {
   readonly view: PlayerView;
   readonly connectionStatus: SocketConnectionStatus;
   readonly error?: string | null | undefined;
-  readonly onSubmitOrder: (order: number) => void;
+  readonly onSubmitOrder: (order: number) => boolean | void;
   readonly onSimulateRound?: (() => void) | undefined;
   readonly onLeaveRoom: () => void;
   readonly roundAdvancedNotice?: number | null | undefined;
