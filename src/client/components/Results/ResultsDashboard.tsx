@@ -90,7 +90,7 @@ export function ResultsDashboard({ view, onPlayAgain }: ResultsDashboardProps) {
                     textTransform: 'uppercase',
                   }}
                 >
-                  SIMULATION PROTOCOL CONCLUDED // 20 ROUNDS EXECUTED
+                  MISSION RESULTS // POST-OPERATION DEBRIEF
                 </span>
                 <span
                   className="scada-badge"
@@ -113,7 +113,7 @@ export function ResultsDashboard({ view, onPlayAgain }: ResultsDashboardProps) {
             style={{ padding: '0.65rem 1.25rem', fontSize: '0.9rem' }}
           >
             <IconRefresh size={15} />
-            <span>RE-COMMISSION FACILITY [NEW SESSION]</span>
+            <span>COMMISSION NEW SESSION // RETURN TO LOBBY</span>
           </button>
         </div>
 

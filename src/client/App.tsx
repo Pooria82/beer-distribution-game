@@ -90,8 +90,8 @@ export function App() {
     };
   }, [session.gameId, clearSession]);
 
-  const isGameCompleted = socket.view?.status === 'completed';
-  const isGameActive = socket.view?.status === 'in_progress' && session.role !== null;
+  const isGameCompleted = socket.view?.status === 'completed' && session.gameId !== null && session.role !== null;
+  const isGameActive = socket.view?.status === 'in_progress' && session.gameId !== null && session.role !== null;
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', width: '100%', backgroundColor: 'var(--bg-app)' }}>

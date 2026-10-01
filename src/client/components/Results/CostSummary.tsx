@@ -68,14 +68,14 @@ export function CostSummary({
         >
           <div>
             <div style={{ fontSize: '0.72rem', fontFamily: 'var(--font-hud)', color: 'var(--text-muted)', letterSpacing: '0.1em' }}>
-              TOTAL 4-NODE SUPPLY CHAIN LOSS
+              CUMULATIVE SUPPLY CHAIN LOSS
             </div>
             <div
               className="metric-num"
               style={{
                 fontSize: '2.5rem',
                 fontWeight: 800,
-                color: 'var(--scada-amber)',
+                color: 'var(--scada-green)',
                 lineHeight: 1.1,
               }}
             >

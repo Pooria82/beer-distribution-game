@@ -188,17 +188,45 @@ export function BullwhipChart({ history, myRole }: BullwhipChartProps) {
               );
             })}
 
-            {/* Cursor Crosshair Line when hovered */}
+            {/* Cursor Crosshair Line and On-Chart Probe Tooltip when hovered */}
             {hoveredRound && (
-              <line
-                x1={getX(hoveredRound)}
-                y1={paddingY}
-                x2={getX(hoveredRound)}
-                y2={chartHeight - paddingY}
-                stroke="var(--scada-amber)"
-                strokeWidth="1"
-                strokeDasharray="3 3"
-              />
+              <g>
+                <line
+                  x1={getX(hoveredRound)}
+                  y1={paddingY}
+                  x2={getX(hoveredRound)}
+                  y2={chartHeight - paddingY}
+                  stroke="var(--scada-amber)"
+                  strokeWidth="1.5"
+                  strokeDasharray="3 3"
+                />
+                {hoveredRecord && (
+                  <g transform={`translate(${Math.min(chartWidth - 55, Math.max(55, getX(hoveredRound)))}, ${Math.max(25, getY(hoveredRecord.orderPlaced) - 15)})`}>
+                    <rect
+                      x="-50"
+                      y="-18"
+                      width="100"
+                      height="20"
+                      rx="2"
+                      fill="#03080e"
+                      stroke="var(--scada-amber)"
+                      strokeWidth="1"
+                    />
+                    <text
+                      x="0"
+                      y="-4"
+                      textAnchor="middle"
+                      fill="var(--scada-amber)"
+                      fontSize="9.5"
+                      fontFamily="var(--font-hud)"
+                      fontWeight="bold"
+                      letterSpacing="0.05em"
+                    >
+                      R#{hoveredRound} // ORD: {hoveredRecord.orderPlaced}
+                    </text>
+                  </g>
+                )}
+              </g>
             )}
           </svg>
         </div>

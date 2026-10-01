@@ -208,6 +208,18 @@ export function useGameSocket(options: UseGameSocketOptions) {
   useEffect(() => {
     isSupersededRef.current = false;
     setIsSuperseded(false);
+
+    if (!gameId || !role) {
+      setView(null);
+      setConnectionStatus('disconnected');
+      if (socketRef.current) {
+        isIntentionalCloseRef.current = true;
+        socketRef.current.close();
+        socketRef.current = null;
+      }
+      return;
+    }
+
     connect();
 
     return () => {
@@ -218,7 +230,7 @@ export function useGameSocket(options: UseGameSocketOptions) {
         socketRef.current.close();
       }
     };
-  }, [connect]);
+  }, [gameId, role, connect]);
 
   return {
     connectionStatus,
