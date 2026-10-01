@@ -237,7 +237,7 @@ export function OrderForm({
         </form>
 
         {/* Evaluator Sim Simulator Trigger */}
-        {onSimulateRound && !isLocked && (
+        {onSimulateRound && !isSuperseded && (
           <div
             style={{
               display: 'flex',
@@ -255,6 +255,7 @@ export function OrderForm({
             <button
               type="button"
               onClick={onSimulateRound}
+              disabled={isSubmitting}
               className="btn-scada"
               style={{ padding: '0.25rem 0.6rem', fontSize: '0.72rem' }}
             >

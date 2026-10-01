@@ -213,8 +213,17 @@ export class GameService {
 
     return mutex.runExclusive(() => {
       const game = this.getGame(gameId);
-      const roles = game.getRoles();
 
+      if (game.getStatus() === 'waiting') {
+        const ALL_ROLES: RoleType[] = ['retailer', 'wholesaler', 'distributor', 'factory'];
+        for (const role of ALL_ROLES) {
+          if (!game.getRoles()[role].getIsOccupied()) {
+            game.claimRole(role);
+          }
+        }
+      }
+
+      const roles = game.getRoles();
       let lastResult: AdvanceResult = { roundAdvanced: false, gameCompleted: false };
 
       for (const [roleName, roleEntity] of Object.entries(roles)) {
