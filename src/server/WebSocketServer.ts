@@ -197,16 +197,19 @@ export class WebSocketGateway {
     const disconnected = this.roomManager.handleDisconnect(ws);
     if (!disconnected) return;
 
-    const room = this.roomManager.getRoom(disconnected.gameId);
-    if (room && !room.isEmpty()) {
-      try {
-        const game = this.gameService.getGame(disconnected.gameId);
-        room.broadcastSanitizedState(game.toSnapshot());
-      } catch {
-        // Safe to ignore if room cleanup in progress
+    try {
+      const game = this.gameService.getGame(disconnected.gameId);
+      if (game.getStatus() === 'waiting') {
+        this.gameService.leaveRole(disconnected.gameId, disconnected.role).catch(() => {});
       }
-    } else {
-      this.roomManager.removeRoomIfEmpty(disconnected.gameId);
+      const room = this.roomManager.getRoom(disconnected.gameId);
+      if (room && !room.isEmpty()) {
+        room.broadcastSanitizedState(game.toSnapshot());
+      } else {
+        this.roomManager.removeRoomIfEmpty(disconnected.gameId);
+      }
+    } catch {
+      // Safe to ignore if room cleanup in progress
     }
   }
 

@@ -103,6 +103,24 @@ export function useSession() {
     });
   }, []);
 
+  const leaveStation = useCallback(() => {
+    if (session.gameId && session.role) {
+      sessionStorage.removeItem(getStorageKey(session.gameId, session.role));
+    }
+    sessionStorage.removeItem(`${STORAGE_PREFIX}active_role`);
+
+    const url = new URL(window.location.href);
+    url.searchParams.delete('role');
+    url.searchParams.delete('token');
+    window.history.replaceState({}, '', url.toString());
+
+    setSessionState((prev) => ({
+      gameId: prev.gameId,
+      role: null,
+      token: null,
+    }));
+  }, [session.gameId, session.role]);
+
   const clearSession = useCallback(() => {
     if (session.gameId && session.role) {
       sessionStorage.removeItem(getStorageKey(session.gameId, session.role));
@@ -140,6 +158,7 @@ export function useSession() {
     setSession,
     setGameId,
     setRole,
+    leaveStation,
     clearSession,
     getShareableLink,
   };

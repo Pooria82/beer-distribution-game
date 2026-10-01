@@ -145,6 +145,20 @@ export class GameService {
   }
 
   /**
+   * Releases a role if game is in pre-game waiting state.
+   */
+  async leaveRole(gameId: string, role: RoleType): Promise<BeerGameEngine> {
+    const mutex = this.getRoomMutex(gameId);
+
+    return mutex.runExclusive(() => {
+      const game = this.getGame(gameId);
+      game.releaseRole(role);
+      this.repository.save(game);
+      return game;
+    });
+  }
+
+  /**
    * Resolves a player session from their token and loads the game state.
    */
   reconnectPlayer(token: string): { session: PlayerSession; game: BeerGameEngine } {

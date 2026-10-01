@@ -7,7 +7,7 @@ import { ResultsDashboard } from './components/Results/ResultsDashboard.js';
 import { RoleType, PeerSummary } from '../core/types.js';
 
 export function App() {
-  const { session, setSession, setGameId, setRole, clearSession } = useSession();
+  const { session, setSession, setGameId, setRole, leaveStation, clearSession } = useSession();
   const [roomError, setRoomError] = useState<string | null>(null);
   const [roomPeers, setRoomPeers] = useState<Record<RoleType, PeerSummary> | null>(null);
 
@@ -104,7 +104,7 @@ export function App() {
           error={socket.error}
           onSubmitOrder={socket.submitOrder}
           onSimulateRound={socket.simulateRound}
-          onLeaveRoom={clearSession}
+          onLeaveRoom={leaveStation}
           roundAdvancedNotice={socket.roundAdvancedNotice}
         />
       ) : (
@@ -123,8 +123,12 @@ export function App() {
           }}
           onSelectRole={setRole}
           onLeaveRoom={() => {
-            setRoomError(null);
-            clearSession();
+            if (session.role) {
+              leaveStation();
+            } else {
+              setRoomError(null);
+              clearSession();
+            }
           }}
           error={socket.error || roomError}
         />
