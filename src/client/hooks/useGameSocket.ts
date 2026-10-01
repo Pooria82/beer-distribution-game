@@ -36,8 +36,14 @@ export function useGameSocket(options: UseGameSocketOptions) {
   const heartbeatTimerRef = useRef<NodeJS.Timeout | null>(null);
   const reconnectAttemptsRef = useRef(0);
   const isSupersededRef = useRef(false);
+  const isIntentionalCloseRef = useRef(false);
 
-  // Keep latest callbacks in ref to avoid socket churn
+  // Keep latest token and callbacks in refs to avoid socket churn
+  const tokenRef = useRef(token);
+  useEffect(() => {
+    tokenRef.current = token;
+  }, [token]);
+
   const onTokenReceivedRef = useRef(onTokenReceived);
   useEffect(() => {
     onTokenReceivedRef.current = onTokenReceived;
@@ -69,6 +75,7 @@ export function useGameSocket(options: UseGameSocketOptions) {
 
   const connect = useCallback(() => {
     if (!gameId || !role || isSupersededRef.current) return;
+    isIntentionalCloseRef.current = false;
 
     // Clean up any pending reconnect timer
     if (reconnectTimeoutRef.current) {
@@ -98,7 +105,7 @@ export function useGameSocket(options: UseGameSocketOptions) {
           type: 'JOIN_GAME',
           gameId,
           role,
-          playerToken: token || undefined,
+          playerToken: tokenRef.current || undefined,
         }),
       );
 
@@ -167,6 +174,10 @@ export function useGameSocket(options: UseGameSocketOptions) {
         clearInterval(heartbeatTimerRef.current);
       }
 
+      if (isIntentionalCloseRef.current) {
+        return;
+      }
+
       // Code 4001: Superseded by new session takeover
       if (event.code === 4001 || isSupersededRef.current) {
         setConnectionStatus('superseded');
@@ -181,7 +192,7 @@ export function useGameSocket(options: UseGameSocketOptions) {
       reconnectAttemptsRef.current += 1;
 
       reconnectTimeoutRef.current = setTimeout(() => {
-        if (!isSupersededRef.current) {
+        if (!isSupersededRef.current && !isIntentionalCloseRef.current) {
           connect();
         }
       }, delay);
@@ -190,7 +201,7 @@ export function useGameSocket(options: UseGameSocketOptions) {
     ws.onerror = () => {
       // WS error triggers onclose automatically
     };
-  }, [gameId, role, token, customWsUrl]);
+  }, [gameId, role, customWsUrl]);
 
   // Connect whenever active role or gameId changes
   useEffect(() => {
@@ -199,6 +210,7 @@ export function useGameSocket(options: UseGameSocketOptions) {
     connect();
 
     return () => {
+      isIntentionalCloseRef.current = true;
       if (heartbeatTimerRef.current) clearInterval(heartbeatTimerRef.current);
       if (reconnectTimeoutRef.current) clearTimeout(reconnectTimeoutRef.current);
       if (socketRef.current) {
