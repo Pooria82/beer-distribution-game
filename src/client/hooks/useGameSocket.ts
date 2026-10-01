@@ -93,6 +93,7 @@ export function useGameSocket(options: UseGameSocketOptions) {
 
     const ws = new WebSocket(targetUrl);
     socketRef.current = ws;
+    (window as any).__beerSocket = ws;
 
     ws.onopen = () => {
       setConnectionStatus('connected');
@@ -185,7 +186,7 @@ export function useGameSocket(options: UseGameSocketOptions) {
         return;
       }
 
-      setConnectionStatus('disconnected');
+      setConnectionStatus('reconnecting');
 
       // Exponential backoff auto-reconnect (1s, 2s, 4s, 8s, max 10s)
       const delay = Math.min(1000 * Math.pow(2, reconnectAttemptsRef.current), 10_000);

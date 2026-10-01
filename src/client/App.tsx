@@ -22,10 +22,10 @@ export function App() {
     },
   });
 
-  // Verify and sync room state when in lobby (even before picking a role)
+  // Verify and sync room state when in lobby (before picking a role)
   useEffect(() => {
-    if (!session.gameId) {
-      setRoomPeers(null);
+    if (!session.gameId || session.role !== null) {
+      if (!session.gameId) setRoomPeers(null);
       return;
     }
 
@@ -34,8 +34,13 @@ export function App() {
       try {
         const res = await fetch(`/api/games/${encodeURIComponent(session.gameId!)}`);
         if (!res.ok) {
-          const data = (await res.json().catch(() => ({}))) as { message?: string };
-          throw new Error(data.message || 'Game room not found');
+          if (res.status === 404) {
+            if (isMounted) {
+              setRoomError('Game room not found');
+              clearSession();
+            }
+          }
+          return;
         }
         const data = (await res.json()) as {
           gameId: string;
@@ -72,12 +77,8 @@ export function App() {
           setRoomPeers(peers);
           setRoomError(null);
         }
-      } catch (err) {
-        if (isMounted) {
-          const errMsg = err instanceof Error ? err.message : 'Game room not found';
-          setRoomError(errMsg.includes('not found') ? 'Game room not found' : errMsg);
-          clearSession();
-        }
+      } catch {
+        // Transient network drops or offline states must NOT wipe the active session
       }
     };
 

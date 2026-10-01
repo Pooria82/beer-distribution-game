@@ -195,11 +195,7 @@ export function ControlRoomHeader({
         >
           <span
             className={`scada-led ${
-              connectionStatus === 'connected'
-                ? 'scada-led-nominal'
-                : connectionStatus === 'reconnecting'
-                  ? 'scada-led-warn'
-                  : 'scada-led-alarm'
+              connectionStatus === 'connected' ? 'scada-led-nominal' : 'scada-led-alarm'
             }`}
           />
           <span
@@ -208,11 +204,15 @@ export function ControlRoomHeader({
               fontFamily: 'var(--font-hud)',
               fontWeight: 700,
               letterSpacing: '0.05em',
-              color: connectionStatus === 'connected' ? 'var(--scada-green)' : 'var(--scada-amber)',
+              color: connectionStatus === 'connected' ? 'var(--scada-green)' : 'var(--scada-red)',
               textTransform: 'uppercase',
             }}
           >
-            {connectionStatus === 'connected' ? 'LINK 100% NOMINAL' : connectionStatus}
+            {connectionStatus === 'connected'
+              ? 'LINK 100% NOMINAL'
+              : connectionStatus === 'reconnecting'
+                ? 'RECONNECTING...'
+                : connectionStatus}
           </span>
         </div>
 
