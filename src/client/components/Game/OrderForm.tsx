@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { RoleState } from '../../../core/types.js';
+import { SocketConnectionStatus } from '../../hooks/useGameSocket.js';
 import {
   IconBot,
   IconHourglass,
@@ -11,6 +12,7 @@ import {
 export interface OrderFormProps {
   readonly currentRound: number;
   readonly myState: RoleState;
+  readonly connectionStatus?: SocketConnectionStatus | undefined;
   readonly onSubmitOrder: (order: number) => boolean | void;
   readonly onSimulateRound?: (() => void) | undefined;
 }
@@ -18,6 +20,7 @@ export interface OrderFormProps {
 export function OrderForm({
   currentRound,
   myState,
+  connectionStatus,
   onSubmitOrder,
   onSimulateRound,
 }: OrderFormProps) {
@@ -25,18 +28,21 @@ export function OrderForm({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
+  const isSuperseded = connectionStatus === 'superseded';
+  const isLocked = myState.hasSubmittedThisRound || isSuperseded;
+
   // Auto-focus input on mount and whenever currentRound changes
   useEffect(() => {
     setIsSubmitting(false);
-    if (!myState.hasSubmittedThisRound) {
+    if (!isLocked) {
       inputRef.current?.focus();
       inputRef.current?.select();
     }
-  }, [currentRound, myState.hasSubmittedThisRound]);
+  }, [currentRound, isLocked]);
 
   const handleSubmit = (e?: React.FormEvent) => {
     if (e) e.preventDefault();
-    if (isSubmitting || myState.hasSubmittedThisRound) return;
+    if (isSubmitting || isLocked) return;
 
     const parsed = parseInt(orderValue, 10);
     if (Number.isNaN(parsed)) {
@@ -58,6 +64,7 @@ export function OrderForm({
   };
 
   const adjustValue = (delta: number) => {
+    if (isLocked) return;
     const current = parseInt(orderValue, 10) || 0;
     const next = Math.max(0, current + delta);
     setOrderValue(next.toString());
@@ -65,11 +72,10 @@ export function OrderForm({
   };
 
   const setPreset = (val: number) => {
+    if (isLocked) return;
     setOrderValue(val.toString());
     inputRef.current?.focus();
   };
-
-  const isLocked = myState.hasSubmittedThisRound;
 
   return (
     <div className="scada-panel" style={{ width: '100%' }}>
@@ -82,11 +88,11 @@ export function OrderForm({
         <span
           className="scada-badge"
           style={{
-            color: isLocked ? 'var(--scada-green)' : 'var(--scada-amber)',
-            borderColor: isLocked ? 'rgba(0, 255, 157, 0.4)' : 'rgba(245, 158, 11, 0.4)',
+            color: isSuperseded ? 'var(--scada-red)' : isLocked ? 'var(--scada-green)' : 'var(--scada-amber)',
+            borderColor: isSuperseded ? 'rgba(239, 68, 68, 0.5)' : isLocked ? 'rgba(0, 255, 157, 0.4)' : 'rgba(245, 158, 11, 0.4)',
           }}
         >
-          {isLocked ? 'ORDER LOCKED' : 'TRANSMITTER ARMED'}
+          {isSuperseded ? 'SESSION SUPERSEDED' : isLocked ? 'ORDER LOCKED' : 'TRANSMITTER ARMED'}
         </span>
       </div>
 

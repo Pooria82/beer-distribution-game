@@ -132,6 +132,7 @@ export function GameDashboard({
             <OrderForm
               currentRound={currentRound}
               myState={myState}
+              connectionStatus={connectionStatus}
               onSubmitOrder={onSubmitOrder}
               onSimulateRound={onSimulateRound}
             />
