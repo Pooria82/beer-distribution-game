@@ -88,7 +88,11 @@ export function createHttpApp(options: HttpServerOptions): Express {
 
   if (fs.existsSync(distPath)) {
     app.use(express.static(distPath));
-    app.get('*', (_req: Request, res: Response) => {
+    app.get('*', (req: Request, res: Response) => {
+      if (req.path.startsWith('/api')) {
+        res.status(404).json({ error: 'Endpoint not found' });
+        return;
+      }
       res.sendFile(path.join(distPath, 'index.html'));
     });
   }
