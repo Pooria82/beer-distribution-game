@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { RoleType, PeerSummary } from '../../../core/types.js';
 import { RoomCreate } from './RoomCreate.js';
 import { RoleSelection } from './RoleSelection.js';
@@ -47,6 +47,30 @@ export function LobbyView({
     : currentRole
       ? 1
       : 0;
+
+  // Global Enter listener: When in a room, if user presses Enter on the page without focusing an input,
+  // occupy the first vacant station automatically!
+  useEffect(() => {
+    const handleLobbyEnter = (e: KeyboardEvent) => {
+      if (e.key === 'Enter') {
+        if (e.defaultPrevented) return;
+        const activeTag = document.activeElement?.tagName?.toLowerCase();
+        if (activeTag === 'input' || activeTag === 'textarea' || activeTag === 'button') return;
+
+        if (roomId && !currentRole) {
+          const roles: RoleType[] = ['retailer', 'wholesaler', 'distributor', 'factory'];
+          const firstVacant = roles.find((r) => !peers?.[r]?.isOccupied);
+          if (firstVacant) {
+            e.preventDefault();
+            onSelectRole(firstVacant);
+          }
+        }
+      }
+    };
+
+    window.addEventListener('keydown', handleLobbyEnter);
+    return () => window.removeEventListener('keydown', handleLobbyEnter);
+  }, [roomId, currentRole, peers, onSelectRole]);
 
   const s1Width = isSector1Open ? (roomId ? '320px' : '400px') : '44px';
   const s3Width = roomId ? (isSector3Open ? '350px' : '44px') : '';

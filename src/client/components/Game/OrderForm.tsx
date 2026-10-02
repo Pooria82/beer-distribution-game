@@ -42,6 +42,17 @@ export function OrderForm({
     }
   }, [currentRound, isLocked]);
 
+  // Re-focus input whenever window or tab regains focus
+  useEffect(() => {
+    const handleWindowFocus = () => {
+      if (!isLocked) {
+        inputRef.current?.focus();
+      }
+    };
+    window.addEventListener('focus', handleWindowFocus);
+    return () => window.removeEventListener('focus', handleWindowFocus);
+  }, [isLocked]);
+
   const handleSubmit = (e?: React.FormEvent) => {
     if (e) e.preventDefault();
     if (isSubmitting || isLocked) return;
@@ -64,6 +75,27 @@ export function OrderForm({
       handleSubmit();
     }
   };
+
+  // Global keydown listener: Enables pressing Enter anywhere on the page to submit the round
+  useEffect(() => {
+    const handleGlobalKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Enter') {
+        if (e.defaultPrevented) return;
+        if (isLocked || isSubmitting) return;
+
+        const activeTag = document.activeElement?.tagName?.toLowerCase();
+        if (activeTag === 'textarea') return;
+
+        e.preventDefault();
+        handleSubmit();
+      }
+    };
+
+    window.addEventListener('keydown', handleGlobalKeyDown);
+    return () => {
+      window.removeEventListener('keydown', handleGlobalKeyDown);
+    };
+  }, [orderValue, isSubmitting, isLocked, onSubmitOrder]);
 
   const adjustValue = (delta: number) => {
     if (isLocked) return;

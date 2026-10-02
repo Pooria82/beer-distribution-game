@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { IconCpu, IconDice, IconRadio, IconTerminal, IconChevronLeft } from '../Common/Icons.js';
 
 export interface RoomCreateProps {
@@ -17,6 +17,12 @@ export function RoomCreate({
   const [customRoomId, setCustomRoomId] = useState('');
   const [joinRoomId, setJoinRoomId] = useState('');
   const [error, setError] = useState<string | null>(null);
+  const customInputRef = useRef<HTMLInputElement>(null);
+
+  // Auto-focus the commission input when panel mounts
+  useEffect(() => {
+    customInputRef.current?.focus();
+  }, []);
 
   const generateRandomCode = () => {
     const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
@@ -26,10 +32,12 @@ export function RoomCreate({
     }
     setCustomRoomId(code);
     setError(null);
+    customInputRef.current?.focus();
   };
 
-  const handleCreate = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleCreate = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    if (isCreating) return;
     const roomId = customRoomId.trim().toUpperCase() || undefined;
 
     try {
@@ -52,8 +60,8 @@ export function RoomCreate({
     }
   };
 
-  const handleJoin = (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleJoin = (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
     const cleanId = joinRoomId.trim().toUpperCase();
     if (!cleanId) {
       setError('Please enter a valid authorization key');
@@ -62,6 +70,27 @@ export function RoomCreate({
     setError(null);
     onRoomJoined(cleanId);
   };
+
+  // Global Enter listener: When focus is anywhere on the page (not in another button/input)
+  useEffect(() => {
+    const handleGlobalEnter = (e: KeyboardEvent) => {
+      if (e.key === 'Enter') {
+        if (e.defaultPrevented) return;
+        const activeTag = document.activeElement?.tagName?.toLowerCase();
+        if (activeTag === 'input' || activeTag === 'button' || activeTag === 'textarea') return;
+
+        if (joinRoomId.trim()) {
+          e.preventDefault();
+          handleJoin();
+        } else {
+          e.preventDefault();
+          handleCreate();
+        }
+      }
+    };
+    window.addEventListener('keydown', handleGlobalEnter);
+    return () => window.removeEventListener('keydown', handleGlobalEnter);
+  }, [customRoomId, joinRoomId, isCreating]);
 
   return (
     <div className="scada-panel" style={{ width: '100%', height: '100%' }}>
@@ -124,11 +153,18 @@ export function RoomCreate({
 
           <div style={{ display: 'flex', gap: '0.5rem' }}>
             <input
+              ref={customInputRef}
               type="text"
               className="scada-input"
               placeholder="AUTO OR CUSTOM ID"
               value={customRoomId}
               onChange={(e) => setCustomRoomId(e.target.value.toUpperCase())}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  e.preventDefault();
+                  handleCreate();
+                }
+              }}
               maxLength={20}
               style={{ fontSize: '0.8rem', letterSpacing: '0.04em' }}
             />
@@ -176,6 +212,12 @@ export function RoomCreate({
               placeholder="ENTER BAY CODE"
               value={joinRoomId}
               onChange={(e) => setJoinRoomId(e.target.value.toUpperCase())}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  e.preventDefault();
+                  handleJoin();
+                }
+              }}
               maxLength={20}
               style={{ fontSize: '0.8rem', letterSpacing: '0.04em' }}
             />
