@@ -27,6 +27,7 @@ export interface PingMessage {
 
 export interface SimulateRoundMessage {
   readonly type: 'SIMULATE_ROUND';
+  readonly targetRound?: number | undefined;
 }
 
 export type ClientMessage =
@@ -136,7 +137,15 @@ export function parseClientMessage(raw: unknown): ClientMessage | null {
         return { type: 'PING' };
 
       case 'SIMULATE_ROUND':
-        return { type: 'SIMULATE_ROUND' };
+        return {
+          type: 'SIMULATE_ROUND',
+          targetRound:
+            typeof parsed.targetRound === 'number' &&
+            Number.isInteger(parsed.targetRound) &&
+            parsed.targetRound >= 1
+              ? parsed.targetRound
+              : undefined,
+        };
 
       default:
         return null;

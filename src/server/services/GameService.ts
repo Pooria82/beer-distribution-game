@@ -2,7 +2,7 @@ import { nanoid } from 'nanoid';
 import { BeerGameEngine, AdvanceResult } from '../../core/BeerGameEngine.js';
 import { RoleType } from '../../core/types.js';
 import { IGameRepository, PlayerSession } from '../ports/IGameRepository.js';
-import { GameNotFoundError, UnauthorizedPlayerError } from '../../core/errors.js';
+import { GameNotFoundError, UnauthorizedPlayerError, RoundAlreadySubmittedError } from '../../core/errors.js';
 
 export class AsyncMutex {
   private queue: Array<() => void> = [];
@@ -95,6 +95,7 @@ export class GameService {
     const mutex = this.getRoomMutex(gameId);
 
     return mutex.runExclusive(() => {
+      this.repository.deleteGame(gameId);
       const game = new BeerGameEngine(gameId);
       this.activeGames.set(gameId, game);
       this.repository.save(game);
@@ -123,10 +124,17 @@ export class GameService {
             `Session token belongs to room "${session.gameId}" and role "${session.role}", not "${role}" in room "${gameId}"`,
           );
         }
+
+        let started = false;
+        if (!game.getRoles()[role].getIsOccupied()) {
+          started = game.claimRole(role);
+          this.repository.save(game);
+        }
+
         return {
           playerToken: existingToken,
           game,
-          started: false,
+          started,
         };
       }
 
@@ -214,11 +222,23 @@ export class GameService {
   /**
    * Reviewer / Bot Helper: Auto-fills orders for remaining roles that have not submitted yet.
    */
-  async simulateRound(gameId: string, defaultOrder = 4): Promise<SubmitOrderResult> {
+  async simulateRound(
+    gameId: string,
+    defaultOrder = 4,
+    requestingRole?: RoleType,
+    targetRound?: number,
+  ): Promise<SubmitOrderResult> {
     const mutex = this.getRoomMutex(gameId);
 
     return mutex.runExclusive(() => {
       const game = this.getGame(gameId);
+
+      // If targetRound was specified and the round has already advanced, this is a duplicate/stale call
+      if (typeof targetRound === 'number' && game.getCurrentRound() !== targetRound) {
+        throw new RoundAlreadySubmittedError(
+          `Round ${targetRound} has already advanced to Round ${game.getCurrentRound()}`,
+        );
+      }
 
       if (game.getStatus() === 'waiting') {
         const ALL_ROLES: RoleType[] = ['retailer', 'wholesaler', 'distributor', 'factory'];
@@ -230,11 +250,27 @@ export class GameService {
       }
 
       const roles = game.getRoles();
+
+      // Guard: If requesting role has NOT placed an order in the current round,
+      // and we are already in progress, don't allow auto-completing next rounds without the player placing their order!
+      if (
+        requestingRole &&
+        game.getStatus() === 'in_progress' &&
+        !roles[requestingRole].getHasSubmittedThisRound()
+      ) {
+        throw new RoundAlreadySubmittedError(
+          `Role ${requestingRole} must place their own order before auto-completing remaining roles`,
+        );
+      }
+
       let lastResult: AdvanceResult = { roundAdvanced: false, gameCompleted: false };
 
       for (const [roleName, roleEntity] of Object.entries(roles)) {
         if (!roleEntity.getHasSubmittedThisRound()) {
           lastResult = game.submitOrder(roleName as RoleType, defaultOrder);
+          if (lastResult.roundAdvanced || lastResult.gameCompleted) {
+            break;
+          }
         }
       }
 

@@ -44,7 +44,11 @@ export async function startServer(config: ServerConfig = {}): Promise<Applicatio
   const gateway = new WebSocketGateway({
     server,
     gameService,
-    heartbeatIntervalMs: config.heartbeatIntervalMs,
+    heartbeatIntervalMs:
+      config.heartbeatIntervalMs ??
+      (process.env['HEARTBEAT_INTERVAL_MS']
+        ? parseInt(process.env['HEARTBEAT_INTERVAL_MS'], 10)
+        : undefined),
   });
 
   // Start listening

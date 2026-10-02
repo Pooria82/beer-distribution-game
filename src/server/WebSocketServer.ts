@@ -3,7 +3,7 @@ import type { Server as HttpServer } from 'node:http';
 import { GameService } from './services/GameService.js';
 import { RoomManager } from './RoomManager.js';
 import { parseClientMessage, ServerMessage, ErrorAlertMessage } from './protocol.js';
-import { DomainError } from '../core/errors.js';
+import { DomainError, RoundAlreadySubmittedError } from '../core/errors.js';
 
 export interface WebSocketGatewayOptions {
   readonly server?: HttpServer | undefined;
@@ -171,36 +171,51 @@ export class WebSocketGateway {
         }
 
         const room = this.roomManager.getRoom(mapping.gameId);
-        const { advanceResult, game } = await this.gameService.simulateRound(mapping.gameId);
+        try {
+          const { advanceResult, game } = await this.gameService.simulateRound(
+            mapping.gameId,
+            4,
+            mapping.role,
+            msg.targetRound,
+          );
 
-        if (advanceResult.roundAdvanced) {
-          if (advanceResult.gameCompleted) {
-            room?.broadcastMessage({
-              type: 'GAME_COMPLETED',
-              totalChainCost: game.getTotalChainCost(),
-            });
-          } else {
-            room?.broadcastMessage({
-              type: 'ROUND_ADVANCED',
-              round: game.getCurrentRound(),
-            });
+          if (advanceResult.roundAdvanced) {
+            if (advanceResult.gameCompleted) {
+              room?.broadcastMessage({
+                type: 'GAME_COMPLETED',
+                totalChainCost: game.getTotalChainCost(),
+              });
+            } else {
+              room?.broadcastMessage({
+                type: 'ROUND_ADVANCED',
+                round: game.getCurrentRound(),
+              });
+            }
           }
-        }
 
-        room?.broadcastSanitizedState(game.toSnapshot());
+          room?.broadcastSanitizedState(game.toSnapshot());
+        } catch (err) {
+          if (err instanceof RoundAlreadySubmittedError) {
+            console.log(`[WebSocketGateway] Suppressed duplicate SIMULATE_ROUND: ${err.message}`);
+            return;
+          }
+          throw err;
+        }
         break;
       }
     }
   }
 
-  private handleClientDisconnect(ws: TrackedWebSocket): void {
+  private async handleClientDisconnect(ws: TrackedWebSocket): Promise<void> {
     const disconnected = this.roomManager.handleDisconnect(ws);
     if (!disconnected) return;
 
+    console.log(`[WebSocketGateway] Client disconnected: room=${disconnected.gameId}, role=${disconnected.role}`);
+
     try {
-      const game = this.gameService.getGame(disconnected.gameId);
+      let game = this.gameService.getGame(disconnected.gameId);
       if (game.getStatus() === 'waiting') {
-        this.gameService.leaveRole(disconnected.gameId, disconnected.role).catch(() => {});
+        game = await this.gameService.leaveRole(disconnected.gameId, disconnected.role);
       }
       const room = this.roomManager.getRoom(disconnected.gameId);
       if (room && !room.isEmpty()) {
@@ -217,6 +232,7 @@ export class WebSocketGateway {
     for (const client of this.wss.clients) {
       const ws = client as TrackedWebSocket;
       if (ws.isAlive === false) {
+        console.log('[WebSocketGateway] Dead socket detected (isAlive === false). Forcibly terminating connection.');
         ws.terminate();
         continue;
       }
