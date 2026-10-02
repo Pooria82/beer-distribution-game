@@ -110,6 +110,9 @@ export function useSession() {
     sessionStorage.removeItem(`${STORAGE_PREFIX}active_role`);
 
     const url = new URL(window.location.href);
+    url.searchParams.delete('game');
+    url.searchParams.delete('room');
+    url.searchParams.delete('gameId');
     url.searchParams.delete('role');
     url.searchParams.delete('token');
     window.history.replaceState({}, '', url.toString());
@@ -122,17 +125,31 @@ export function useSession() {
   }, [session.gameId, session.role]);
 
   const clearSession = useCallback(() => {
+    // Purge active station token and active pointers
     if (session.gameId && session.role) {
       sessionStorage.removeItem(getStorageKey(session.gameId, session.role));
     }
     sessionStorage.removeItem(`${STORAGE_PREFIX}active_game`);
     sessionStorage.removeItem(`${STORAGE_PREFIX}active_role`);
 
+    // Clean all session-scoped beer_game storage keys
+    const keysToRemove: string[] = [];
+    for (let i = 0; i < sessionStorage.length; i++) {
+      const key = sessionStorage.key(i);
+      if (key && key.startsWith(STORAGE_PREFIX)) {
+        keysToRemove.push(key);
+      }
+    }
+    keysToRemove.forEach((key) => sessionStorage.removeItem(key));
+
     const url = new URL(window.location.href);
     url.searchParams.delete('game');
+    url.searchParams.delete('room');
+    url.searchParams.delete('gameId');
     url.searchParams.delete('role');
     url.searchParams.delete('token');
-    window.history.replaceState({}, '', url.toString());
+    const cleanUrl = url.pathname + (url.search ? url.search : '');
+    window.history.replaceState({}, '', cleanUrl);
 
     setSessionState({ gameId: null, role: null, token: null });
   }, [session.gameId, session.role]);

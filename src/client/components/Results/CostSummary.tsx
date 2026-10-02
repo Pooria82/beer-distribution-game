@@ -124,8 +124,9 @@ export function CostSummary({
                   key={meta.role}
                   style={{
                     padding: '0.65rem 0.85rem',
-                    background: isMe ? 'rgba(0, 240, 255, 0.05)' : 'var(--bg-panel-inset)',
-                    border: isMe ? `1px solid ${meta.color}` : '1px solid var(--border-panel)',
+                    background: isMe ? 'rgba(0, 240, 255, 0.08)' : 'var(--bg-panel-inset)',
+                    border: isMe ? '1px solid var(--scada-cyan)' : '1px solid var(--border-panel)',
+                    boxShadow: isMe ? '0 0 12px rgba(0, 240, 255, 0.22), inset 0 0 8px rgba(0, 240, 255, 0.05)' : undefined,
                     borderRadius: 'var(--radius-xs)',
                     display: 'flex',
                     flexDirection: 'column',
@@ -140,7 +141,19 @@ export function CostSummary({
                       </span>
                     </div>
                     {isMe && (
-                      <span className="scada-badge" style={{ fontSize: '0.6rem', padding: '0.05rem 0.35rem', color: 'var(--scada-cyan)' }}>
+                      <span
+                        className="scada-badge"
+                        style={{
+                          fontSize: '0.62rem',
+                          fontWeight: 800,
+                          padding: '0.08rem 0.45rem',
+                          color: 'var(--scada-cyan)',
+                          borderColor: 'rgba(0, 240, 255, 0.5)',
+                          background: 'rgba(0, 240, 255, 0.15)',
+                          boxShadow: '0 0 8px rgba(0, 240, 255, 0.3)',
+                          letterSpacing: '0.05em',
+                        }}
+                      >
                         YOU
                       </span>
                     )}

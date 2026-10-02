@@ -96,7 +96,11 @@ export function App() {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', width: '100%', backgroundColor: 'var(--bg-app)' }}>
       {isGameCompleted && socket.view ? (
-        <ResultsDashboard view={socket.view} onPlayAgain={clearSession} />
+        <ResultsDashboard
+          view={socket.view}
+          onPlayAgain={clearSession}
+          error={socket.error}
+        />
       ) : isGameActive && socket.view ? (
         <GameDashboard
           view={socket.view}

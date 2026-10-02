@@ -49,6 +49,11 @@ export function useGameSocket(options: UseGameSocketOptions) {
     onTokenReceivedRef.current = onTokenReceived;
   }, [onTokenReceived]);
 
+  const viewRef = useRef<PlayerView | null>(view);
+  useEffect(() => {
+    viewRef.current = view;
+  }, [view]);
+
   const send = useCallback((message: ClientMessage) => {
     if (socketRef.current?.readyState === WebSocket.OPEN) {
       socketRef.current.send(JSON.stringify(message));
@@ -65,8 +70,11 @@ export function useGameSocket(options: UseGameSocketOptions) {
     return send({ type: 'SUBMIT_ORDER', order });
   }, [send]);
 
-  const simulateRound = useCallback(() => {
-    return send({ type: 'SIMULATE_ROUND' });
+  const simulateRound = useCallback((targetRound?: number) => {
+    return send({
+      type: 'SIMULATE_ROUND',
+      targetRound: targetRound ?? viewRef.current?.currentRound,
+    });
   }, [send]);
 
   const clearError = useCallback(() => {
@@ -110,13 +118,13 @@ export function useGameSocket(options: UseGameSocketOptions) {
         }),
       );
 
-      // Start 20s heartbeat keepalive
+      // Start 30s heartbeat keepalive
       if (heartbeatTimerRef.current) clearInterval(heartbeatTimerRef.current);
       heartbeatTimerRef.current = setInterval(() => {
         if (ws.readyState === WebSocket.OPEN) {
           ws.send(JSON.stringify({ type: 'PING' }));
         }
-      }, 20_000);
+      }, 30_000);
     };
 
     ws.onmessage = (event) => {

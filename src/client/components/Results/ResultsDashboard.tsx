@@ -7,14 +7,16 @@ import { ControlRoomFooter } from '../Common/ControlRoomFooter.js';
 import {
   IconRefresh,
   IconCheck,
+  IconAlertTriangle,
 } from '../Common/Icons.js';
 
 export interface ResultsDashboardProps {
   readonly view: PlayerView;
   readonly onPlayAgain: () => void;
+  readonly error?: string | null | undefined;
 }
 
-export function ResultsDashboard({ view, onPlayAgain }: ResultsDashboardProps) {
+export function ResultsDashboard({ view, onPlayAgain, error }: ResultsDashboardProps) {
   const { totalChainCost, finalScores, myRole, myState, gameId } = view;
 
   return (
@@ -48,6 +50,26 @@ export function ResultsDashboard({ view, onPlayAgain }: ResultsDashboardProps) {
           gap: '0.85rem',
         }}
       >
+        {/* Error Alert Banner if an illegal action was attempted */}
+        {error && (
+          <div
+            className="hazard-stripes-danger animate-fade-in"
+            style={{
+              padding: '0.65rem 1rem',
+              borderRadius: 'var(--radius-xs)',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.6rem',
+              color: '#fecaca',
+              fontSize: '0.825rem',
+              fontFamily: 'var(--font-mono)',
+            }}
+          >
+            <IconAlertTriangle size={18} color="var(--scada-red)" />
+            <span>[CRITICAL TELEMETRY FAULT] {error}</span>
+          </div>
+        )}
+
         {/* Debrief Top Action Bar */}
         <div
           style={{
@@ -130,6 +152,32 @@ export function ResultsDashboard({ view, onPlayAgain }: ResultsDashboardProps) {
 
         {/* 3. Black Box 20-Round Flight Recorder Ledger */}
         <HistoryTable history={myState.history} />
+
+        {/* Tactical Return to Lobby Bar */}
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            padding: '1.5rem 0 1rem 0',
+          }}
+        >
+          <button
+            type="button"
+            onClick={onPlayAgain}
+            className="btn-scada btn-scada-primary"
+            style={{
+              padding: '0.85rem 2.25rem',
+              fontSize: '1rem',
+              fontWeight: 700,
+              letterSpacing: '0.08em',
+              boxShadow: '0 0 20px rgba(6, 182, 212, 0.35)',
+            }}
+          >
+            <IconRefresh size={18} />
+            <span>RETURN TO LOBBY // RE-COMMISSION</span>
+          </button>
+        </div>
       </main>
 
       {/* Bottom Industrial Status Ticker */}
