@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { RoleType, PeerSummary } from '../../../core/types.js';
 import { RoomCreate } from './RoomCreate.js';
 import { RoleSelection } from './RoleSelection.js';
@@ -7,6 +8,10 @@ import { ControlRoomFooter } from '../Common/ControlRoomFooter.js';
 import {
   IconCheck,
   IconAlertTriangle,
+  IconChevronRight,
+  IconChevronLeft,
+  IconTerminal,
+  IconZap,
 } from '../Common/Icons.js';
 
 export interface LobbyViewProps {
@@ -34,11 +39,20 @@ export function LobbyView({
   onClearError,
   error,
 }: LobbyViewProps) {
+  const [isSector1Open, setIsSector1Open] = useState(true);
+  const [isSector3Open, setIsSector3Open] = useState(true);
+
   const occupiedCount = peers
     ? Object.values(peers).filter((p) => p.isOccupied).length
     : currentRole
       ? 1
       : 0;
+
+  const s1Width = isSector1Open ? (roomId ? '320px' : '400px') : '44px';
+  const s3Width = roomId ? (isSector3Open ? '350px' : '44px') : '';
+  const gridColumns = roomId
+    ? `${s1Width} minmax(380px, 1fr) ${s3Width}`
+    : `${s1Width} minmax(380px, 1fr)`;
 
   return (
     <div
@@ -50,10 +64,11 @@ export function LobbyView({
         backgroundColor: 'var(--bg-app)',
       }}
     >
-      {/* Top SCADA Control Room Header */}
+      {/* Top SCADA Control Room Header with Dynamic Realtime Status */}
       <ControlRoomHeader
         roomId={roomId}
         currentRole={currentRole}
+        connectionStatus={error ? 'disconnected' : roomId ? 'lobby' : 'standby'}
         onLeave={roomId ? onLeaveRoom : undefined}
       />
 
@@ -126,14 +141,37 @@ export function LobbyView({
               <span
                 className={`scada-led ${occupiedCount === 4 ? 'scada-led-nominal' : 'scada-led-warn'}`}
               />
-              <span style={{ fontFamily: 'var(--font-hud)', fontSize: '0.95rem', fontWeight: 700, letterSpacing: '0.08em', color: 'var(--text-primary)' }}>
+              <span
+                style={{
+                  fontFamily: 'var(--font-hud)',
+                  fontSize: '0.95rem',
+                  fontWeight: 700,
+                  letterSpacing: '0.08em',
+                  color: 'var(--text-primary)',
+                }}
+              >
                 STATION READINESS: {occupiedCount} / 4 OPERATORS LINKED
               </span>
             </div>
 
-            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', fontSize: '0.75rem', fontFamily: 'var(--font-mono)' }}>
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '1rem',
+                fontSize: '0.75rem',
+                fontFamily: 'var(--font-mono)',
+              }}
+            >
               {occupiedCount === 4 ? (
-                <span style={{ color: 'var(--scada-green)', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                <span
+                  style={{
+                    color: 'var(--scada-green)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.35rem',
+                  }}
+                >
                   <IconCheck size={14} color="var(--scada-green)" />
                   <span>ALL STATIONS OCCUPIED • SYSTEM ENGAGED</span>
                 </span>
@@ -146,26 +184,69 @@ export function LobbyView({
           </div>
         )}
 
-        {/* Full-Width 3-Column Cockpit Sectors */}
+        {/* Full-Width Cockpit Sectors (Collapsible Sidebars on Sector 1 and Sector 3) */}
         <div
           style={{
             flex: 1,
             display: 'grid',
-            gridTemplateColumns: roomId ? '320px 1fr 340px' : '450px 1fr',
+            gridTemplateColumns: gridColumns,
             gap: '1rem',
             alignItems: 'stretch',
+            transition: 'grid-template-columns 200ms ease',
           }}
         >
-          {/* Sector 1: Session Management */}
-          <div style={{ display: 'flex', flexDirection: 'column' }}>
-            <RoomCreate
-              onRoomCreated={onRoomCreated}
-              onRoomJoined={onRoomJoined}
-            />
+          {/* Sector 1: Session Management (Collapsible Sidebar) */}
+          <div style={{ display: 'flex', flexDirection: 'column', minWidth: 0 }}>
+            {isSector1Open ? (
+              <RoomCreate
+                onRoomCreated={onRoomCreated}
+                onRoomJoined={onRoomJoined}
+                onToggleCollapse={() => setIsSector1Open(false)}
+              />
+            ) : (
+              <div
+                onClick={() => setIsSector1Open(true)}
+                className="scada-panel"
+                style={{
+                  width: '44px',
+                  height: '100%',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  padding: '0.75rem 0.25rem',
+                  cursor: 'pointer',
+                  userSelect: 'none',
+                  background: 'var(--bg-panel-inset)',
+                  border: '1px solid var(--border-panel)',
+                  transition: 'all 150ms ease',
+                }}
+                title="Expand Sector 1 (Session Commissioning)"
+              >
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem' }}>
+                  <IconChevronRight size={16} color="var(--scada-cyan)" />
+                  <IconTerminal size={15} color="var(--scada-cyan)" />
+                </div>
+                <div
+                  style={{
+                    writingMode: 'vertical-rl',
+                    transform: 'rotate(180deg)',
+                    fontFamily: 'var(--font-hud)',
+                    fontSize: '0.75rem',
+                    fontWeight: 700,
+                    letterSpacing: '0.12em',
+                    color: 'var(--text-secondary)',
+                    marginTop: '1.5rem',
+                    whiteSpace: 'nowrap',
+                  }}
+                >
+                  SECTOR-01 // COMMISSIONING
+                </div>
+              </div>
+            )}
           </div>
 
-          {/* Sector 2: Station Dispatch (Center) */}
-          <div style={{ display: 'flex', flexDirection: 'column' }}>
+          {/* Sector 2: Station Dispatch (Center Main Cockpit) */}
+          <div style={{ display: 'flex', flexDirection: 'column', minWidth: 0 }}>
             <RoleSelection
               currentRole={currentRole}
               peers={peers}
@@ -174,17 +255,67 @@ export function LobbyView({
             />
           </div>
 
-          {/* Sector 3: Reviewer 1-Click Multi-Tab Launcher (Right) */}
+          {/* Sector 3: Reviewer 1-Click Multi-Tab Launcher (Collapsible Sidebar) */}
           {roomId && (
-            <div style={{ display: 'flex', flexDirection: 'column' }}>
-              <ReviewerQuickStart roomId={roomId} />
+            <div style={{ display: 'flex', flexDirection: 'column', minWidth: 0 }}>
+              {isSector3Open ? (
+                <ReviewerQuickStart
+                  roomId={roomId}
+                  onToggleCollapse={() => setIsSector3Open(false)}
+                />
+              ) : (
+                <div
+                  onClick={() => setIsSector3Open(true)}
+                  className="scada-panel"
+                  style={{
+                    width: '44px',
+                    height: '100%',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    padding: '0.75rem 0.25rem',
+                    cursor: 'pointer',
+                    userSelect: 'none',
+                    background: 'var(--bg-panel-inset)',
+                    border: '1px solid var(--border-panel)',
+                    transition: 'all 150ms ease',
+                  }}
+                  title="Expand Sector 3 (Reviewer 1-Click Harness)"
+                >
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem' }}>
+                    <IconChevronLeft size={16} color="var(--scada-cyan)" />
+                    <IconZap size={15} color="var(--scada-cyan)" />
+                  </div>
+                  <div
+                    style={{
+                      writingMode: 'vertical-rl',
+                      transform: 'rotate(180deg)',
+                      fontFamily: 'var(--font-hud)',
+                      fontSize: '0.75rem',
+                      fontWeight: 700,
+                      letterSpacing: '0.12em',
+                      color: 'var(--text-secondary)',
+                      marginTop: '1.5rem',
+                      whiteSpace: 'nowrap',
+                    }}
+                  >
+                    SECTOR-03 // 4-BAY HARNESS
+                  </div>
+                </div>
+              )}
             </div>
           )}
         </div>
       </main>
 
-      {/* Bottom Industrial Status Ticker */}
-      <ControlRoomFooter />
+      {/* Bottom Industrial Status Ticker with Dynamic State */}
+      <ControlRoomFooter
+        roomId={roomId}
+        role={currentRole}
+        error={error}
+        status={error ? 'alarm' : roomId ? 'nominal' : 'standby'}
+        statusText={error ? 'SYS.FAULT' : roomId ? 'SYS.NOMINAL' : 'SYS.STANDBY'}
+      />
     </div>
   );
 }

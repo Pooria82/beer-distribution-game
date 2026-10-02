@@ -181,7 +181,13 @@ export function ResultsDashboard({ view, onPlayAgain, error }: ResultsDashboardP
       </main>
 
       {/* Bottom Industrial Status Ticker */}
-      <ControlRoomFooter />
+      <ControlRoomFooter
+        roomId={view.gameId}
+        role={view.myRole}
+        error={error}
+        status="nominal"
+        statusText="SIMULATION COMPLETED"
+      />
     </div>
   );
 }

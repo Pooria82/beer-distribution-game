@@ -129,7 +129,29 @@ export function GameDashboard({
       </main>
 
       {/* Bottom Industrial Status Ticker */}
-      <ControlRoomFooter />
+      <ControlRoomFooter
+        roomId={view.gameId}
+        role={myRole}
+        error={error}
+        status={
+          error
+            ? 'alarm'
+            : connectionStatus === 'connected'
+              ? 'nominal'
+              : connectionStatus === 'reconnecting'
+                ? 'degraded'
+                : 'alarm'
+        }
+        statusText={
+          error
+            ? 'SYS.FAULT'
+            : connectionStatus === 'connected'
+              ? 'SYS.NOMINAL'
+              : connectionStatus === 'reconnecting'
+                ? 'SYS.RECONNECTING'
+                : 'SYS.OFFLINE'
+        }
+      />
     </div>
   );
 }

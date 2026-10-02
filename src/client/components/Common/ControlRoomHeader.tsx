@@ -12,7 +12,7 @@ export interface ControlRoomHeaderProps {
   readonly currentRole?: RoleType | null | undefined;
   readonly currentRound?: number | undefined;
   readonly totalRounds?: number | undefined;
-  readonly connectionStatus?: SocketConnectionStatus | undefined;
+  readonly connectionStatus?: SocketConnectionStatus | 'standby' | 'lobby' | undefined;
   readonly onLeave?: (() => void) | undefined;
 }
 
@@ -21,9 +21,12 @@ export function ControlRoomHeader({
   currentRole,
   currentRound,
   totalRounds,
-  connectionStatus = 'connected',
+  connectionStatus,
   onLeave,
 }: ControlRoomHeaderProps) {
+  const effectiveStatus =
+    connectionStatus ?? (currentRole ? 'connected' : roomId ? 'lobby' : 'standby');
+
   // Live UTC Master Chronometer
   const [timeString, setTimeString] = useState<string>('');
 
@@ -195,7 +198,13 @@ export function ControlRoomHeader({
         >
           <span
             className={`scada-led ${
-              connectionStatus === 'connected' ? 'scada-led-nominal' : 'scada-led-alarm'
+              effectiveStatus === 'connected' || effectiveStatus === 'lobby'
+                ? 'scada-led-nominal'
+                : effectiveStatus === 'connecting' ||
+                    effectiveStatus === 'reconnecting' ||
+                    effectiveStatus === 'standby'
+                  ? 'scada-led-warn'
+                  : 'scada-led-alarm'
             }`}
           />
           <span
@@ -204,15 +213,32 @@ export function ControlRoomHeader({
               fontFamily: 'var(--font-hud)',
               fontWeight: 700,
               letterSpacing: '0.05em',
-              color: connectionStatus === 'connected' ? 'var(--scada-green)' : 'var(--scada-red)',
+              color:
+                effectiveStatus === 'connected'
+                  ? 'var(--scada-green)'
+                  : effectiveStatus === 'lobby'
+                    ? 'var(--scada-cyan)'
+                    : effectiveStatus === 'connecting' || effectiveStatus === 'reconnecting'
+                      ? 'var(--scada-amber)'
+                      : effectiveStatus === 'standby'
+                        ? 'var(--text-muted)'
+                        : 'var(--scada-red)',
               textTransform: 'uppercase',
             }}
           >
-            {connectionStatus === 'connected'
+            {effectiveStatus === 'connected'
               ? 'LINK 100% NOMINAL'
-              : connectionStatus === 'reconnecting'
-                ? 'RECONNECTING...'
-                : connectionStatus}
+              : effectiveStatus === 'lobby'
+                ? 'BAY COMMISSIONED'
+                : effectiveStatus === 'standby'
+                  ? 'STANDBY // NO BAY'
+                  : effectiveStatus === 'connecting'
+                    ? 'CONNECTING...'
+                    : effectiveStatus === 'reconnecting'
+                      ? 'RECONNECTING...'
+                      : effectiveStatus === 'superseded'
+                        ? 'LINK SUPERSEDED'
+                        : 'LINK DISCONNECTED'}
           </span>
         </div>
 

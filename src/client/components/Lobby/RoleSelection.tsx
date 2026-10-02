@@ -77,6 +77,10 @@ export function RoleSelection({
   onSelectRole,
   disabled = false,
 }: RoleSelectionProps) {
+  const occupiedCount = peers
+    ? Object.values(peers).filter((p) => p.isOccupied).length
+    : 0;
+
   return (
     <div className="scada-panel" style={{ width: '100%', height: '100%' }}>
       {/* Panel Header */}
@@ -85,8 +89,28 @@ export function RoleSelection({
           <IconCrosshair size={15} color="var(--scada-green)" />
           <span>SECTOR-02 // STATION DISPATCH & OPERATOR SLOTS</span>
         </div>
-        <span className="scada-badge" style={{ color: 'var(--scada-green)' }}>
-          4 STATIONS ACTIVE
+        <span
+          className="scada-badge"
+          style={{
+            color:
+              occupiedCount === 4
+                ? 'var(--scada-green)'
+                : occupiedCount > 0
+                  ? 'var(--scada-amber)'
+                  : 'var(--text-muted)',
+            borderColor:
+              occupiedCount === 4
+                ? 'rgba(0, 255, 157, 0.4)'
+                : occupiedCount > 0
+                  ? 'rgba(245, 158, 11, 0.4)'
+                  : 'var(--border-panel)',
+          }}
+        >
+          {occupiedCount === 4
+            ? '4/4 ALL OPERATORS LINKED'
+            : occupiedCount > 0
+              ? `${occupiedCount}/4 OPERATORS LINKED`
+              : '0/4 OPERATORS (STANDBY)'}
         </span>
       </div>
 

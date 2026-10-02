@@ -1,13 +1,19 @@
 import { useState } from 'react';
-import { IconCpu, IconDice, IconRadio, IconTerminal } from '../Common/Icons.js';
+import { IconCpu, IconDice, IconRadio, IconTerminal, IconChevronLeft } from '../Common/Icons.js';
 
 export interface RoomCreateProps {
   readonly onRoomCreated: (roomId: string) => void;
   readonly onRoomJoined: (roomId: string) => void;
   readonly isCreating?: boolean;
+  readonly onToggleCollapse?: () => void;
 }
 
-export function RoomCreate({ onRoomCreated, onRoomJoined, isCreating = false }: RoomCreateProps) {
+export function RoomCreate({
+  onRoomCreated,
+  onRoomJoined,
+  isCreating = false,
+  onToggleCollapse,
+}: RoomCreateProps) {
   const [customRoomId, setCustomRoomId] = useState('');
   const [joinRoomId, setJoinRoomId] = useState('');
   const [error, setError] = useState<string | null>(null);
@@ -60,17 +66,36 @@ export function RoomCreate({ onRoomCreated, onRoomJoined, isCreating = false }: 
   return (
     <div className="scada-panel" style={{ width: '100%', height: '100%' }}>
       {/* Panel Header */}
-      <div className="scada-panel-header">
+      <div className="scada-panel-header" style={{ justifyContent: 'space-between' }}>
         <div className="scada-panel-title">
           <IconTerminal size={15} color="var(--scada-cyan)" />
           <span>SECTOR-01 // SESSION COMMISSIONING</span>
         </div>
-        <span className="scada-badge" style={{ color: 'var(--scada-cyan)' }}>
-          BAY DISPATCH
-        </span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+          <span
+            className="scada-badge"
+            style={{
+              color: isCreating ? 'var(--scada-amber)' : 'var(--scada-cyan)',
+              borderColor: isCreating ? 'rgba(245, 158, 11, 0.4)' : 'rgba(0, 240, 255, 0.4)',
+            }}
+          >
+            {isCreating ? 'COMMISSIONING...' : 'BAY DISPATCH'}
+          </span>
+          {onToggleCollapse && (
+            <button
+              type="button"
+              onClick={onToggleCollapse}
+              className="btn-scada"
+              style={{ padding: '0.15rem 0.35rem', fontSize: '0.7rem' }}
+              title="Collapse Sector 1 Sidebar"
+            >
+              <IconChevronLeft size={13} color="var(--text-secondary)" />
+            </button>
+          )}
+        </div>
       </div>
 
-      <div className="scada-panel-body" style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+      <div className="scada-panel-body" style={{ display: 'flex', flexDirection: 'column', gap: '1.15rem' }}>
         <p style={{ color: 'var(--text-secondary)', fontSize: '0.8rem', lineHeight: 1.4 }}>
           Initialize an authoritative 4-station SCADA simulation room or connect to an active distributed node network.
         </p>
@@ -101,11 +126,11 @@ export function RoomCreate({ onRoomCreated, onRoomJoined, isCreating = false }: 
             <input
               type="text"
               className="scada-input"
-              placeholder="AUTO-GENERATED (OR TYPE CUSTOM)"
+              placeholder="AUTO OR CUSTOM ID"
               value={customRoomId}
               onChange={(e) => setCustomRoomId(e.target.value.toUpperCase())}
               maxLength={20}
-              style={{ fontSize: '0.875rem' }}
+              style={{ fontSize: '0.8rem', letterSpacing: '0.04em' }}
             />
             <button
               type="button"
@@ -148,11 +173,11 @@ export function RoomCreate({ onRoomCreated, onRoomJoined, isCreating = false }: 
             <input
               type="text"
               className="scada-input"
-              placeholder="ENTER EXISTING BAY CODE"
+              placeholder="ENTER BAY CODE"
               value={joinRoomId}
               onChange={(e) => setJoinRoomId(e.target.value.toUpperCase())}
               maxLength={20}
-              style={{ fontSize: '0.875rem' }}
+              style={{ fontSize: '0.8rem', letterSpacing: '0.04em' }}
             />
             <button
               type="submit"
