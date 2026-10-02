@@ -316,6 +316,36 @@ body {
   box-shadow: 0 0 20px rgba(245, 158, 11, 0.6);
 }
 
+/* Glowing Cyan Dispatch Action Button */
+.btn-scada-cyan {
+  background: linear-gradient(180deg, #0891b2 0%, #0e7490 100%);
+  border-color: #00f0ff;
+  color: #ffffff;
+  box-shadow: 0 0 16px rgba(0, 240, 255, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.35);
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
+}
+
+.btn-scada-cyan:hover:not(:disabled) {
+  background: linear-gradient(180deg, #06b6d4 0%, #0891b2 100%);
+  border-color: #a5f3fc;
+  box-shadow: 0 0 25px rgba(0, 240, 255, 0.75), inset 0 1px 0 rgba(255, 255, 255, 0.5);
+  transform: translateY(-1px);
+}
+
+/* Operational Success Action Button */
+.btn-scada-success {
+  background: linear-gradient(180deg, #059669 0%, #047857 100%);
+  border-color: #10b981;
+  color: #ffffff;
+  box-shadow: 0 0 16px rgba(16, 185, 129, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.35);
+}
+
+.btn-scada-success:hover:not(:disabled) {
+  background: linear-gradient(180deg, #10b981 0%, #059669 100%);
+  border-color: #34d399;
+  box-shadow: 0 0 25px rgba(16, 185, 129, 0.75);
+}
+
 /* SCADA Inputs */
 .scada-input {
   background: var(--bg-panel-inset);
