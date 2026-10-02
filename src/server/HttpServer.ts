@@ -72,7 +72,6 @@ export function createHttpApp(options: HttpServerOptions): Express {
             {
               isOccupied: r.isOccupied,
               ready: r.hasSubmittedThisRound,
-              lastOrderPlaced: r.isOccupied ? r.lastOrderPlaced : null,
             },
           ]),
         ),
