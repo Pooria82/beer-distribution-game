@@ -30,12 +30,23 @@ export interface SimulateRoundMessage {
   readonly targetRound?: number | undefined;
 }
 
+export interface WatchRoomMessage {
+  readonly type: 'WATCH_ROOM';
+  readonly gameId: string;
+}
+
+export interface RequestSyncMessage {
+  readonly type: 'REQUEST_SYNC';
+}
+
 export type ClientMessage =
   | JoinGameMessage
   | ReconnectMessage
   | SubmitOrderMessage
   | PingMessage
-  | SimulateRoundMessage;
+  | SimulateRoundMessage
+  | WatchRoomMessage
+  | RequestSyncMessage;
 
 // ==========================================
 // Server -> Client Message Contracts
@@ -45,6 +56,13 @@ export interface StateSyncMessage {
   readonly type: 'STATE_SYNC';
   readonly view: PlayerView;
   readonly playerToken: string;
+}
+
+export interface RoomStateMessage {
+  readonly type: 'ROOM_STATE';
+  readonly gameId: string;
+  readonly status: string;
+  readonly roles: Record<RoleType, { isOccupied: boolean; ready: boolean }>;
 }
 
 export interface ErrorAlertMessage {
@@ -79,6 +97,7 @@ export interface PongMessage {
 
 export type ServerMessage =
   | StateSyncMessage
+  | RoomStateMessage
   | ErrorAlertMessage
   | SupersededMessage
   | GameStartedMessage
@@ -146,6 +165,18 @@ export function parseClientMessage(raw: unknown): ClientMessage | null {
               ? parsed.targetRound
               : undefined,
         };
+
+      case 'WATCH_ROOM':
+        if (typeof parsed.gameId === 'string' && parsed.gameId.trim().length > 0) {
+          return {
+            type: 'WATCH_ROOM',
+            gameId: parsed.gameId.trim().toUpperCase(),
+          };
+        }
+        return null;
+
+      case 'REQUEST_SYNC':
+        return { type: 'REQUEST_SYNC' };
 
       default:
         return null;

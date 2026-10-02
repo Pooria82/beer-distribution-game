@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { RoleState } from '../../../core/types.js';
+import { RoleState, RoleType, PeerSummary } from '../../../core/types.js';
 import { SocketConnectionStatus } from '../../hooks/useGameSocket.js';
 import {
   IconBot,
@@ -15,6 +15,7 @@ export interface OrderFormProps {
   readonly connectionStatus?: SocketConnectionStatus | undefined;
   readonly onSubmitOrder: (order: number) => boolean | void;
   readonly onSimulateRound?: (() => void) | undefined;
+  readonly peers?: Readonly<Record<RoleType, PeerSummary>> | undefined;
 }
 
 export function OrderForm({
@@ -23,6 +24,7 @@ export function OrderForm({
   connectionStatus,
   onSubmitOrder,
   onSimulateRound,
+  peers,
 }: OrderFormProps) {
   const [orderValue, setOrderValue] = useState<string>('4');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -31,6 +33,12 @@ export function OrderForm({
 
   const isSuperseded = connectionStatus === 'superseded';
   const isLocked = myState.hasSubmittedThisRound || isSuperseded;
+
+  const lockedCount = peers
+    ? Object.values(peers).filter((p) => p.hasSubmittedThisRound).length
+    : myState.hasSubmittedThisRound
+      ? 1
+      : 0;
 
   // Auto-focus input on mount and whenever currentRound changes
   useEffect(() => {
@@ -251,7 +259,7 @@ export function OrderForm({
               <>
                 <IconCheck size={18} color="var(--scada-green)" />
                 <span style={{ color: 'var(--scada-green)' }}>
-                  ORDER TRANSMITTED ({myState.lastOrderPlaced} UNITS) • AWAITING PEER LOCKSTEP
+                  ORDER TRANSMITTED ({myState.lastOrderPlaced} UNITS) • {lockedCount} / 4 OPERATORS LOCKED
                 </span>
               </>
             ) : isSubmitting ? (
@@ -263,6 +271,18 @@ export function OrderForm({
               <>
                 <IconRadio size={18} />
                 <span>TRANSMIT ORDER // ROUND {currentRound}</span>
+                {lockedCount > 0 && (
+                  <span
+                    style={{
+                      fontSize: '0.75rem',
+                      color: 'var(--scada-amber)',
+                      fontFamily: 'var(--font-mono)',
+                      marginLeft: '0.4rem',
+                    }}
+                  >
+                    ({lockedCount}/4 READY)
+                  </span>
+                )}
                 <kbd style={{ marginLeft: '0.5rem' }}>↵ ENTER</kbd>
               </>
             )}
@@ -292,6 +312,9 @@ export function OrderForm({
               onClick={() => {
                 if (isSubmitting || isSimulating || !onSimulateRound) return;
                 setIsSimulating(true);
+                if (!isLocked) {
+                  handleSubmit();
+                }
                 onSimulateRound();
               }}
               disabled={isSubmitting || isSimulating}

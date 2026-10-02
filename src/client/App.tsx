@@ -5,6 +5,7 @@ import { LobbyView } from './components/Lobby/LobbyView.js';
 import { GameDashboard } from './components/Game/GameDashboard.js';
 import { ResultsDashboard } from './components/Results/ResultsDashboard.js';
 import { RoleType, PeerSummary } from '../core/types.js';
+import { tabBus } from './utils/channel.js';
 
 export function App() {
   const { session, setSession, setGameId, setRole, leaveStation, clearSession } = useSession();
@@ -21,6 +22,76 @@ export function App() {
       }
     },
   });
+
+  // Real-time synchronization of room state from WebSocket (WATCH_ROOM / ROOM_STATE)
+  useEffect(() => {
+    if (socket.roomState && socket.roomState.gameId === session.gameId) {
+      const r = socket.roomState.roles;
+      const peers: Record<RoleType, PeerSummary> = {
+        retailer: {
+          role: 'retailer',
+          isOccupied: r.retailer.isOccupied,
+          hasSubmittedThisRound: r.retailer.ready,
+          isConnected: r.retailer.isOccupied,
+        },
+        wholesaler: {
+          role: 'wholesaler',
+          isOccupied: r.wholesaler.isOccupied,
+          hasSubmittedThisRound: r.wholesaler.ready,
+          isConnected: r.wholesaler.isOccupied,
+        },
+        distributor: {
+          role: 'distributor',
+          isOccupied: r.distributor.isOccupied,
+          hasSubmittedThisRound: r.distributor.ready,
+          isConnected: r.distributor.isOccupied,
+        },
+        factory: {
+          role: 'factory',
+          isOccupied: r.factory.isOccupied,
+          hasSubmittedThisRound: r.factory.ready,
+          isConnected: r.factory.isOccupied,
+        },
+      };
+      setRoomPeers(peers);
+      setRoomError(null);
+    }
+  }, [socket.roomState, session.gameId]);
+
+  // Instant multi-tab synchronization via BroadcastChannel for role claims/releases
+  useEffect(() => {
+    const unsubscribe = tabBus.subscribe((event) => {
+      if (!session.gameId || event.gameId !== session.gameId) return;
+
+      if (event.type === 'ROLE_CLAIMED') {
+        setRoomPeers((prev) => {
+          if (!prev) return prev;
+          return {
+            ...prev,
+            [event.role]: {
+              ...prev[event.role],
+              isOccupied: true,
+              isConnected: true,
+            },
+          };
+        });
+      } else if (event.type === 'ROLE_RELEASED') {
+        setRoomPeers((prev) => {
+          if (!prev) return prev;
+          return {
+            ...prev,
+            [event.role]: {
+              ...prev[event.role],
+              isOccupied: false,
+              isConnected: false,
+            },
+          };
+        });
+      }
+    });
+
+    return unsubscribe;
+  }, [session.gameId]);
 
   // Verify and sync room state when in lobby (before picking a role)
   useEffect(() => {
@@ -84,9 +155,18 @@ export function App() {
 
     fetchRoom();
     const pollInterval = setInterval(fetchRoom, 2500);
+
+    const handleVisibility = () => {
+      if (document.visibilityState === 'visible') {
+        fetchRoom();
+      }
+    };
+    document.addEventListener('visibilitychange', handleVisibility);
+
     return () => {
       isMounted = false;
       clearInterval(pollInterval);
+      document.removeEventListener('visibilitychange', handleVisibility);
     };
   }, [session.gameId, clearSession]);
 
@@ -116,7 +196,7 @@ export function App() {
           roomId={session.gameId}
           currentRole={session.role}
           peers={socket.view?.peers || roomPeers || undefined}
-          gameStarted={socket.view?.status === 'in_progress'}
+          gameStarted={socket.view?.status === 'in_progress' || socket.roomState?.status === 'in_progress'}
           onRoomCreated={(id) => {
             setRoomError(null);
             setGameId(id);
@@ -129,10 +209,16 @@ export function App() {
             socket.clearError();
             setRoomError(null);
             setRole(role);
+            if (session.gameId) {
+              tabBus.broadcast({ type: 'ROLE_CLAIMED', gameId: session.gameId, role });
+            }
           }}
           onLeaveRoom={() => {
             socket.clearError();
             if (session.role) {
+              if (session.gameId) {
+                tabBus.broadcast({ type: 'ROLE_RELEASED', gameId: session.gameId, role: session.role });
+              }
               leaveStation();
             } else {
               setRoomError(null);

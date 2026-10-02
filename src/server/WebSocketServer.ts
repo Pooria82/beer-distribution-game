@@ -4,6 +4,7 @@ import { GameService } from './services/GameService.js';
 import { RoomManager } from './RoomManager.js';
 import { parseClientMessage, ServerMessage, ErrorAlertMessage } from './protocol.js';
 import { DomainError, RoundAlreadySubmittedError } from '../core/errors.js';
+import { StateSanitizer } from '../core/StateSanitizer.js';
 
 export interface WebSocketGatewayOptions {
   readonly server?: HttpServer | undefined;
@@ -93,6 +94,84 @@ export class WebSocketGateway {
         break;
       }
 
+      case 'WATCH_ROOM': {
+        this.roomManager.registerLobbyConnection(msg.gameId, ws);
+        try {
+          const game = this.gameService.getGame(msg.gameId);
+          const roles = game.getRoles();
+          this.sendMessage(ws, {
+            type: 'ROOM_STATE',
+            gameId: msg.gameId,
+            status: game.getStatus(),
+            roles: {
+              retailer: {
+                isOccupied: roles.retailer.getIsOccupied(),
+                ready: roles.retailer.getHasSubmittedThisRound(),
+              },
+              wholesaler: {
+                isOccupied: roles.wholesaler.getIsOccupied(),
+                ready: roles.wholesaler.getHasSubmittedThisRound(),
+              },
+              distributor: {
+                isOccupied: roles.distributor.getIsOccupied(),
+                ready: roles.distributor.getHasSubmittedThisRound(),
+              },
+              factory: {
+                isOccupied: roles.factory.getIsOccupied(),
+                ready: roles.factory.getHasSubmittedThisRound(),
+              },
+            },
+          });
+        } catch {
+          this.sendError(ws, 'GAME_NOT_FOUND', `Game room "${msg.gameId}" not found`);
+        }
+        break;
+      }
+
+      case 'REQUEST_SYNC': {
+        const mapping = this.roomManager.getMappingForSocket(ws);
+        if (mapping && mapping.gameId) {
+          try {
+            const game = this.gameService.getGame(mapping.gameId);
+            const room = this.roomManager.getRoom(mapping.gameId);
+            if (mapping.role) {
+              const token = room?.getTokenForRole(mapping.role) ?? '';
+              const connectedRoles = room?.getConnectedRoles() ?? new Set();
+              const view = StateSanitizer.sanitize(game.toSnapshot(), mapping.role, connectedRoles);
+              this.sendMessage(ws, { type: 'STATE_SYNC', view, playerToken: token });
+            } else {
+              const roles = game.getRoles();
+              this.sendMessage(ws, {
+                type: 'ROOM_STATE',
+                gameId: mapping.gameId,
+                status: game.getStatus(),
+                roles: {
+                  retailer: {
+                    isOccupied: roles.retailer.getIsOccupied(),
+                    ready: roles.retailer.getHasSubmittedThisRound(),
+                  },
+                  wholesaler: {
+                    isOccupied: roles.wholesaler.getIsOccupied(),
+                    ready: roles.wholesaler.getHasSubmittedThisRound(),
+                  },
+                  distributor: {
+                    isOccupied: roles.distributor.getIsOccupied(),
+                    ready: roles.distributor.getHasSubmittedThisRound(),
+                  },
+                  factory: {
+                    isOccupied: roles.factory.getIsOccupied(),
+                    ready: roles.factory.getHasSubmittedThisRound(),
+                  },
+                },
+              });
+            }
+          } catch {
+            // Room or game not initialized yet
+          }
+        }
+        break;
+      }
+
       case 'JOIN_GAME': {
         const result = await this.gameService.joinGame(msg.gameId, msg.role, msg.playerToken);
         const room = this.roomManager.registerConnection(
@@ -126,7 +205,7 @@ export class WebSocketGateway {
 
       case 'SUBMIT_ORDER': {
         const mapping = this.roomManager.getMappingForSocket(ws);
-        if (!mapping) {
+        if (!mapping || !mapping.role) {
           this.sendError(ws, 'UNAUTHORIZED_PLAYER', 'Socket is not attached to an active role');
           return;
         }
@@ -165,7 +244,7 @@ export class WebSocketGateway {
 
       case 'SIMULATE_ROUND': {
         const mapping = this.roomManager.getMappingForSocket(ws);
-        if (!mapping) {
+        if (!mapping || !mapping.role) {
           this.sendError(ws, 'UNAUTHORIZED_PLAYER', 'Socket is not attached to an active role');
           return;
         }
@@ -209,6 +288,15 @@ export class WebSocketGateway {
   private async handleClientDisconnect(ws: TrackedWebSocket): Promise<void> {
     const disconnected = this.roomManager.handleDisconnect(ws);
     if (!disconnected) return;
+
+    if (!disconnected.role) {
+      // Lobby watcher disconnected
+      const room = this.roomManager.getRoom(disconnected.gameId);
+      if (room && room.isEmpty()) {
+        this.roomManager.removeRoomIfEmpty(disconnected.gameId);
+      }
+      return;
+    }
 
     console.log(`[WebSocketGateway] Client disconnected: room=${disconnected.gameId}, role=${disconnected.role}`);
 

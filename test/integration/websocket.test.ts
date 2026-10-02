@@ -266,4 +266,58 @@ describe('Authoritative WebSocket & Express Integration', () => {
     factoryClient.close();
     takeoverClient.close();
   });
+
+  it('provides zero-polling real-time lobby sync via WATCH_ROOM and REQUEST_SYNC', async () => {
+    // 1. Create room
+    const createRes = await fetch(`${httpUrl}/api/games`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ gameId: 'REALTIME-LOBBY-TEST' }),
+    });
+    expect(createRes.status).toBe(201);
+    const { gameId } = (await createRes.json()) as { gameId: string };
+
+    // 2. Connect a lobby spectator tab
+    const lobbyClient = new VirtualClient(wsUrl);
+    await lobbyClient.waitForOpen();
+
+    lobbyClient.send({
+      type: 'WATCH_ROOM',
+      gameId,
+    });
+
+    // Lobby client immediately receives active ROOM_STATE
+    const initialLobbyState = await lobbyClient.waitForMessage<any>('ROOM_STATE');
+    expect(initialLobbyState.gameId).toBe(gameId);
+    expect(initialLobbyState.roles.retailer.isOccupied).toBe(false);
+
+    // 3. Connect a player tab and claim retailer
+    const playerClient = new VirtualClient(wsUrl);
+    await playerClient.waitForOpen();
+
+    playerClient.send({
+      type: 'JOIN_GAME',
+      gameId,
+      role: 'retailer',
+    });
+
+    const playerSync = await playerClient.waitForMessage<StateSyncMessage>('STATE_SYNC');
+    expect(playerSync.view.myRole).toBe('retailer');
+
+    // 4. Lobby client receives updated ROOM_STATE in 0ms without polling!
+    const updatedLobbyState = await lobbyClient.waitForMessage<any>(
+      (m: any) => m.type === 'ROOM_STATE' && m.roles.retailer.isOccupied === true,
+      'ROOM_STATE with retailer occupied',
+    );
+    expect(updatedLobbyState.roles.retailer.isOccupied).toBe(true);
+    expect(updatedLobbyState.roles.wholesaler.isOccupied).toBe(false);
+
+    // 5. Test REQUEST_SYNC
+    playerClient.send({ type: 'REQUEST_SYNC' });
+    const freshSync = await playerClient.waitForMessage<StateSyncMessage>('STATE_SYNC');
+    expect(freshSync.view.myRole).toBe('retailer');
+
+    lobbyClient.close();
+    playerClient.close();
+  });
 });

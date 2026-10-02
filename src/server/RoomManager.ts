@@ -12,6 +12,7 @@ export class GameRoom {
   readonly gameId: string;
   private readonly sockets = new Map<RoleType, ISocket>();
   private readonly tokens = new Map<RoleType, string>();
+  private readonly lobbySockets = new Set<ISocket>();
 
   constructor(gameId: string) {
     this.gameId = gameId;
@@ -39,6 +40,16 @@ export class GameRoom {
 
     this.sockets.set(role, socket);
     this.tokens.set(role, token);
+    // Remove from lobby sockets if it previously was watching
+    this.lobbySockets.delete(socket);
+  }
+
+  attachLobbySocket(socket: ISocket): void {
+    this.lobbySockets.add(socket);
+  }
+
+  detachLobbySocket(socket: ISocket): void {
+    this.lobbySockets.delete(socket);
   }
 
   detachSocket(socket: ISocket): RoleType | null {
@@ -73,6 +84,7 @@ export class GameRoom {
   /**
    * Broadcasts individualized, sanitized state views to all connected roles.
    * Fog of War is strictly enforced: each socket only receives its own numbers.
+   * Also broadcasts public room presence state to any connected lobby spectators.
    */
   broadcastSanitizedState(gameState: GameState): void {
     const connectedRoles = this.getConnectedRoles();
@@ -93,6 +105,43 @@ export class GameRoom {
         }
       }
     }
+
+    // Broadcast room presence to lobby watchers
+    if (this.lobbySockets.size > 0) {
+      const lobbyMsg = JSON.stringify({
+        type: 'ROOM_STATE',
+        gameId: this.gameId,
+        status: gameState.status,
+        roles: {
+          retailer: {
+            isOccupied: gameState.roles.retailer.isOccupied,
+            ready: gameState.roles.retailer.hasSubmittedThisRound,
+          },
+          wholesaler: {
+            isOccupied: gameState.roles.wholesaler.isOccupied,
+            ready: gameState.roles.wholesaler.hasSubmittedThisRound,
+          },
+          distributor: {
+            isOccupied: gameState.roles.distributor.isOccupied,
+            ready: gameState.roles.distributor.hasSubmittedThisRound,
+          },
+          factory: {
+            isOccupied: gameState.roles.factory.isOccupied,
+            ready: gameState.roles.factory.hasSubmittedThisRound,
+          },
+        },
+      });
+
+      for (const socket of this.lobbySockets) {
+        if (socket.readyState === 1) {
+          try {
+            socket.send(lobbyMsg);
+          } catch {
+            // ignore
+          }
+        }
+      }
+    }
   }
 
   broadcastMessage(message: ServerMessage): void {
@@ -103,6 +152,16 @@ export class GameRoom {
           socket.send(payload);
         } catch {
           // Ignore write error on dropped socket
+        }
+      }
+    }
+
+    for (const socket of this.lobbySockets) {
+      if (socket.readyState === 1) {
+        try {
+          socket.send(payload);
+        } catch {
+          // Ignore
         }
       }
     }
@@ -120,13 +179,13 @@ export class GameRoom {
   }
 
   isEmpty(): boolean {
-    return this.sockets.size === 0;
+    return this.sockets.size === 0 && this.lobbySockets.size === 0;
   }
 }
 
 export class RoomManager {
   private readonly rooms = new Map<string, GameRoom>();
-  private readonly socketToRoomMap = new Map<ISocket, { gameId: string; role: RoleType }>();
+  private readonly socketToRoomMap = new Map<ISocket, { gameId: string; role: RoleType | null }>();
 
   getOrCreateRoom(gameId: string): GameRoom {
     let room = this.rooms.get(gameId);
@@ -148,7 +207,14 @@ export class RoomManager {
     return room;
   }
 
-  handleDisconnect(socket: ISocket): { gameId: string; role: RoleType } | null {
+  registerLobbyConnection(gameId: string, socket: ISocket): GameRoom {
+    const room = this.getOrCreateRoom(gameId);
+    room.attachLobbySocket(socket);
+    this.socketToRoomMap.set(socket, { gameId, role: null });
+    return room;
+  }
+
+  handleDisconnect(socket: ISocket): { gameId: string; role: RoleType | null } | null {
     const mapping = this.socketToRoomMap.get(socket);
     if (!mapping) {
       return null;
@@ -157,13 +223,17 @@ export class RoomManager {
     this.socketToRoomMap.delete(socket);
     const room = this.rooms.get(mapping.gameId);
     if (room) {
-      room.detachSocket(socket);
+      if (mapping.role) {
+        room.detachSocket(socket);
+      } else {
+        room.detachLobbySocket(socket);
+      }
     }
 
     return mapping;
   }
 
-  getMappingForSocket(socket: ISocket): { gameId: string; role: RoleType } | undefined {
+  getMappingForSocket(socket: ISocket): { gameId: string; role: RoleType | null } | undefined {
     return this.socketToRoomMap.get(socket);
   }
 

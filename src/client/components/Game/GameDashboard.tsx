@@ -4,6 +4,7 @@ import { SupplyChainCanvas } from './SupplyChainCanvas.js';
 import { MetricCards } from './MetricCards.js';
 import { OrderForm } from './OrderForm.js';
 import { HistoryTable } from './HistoryTable.js';
+import { RoundReadinessBanner } from './RoundReadinessBanner.js';
 import { ControlRoomHeader } from '../Common/ControlRoomHeader.js';
 import { ControlRoomFooter } from '../Common/ControlRoomFooter.js';
 import {
@@ -53,7 +54,7 @@ export function GameDashboard({
       />
 
       {/* Main Full-Width Cockpit Workspace */}
-      <main className="scada-main-workspace">
+      <main className="scada-main-workspace" style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
         {/* Round Advanced Announcement Banner */}
         {roundAdvancedNotice && (
           <div
@@ -99,6 +100,13 @@ export function GameDashboard({
           </div>
         )}
 
+        {/* Real-Time Lockstep Round Readiness Banner */}
+        <RoundReadinessBanner
+          currentRound={currentRound}
+          myRole={myRole}
+          peers={peers}
+        />
+
         {/* Dense 3-Column Cockpit Grid */}
         <div className="scada-cockpit-grid">
           {/* Column 1: SCADA Supply Chain Pipeline (Left) */}
@@ -115,6 +123,7 @@ export function GameDashboard({
             <OrderForm
               currentRound={currentRound}
               myState={myState}
+              peers={peers}
               connectionStatus={connectionStatus}
               onSubmitOrder={onSubmitOrder}
               onSimulateRound={onSimulateRound}
