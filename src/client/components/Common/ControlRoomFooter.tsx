@@ -51,6 +51,7 @@ export function ControlRoomFooter() {
       <div
         style={{
           flex: 1,
+          minWidth: 0,
           overflow: 'hidden',
           position: 'relative',
           maskImage: 'linear-gradient(90deg, transparent, #000 5%, #000 95%, transparent)',

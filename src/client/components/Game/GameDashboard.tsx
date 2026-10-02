@@ -53,16 +53,7 @@ export function GameDashboard({
       />
 
       {/* Main Full-Width Cockpit Workspace */}
-      <main
-        style={{
-          flex: 1,
-          width: '100%',
-          padding: '0.85rem 1rem',
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '0.75rem',
-        }}
-      >
+      <main className="scada-main-workspace">
         {/* Round Advanced Announcement Banner */}
         {roundAdvancedNotice && (
           <div
@@ -109,22 +100,14 @@ export function GameDashboard({
         )}
 
         {/* Dense 3-Column Cockpit Grid */}
-        <div
-          style={{
-            flex: 1,
-            display: 'grid',
-            gridTemplateColumns: '350px 1fr 450px',
-            gap: '0.85rem',
-            alignItems: 'stretch',
-          }}
-        >
+        <div className="scada-cockpit-grid">
           {/* Column 1: SCADA Supply Chain Pipeline (Left) */}
-          <div style={{ display: 'flex', flexDirection: 'column' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', minWidth: 0 }}>
             <SupplyChainCanvas myRole={myRole} peers={peers} currentRound={currentRound} />
           </div>
 
           {/* Column 2: Core Telemetry Cluster & Order Actuator (Center) */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem', minWidth: 0 }}>
             {/* Telemetry Instruments Cluster */}
             <MetricCards myState={myState} intermediate={currentIntermediate} />
 
@@ -139,7 +122,7 @@ export function GameDashboard({
           </div>
 
           {/* Column 3: Black Box Telemetry Ledger (Right) */}
-          <div style={{ display: 'flex', flexDirection: 'column' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', minWidth: 0 }}>
             <HistoryTable history={myState.history} />
           </div>
         </div>

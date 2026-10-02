@@ -50,10 +50,10 @@ export function HistoryTable({ history }: HistoryTableProps) {
       <div className="scada-panel-header">
         <div className="scada-panel-title">
           <IconDatabase size={15} color="var(--scada-cyan)" />
-          <span>BLACK BOX // TELEMETRY RECORDER</span>
+          <span style={{ whiteSpace: 'nowrap', fontSize: '0.75rem' }}>BLACK BOX // RECORDER</span>
         </div>
-        <span className="scada-badge" style={{ color: 'var(--scada-green)' }}>
-          {history.length} ROUNDS LOGGED
+        <span className="scada-badge" style={{ color: 'var(--scada-green)', whiteSpace: 'nowrap', fontSize: '0.62rem', padding: '0.1rem 0.35rem' }}>
+          {history.length} LOGGED
         </span>
       </div>
 
@@ -61,8 +61,9 @@ export function HistoryTable({ history }: HistoryTableProps) {
         className="scada-panel-body"
         style={{
           padding: 0,
-          overflowX: 'hidden',
-          maxHeight: '440px',
+          overflowX: 'auto',
+          maxHeight: 'calc(100vh - 240px)',
+          minHeight: '200px',
           overflowY: 'auto',
           width: '100%',
         }}
@@ -70,9 +71,10 @@ export function HistoryTable({ history }: HistoryTableProps) {
         <table
           style={{
             width: '100%',
+            minWidth: '335px',
             tableLayout: 'fixed',
             borderCollapse: 'collapse',
-            fontSize: '0.72rem',
+            fontSize: '0.68rem',
             fontFamily: 'var(--font-mono)',
             textAlign: 'right',
           }}
@@ -84,22 +86,22 @@ export function HistoryTable({ history }: HistoryTableProps) {
                 color: 'var(--text-muted)',
                 fontFamily: 'var(--font-hud)',
                 letterSpacing: '0.04em',
-                fontSize: '0.68rem',
+                fontSize: '0.64rem',
                 borderBottom: '1px solid var(--border-panel)',
                 position: 'sticky',
                 top: 0,
                 zIndex: 10,
               }}
             >
-              <th style={{ width: '40px', padding: '0.5rem 0.3rem', textAlign: 'left' }} title="Round Number">RND</th>
-              <th style={{ width: '46px', padding: '0.5rem 0.3rem' }} title="Inbound Shipment Received">INFLOW</th>
-              <th style={{ width: '48px', padding: '0.5rem 0.3rem' }} title="Incoming Demand Order">DEMAND</th>
-              <th style={{ width: '44px', padding: '0.5rem 0.3rem' }} title="Units Shipped Downstream">SHIPPED</th>
-              <th style={{ width: '44px', padding: '0.5rem 0.3rem' }} title="Backlog Deficit">DEFICIT</th>
-              <th style={{ width: '46px', padding: '0.5rem 0.3rem', color: 'var(--scada-cyan)' }} title="Order Placed Upstream">ORDER</th>
-              <th style={{ width: '44px', padding: '0.5rem 0.3rem' }} title="Ending Inventory Stock">STOCK</th>
-              <th style={{ width: '56px', padding: '0.5rem 0.3rem' }} title="Cost This Round">RND $</th>
-              <th style={{ width: '56px', padding: '0.5rem 0.3rem' }} title="Cumulative Total Loss">TOTAL $</th>
+              <th style={{ width: '32px', padding: '0.4rem 0.2rem', textAlign: 'left' }} title="Round Number">RND</th>
+              <th style={{ width: '38px', padding: '0.4rem 0.2rem' }} title="Inbound Shipment Received">RECV</th>
+              <th style={{ width: '36px', padding: '0.4rem 0.2rem' }} title="Incoming Demand Order">DEM</th>
+              <th style={{ width: '36px', padding: '0.4rem 0.2rem' }} title="Units Shipped Downstream">SHIP</th>
+              <th style={{ width: '36px', padding: '0.4rem 0.2rem' }} title="Backlog Deficit">BACK</th>
+              <th style={{ width: '36px', padding: '0.4rem 0.2rem', color: 'var(--scada-cyan)' }} title="Order Placed Upstream">ORD</th>
+              <th style={{ width: '36px', padding: '0.4rem 0.2rem' }} title="Ending Inventory Stock">STK</th>
+              <th style={{ width: '42px', padding: '0.4rem 0.2rem' }} title="Cost This Round">COST</th>
+              <th style={{ width: '46px', padding: '0.4rem 0.2rem' }} title="Cumulative Total Loss">TOTAL</th>
             </tr>
           </thead>
           <tbody>

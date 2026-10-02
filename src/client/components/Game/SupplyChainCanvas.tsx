@@ -122,12 +122,12 @@ export function SupplyChainCanvas({ myRole, peers, currentRound }: SupplyChainCa
                   }}
                 >
                   {/* Row 1: Icon, Identification, and Readiness Status Pill */}
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.5rem' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.55rem', minWidth: 0 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.35rem' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', minWidth: 0, flexShrink: 1 }}>
                       <div
                         style={{
-                          width: '28px',
-                          height: '28px',
+                          width: '24px',
+                          height: '24px',
                           borderRadius: 'var(--radius-xs)',
                           background: 'var(--bg-panel)',
                           border: `1px solid ${node.color}55`,
@@ -141,13 +141,10 @@ export function SupplyChainCanvas({ myRole, peers, currentRound }: SupplyChainCa
                       </div>
 
                       <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', minWidth: 0 }}>
-                        <span style={{ fontSize: '0.62rem', fontFamily: 'var(--font-mono)', color: 'var(--text-muted)' }}>
-                          {node.callsign}
-                        </span>
                         <strong
                           style={{
                             fontFamily: 'var(--font-hud)',
-                            fontSize: '0.85rem',
+                            fontSize: '0.84rem',
                             fontWeight: 700,
                             letterSpacing: '0.04em',
                             color: node.color,
@@ -160,12 +157,13 @@ export function SupplyChainCanvas({ myRole, peers, currentRound }: SupplyChainCa
                           <span
                             className="scada-badge"
                             style={{
-                              fontSize: '0.58rem',
-                              padding: '0.05rem 0.3rem',
+                              fontSize: '0.55rem',
+                              padding: '0.05rem 0.25rem',
                               color: 'var(--scada-cyan)',
                               borderColor: 'rgba(0,240,255,0.4)',
                               background: 'rgba(0,240,255,0.1)',
                               whiteSpace: 'nowrap',
+                              flexShrink: 0,
                             }}
                           >
                             YOU
@@ -179,8 +177,8 @@ export function SupplyChainCanvas({ myRole, peers, currentRound }: SupplyChainCa
                       style={{
                         display: 'flex',
                         alignItems: 'center',
-                        gap: '0.35rem',
-                        padding: '0.15rem 0.45rem',
+                        gap: '0.3rem',
+                        padding: '0.12rem 0.4rem',
                         borderRadius: 'var(--radius-xs)',
                         background: isReady ? 'rgba(0, 255, 157, 0.1)' : 'rgba(245, 158, 11, 0.1)',
                         border: `1px solid ${isReady ? 'rgba(0, 255, 157, 0.3)' : 'rgba(245, 158, 11, 0.3)'}`,
@@ -193,32 +191,35 @@ export function SupplyChainCanvas({ myRole, peers, currentRound }: SupplyChainCa
                       />
                       <span
                         style={{
-                          fontSize: '0.65rem',
+                          fontSize: '0.62rem',
                           fontFamily: 'var(--font-mono)',
                           color: isReady ? 'var(--scada-green)' : 'var(--scada-amber)',
                           fontWeight: 700,
                           letterSpacing: '0.04em',
                         }}
                       >
-                        {isReady ? 'LOCKED' : 'TRANSMITTING'}
+                        {isReady ? 'LOCKED' : 'ARMED'}
                       </span>
                     </div>
                   </div>
 
-                  {/* Row 2: Operator Status & Station Type Callout */}
+                  {/* Row 2: Callsign, Operator Status & Station Type Callout */}
                   <div
                     style={{
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'space-between',
-                      paddingLeft: '34px',
-                      fontSize: '0.65rem',
+                      paddingLeft: '29px',
+                      fontSize: '0.63rem',
                       fontFamily: 'var(--font-mono)',
                       color: 'var(--text-muted)',
+                      gap: '0.35rem',
                     }}
                   >
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
-                      <span style={{ color: 'var(--text-muted)' }}>OPERATOR:</span>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', minWidth: 0, flexShrink: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      <span style={{ fontSize: '0.58rem', color: 'var(--text-muted)' }}>{node.callsign}</span>
+                      <span style={{ color: 'var(--border-panel-bright)' }}>•</span>
+                      <span style={{ color: 'var(--text-muted)' }}>OP:</span>
                       <span
                         style={{
                           color: peer?.isConnected
@@ -233,8 +234,8 @@ export function SupplyChainCanvas({ myRole, peers, currentRound }: SupplyChainCa
                       </span>
                     </div>
 
-                    <span style={{ fontSize: '0.62rem', color: isMe ? 'var(--scada-cyan)' : 'var(--text-muted)', opacity: 0.8 }}>
-                      {isMe ? 'LOCAL COCKPIT' : 'REMOTE LINK'}
+                    <span style={{ fontSize: '0.6rem', color: isMe ? 'var(--scada-cyan)' : 'var(--text-muted)', opacity: 0.8, flexShrink: 0, whiteSpace: 'nowrap' }}>
+                      {isMe ? 'LOCAL' : 'REMOTE'}
                     </span>
                   </div>
                 </div>

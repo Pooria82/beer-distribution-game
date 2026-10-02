@@ -26,6 +26,7 @@ export function OrderForm({
 }: OrderFormProps) {
   const [orderValue, setOrderValue] = useState<string>('4');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSimulating, setIsSimulating] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const isSuperseded = connectionStatus === 'superseded';
@@ -34,6 +35,7 @@ export function OrderForm({
   // Auto-focus input on mount and whenever currentRound changes
   useEffect(() => {
     setIsSubmitting(false);
+    setIsSimulating(false);
     if (!isLocked) {
       inputRef.current?.focus();
       inputRef.current?.select();
@@ -97,7 +99,7 @@ export function OrderForm({
       </div>
 
       <div className="scada-panel-body" style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
-        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+        <form noValidate onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
           {/* Main Numeric Actuator Controls */}
           <div style={{ display: 'flex', alignItems: 'stretch', gap: '0.5rem' }}>
             {/* Decrement Steppers */}
@@ -126,7 +128,6 @@ export function OrderForm({
                 ref={inputRef}
                 type="number"
                 min="0"
-                max="10000"
                 step="1"
                 disabled={isLocked || isSubmitting}
                 value={orderValue}
@@ -174,7 +175,7 @@ export function OrderForm({
           </div>
 
           {/* Quick Presets Bar */}
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.35rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.35rem' }}>
             <span style={{ fontSize: '0.68rem', fontFamily: 'var(--font-hud)', color: 'var(--text-muted)', letterSpacing: '0.05em' }}>
               BATCH PRESETS:
             </span>
@@ -243,6 +244,8 @@ export function OrderForm({
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'space-between',
+              flexWrap: 'wrap',
+              gap: '0.35rem',
               padding: '0.45rem 0.75rem',
               background: 'var(--bg-panel-inset)',
               border: '1px solid var(--border-panel)',
@@ -254,13 +257,22 @@ export function OrderForm({
             </span>
             <button
               type="button"
-              onClick={onSimulateRound}
-              disabled={isSubmitting}
+              onClick={() => {
+                if (isSubmitting || isSimulating || !onSimulateRound) return;
+                setIsSimulating(true);
+                onSimulateRound();
+              }}
+              disabled={isSubmitting || isSimulating}
               className="btn-scada"
-              style={{ padding: '0.25rem 0.6rem', fontSize: '0.72rem' }}
+              style={{
+                padding: '0.25rem 0.6rem',
+                fontSize: '0.72rem',
+                opacity: isSimulating ? 0.6 : 1,
+                cursor: isSimulating ? 'wait' : undefined,
+              }}
             >
               <IconBot size={12} color="var(--scada-cyan)" />
-              <span>AUTO-COMPLETE ROUND</span>
+              <span>{isSimulating ? 'COMPUTING ADVANCE...' : 'AUTO-COMPLETE ROUND'}</span>
             </button>
           </div>
         )}
