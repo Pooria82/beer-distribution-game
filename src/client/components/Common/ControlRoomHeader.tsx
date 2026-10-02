@@ -142,6 +142,7 @@ export function ControlRoomHeader({
             </span>
             <span
               className="metric-num"
+              data-metric="current-round"
               style={{
                 fontSize: '1.15rem',
                 fontWeight: 800,

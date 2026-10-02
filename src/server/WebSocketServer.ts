@@ -224,18 +224,16 @@ export class WebSocketGateway {
           msg.order,
         );
 
-        if (advanceResult.roundAdvanced) {
-          if (advanceResult.gameCompleted) {
-            room?.broadcastMessage({
-              type: 'GAME_COMPLETED',
-              totalChainCost: game.getTotalChainCost(),
-            });
-          } else {
-            room?.broadcastMessage({
-              type: 'ROUND_ADVANCED',
-              round: game.getCurrentRound(),
-            });
-          }
+        if (advanceResult.gameCompleted) {
+          room?.broadcastMessage({
+            type: 'GAME_COMPLETED',
+            totalChainCost: game.getTotalChainCost(),
+          });
+        } else if (advanceResult.roundAdvanced) {
+          room?.broadcastMessage({
+            type: 'ROUND_ADVANCED',
+            round: game.getCurrentRound(),
+          });
         }
 
         room?.broadcastSanitizedState(game.toSnapshot());
@@ -258,18 +256,16 @@ export class WebSocketGateway {
             msg.targetRound,
           );
 
-          if (advanceResult.roundAdvanced) {
-            if (advanceResult.gameCompleted) {
-              room?.broadcastMessage({
-                type: 'GAME_COMPLETED',
-                totalChainCost: game.getTotalChainCost(),
-              });
-            } else {
-              room?.broadcastMessage({
-                type: 'ROUND_ADVANCED',
-                round: game.getCurrentRound(),
-              });
-            }
+          if (advanceResult.gameCompleted) {
+            room?.broadcastMessage({
+              type: 'GAME_COMPLETED',
+              totalChainCost: game.getTotalChainCost(),
+            });
+          } else if (advanceResult.roundAdvanced) {
+            room?.broadcastMessage({
+              type: 'ROUND_ADVANCED',
+              round: game.getCurrentRound(),
+            });
           }
 
           room?.broadcastSanitizedState(game.toSnapshot());

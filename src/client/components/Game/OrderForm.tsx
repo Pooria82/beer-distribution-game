@@ -170,6 +170,7 @@ export function OrderForm({
                 min="0"
                 step="1"
                 disabled={isLocked || isSubmitting}
+                data-action="order-input"
                 value={orderValue}
                 onChange={(e) => setOrderValue(e.target.value)}
                 onKeyDown={handleKeyDown}
@@ -244,6 +245,7 @@ export function OrderForm({
           <button
             type="submit"
             disabled={isLocked || isSubmitting}
+            data-action="transmit-order"
             className={`btn-scada ${isLocked ? '' : 'btn-scada-warning'}`}
             style={{
               padding: '0.85rem',
@@ -309,6 +311,7 @@ export function OrderForm({
             </span>
             <button
               type="button"
+              data-action="auto-complete-round"
               onClick={() => {
                 if (isSubmitting || isSimulating || !onSimulateRound) return;
                 setIsSimulating(true);

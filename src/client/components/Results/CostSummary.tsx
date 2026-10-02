@@ -72,6 +72,7 @@ export function CostSummary({
             </div>
             <div
               className="metric-num"
+              data-metric="chain-cost"
               style={{
                 fontSize: '2.5rem',
                 fontWeight: 800,
@@ -96,7 +97,7 @@ export function CostSummary({
             }}
           >
             <div style={{ fontSize: '0.7rem', fontFamily: 'var(--font-hud)', color: 'var(--text-muted)' }}>YOUR STATION CONTRIBUTION</div>
-            <div className="metric-num" style={{ fontSize: '1.75rem', fontWeight: 800, color: 'var(--scada-cyan)' }}>
+            <div className="metric-num" data-metric="my-cost" style={{ fontSize: '1.75rem', fontWeight: 800, color: 'var(--scada-cyan)' }}>
               ${myTotalCost.toFixed(2)}
             </div>
             <div style={{ fontSize: '0.72rem', fontFamily: 'var(--font-mono)', color: 'var(--text-muted)' }}>

@@ -6,3 +6,4 @@ dist/
 *.sqlite-shm
 *.db
 *.log
+test-results/

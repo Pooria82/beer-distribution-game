@@ -51,6 +51,7 @@ export function MetricCards({ myState, intermediate }: MetricCardsProps) {
         <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.35rem', marginTop: '0.15rem' }}>
           <span
             className="metric-num"
+            data-metric="inventory"
             style={{
               fontSize: '1.6rem',
               fontWeight: 800,
@@ -88,6 +89,7 @@ export function MetricCards({ myState, intermediate }: MetricCardsProps) {
         <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.35rem', marginTop: '0.15rem' }}>
           <span
             className="metric-num"
+            data-metric="backlog"
             style={{
               fontSize: '1.6rem',
               fontWeight: 800,
@@ -119,6 +121,7 @@ export function MetricCards({ myState, intermediate }: MetricCardsProps) {
         <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.35rem', marginTop: '0.15rem' }}>
           <span
             className="metric-num"
+            data-metric="inflow"
             style={{
               fontSize: '1.6rem',
               fontWeight: 800,
@@ -150,6 +153,7 @@ export function MetricCards({ myState, intermediate }: MetricCardsProps) {
         <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.35rem', marginTop: '0.15rem' }}>
           <span
             className="metric-num"
+            data-metric="demand"
             style={{
               fontSize: '1.6rem',
               fontWeight: 800,
@@ -181,6 +185,7 @@ export function MetricCards({ myState, intermediate }: MetricCardsProps) {
         <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.35rem', marginTop: '0.15rem' }}>
           <span
             className="metric-num"
+            data-metric="transit"
             style={{
               fontSize: '1.6rem',
               fontWeight: 800,
@@ -212,6 +217,7 @@ export function MetricCards({ myState, intermediate }: MetricCardsProps) {
         <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.35rem', marginTop: '0.15rem' }}>
           <span
             className="metric-num"
+            data-metric="loss"
             style={{
               fontSize: '1.6rem',
               fontWeight: 800,

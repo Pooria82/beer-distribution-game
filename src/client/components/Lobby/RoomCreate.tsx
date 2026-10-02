@@ -183,6 +183,7 @@ export function RoomCreate({
           <button
             type="submit"
             disabled={isCreating}
+            data-action="commission-room"
             className="btn-scada btn-scada-primary"
             style={{ width: '100%', padding: '0.65rem', marginTop: '0.25rem' }}
           >

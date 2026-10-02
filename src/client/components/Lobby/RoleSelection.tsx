@@ -252,6 +252,7 @@ export function RoleSelection({
                 {/* Dispatch Button */}
                 <button
                   type="button"
+                  data-role={r.role}
                   onClick={() => onSelectRole(r.role)}
                   disabled={disabled}
                   className={`btn-scada ${isSelected ? 'btn-scada-primary' : isOccupied ? 'btn-scada-cyan' : ''}`}
