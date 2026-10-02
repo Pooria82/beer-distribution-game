@@ -107,31 +107,35 @@ export function GameDashboard({
           peers={peers}
         />
 
-        {/* Dense 3-Column Cockpit Grid */}
+        {/* Dense 3-Column Cockpit Grid with Responsive Priority Flow */}
         <div className="scada-cockpit-grid">
-          {/* Column 1: SCADA Supply Chain Pipeline (Left) */}
-          <div style={{ display: 'flex', flexDirection: 'column', minWidth: 0 }}>
+          {/* Column 1: SCADA Supply Chain Pipeline */}
+          <div className="scada-col-pipeline" style={{ display: 'flex', flexDirection: 'column', minWidth: 0 }}>
             <SupplyChainCanvas myRole={myRole} peers={peers} currentRound={currentRound} />
           </div>
 
-          {/* Column 2: Core Telemetry Cluster & Order Actuator (Center) */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem', minWidth: 0 }}>
-            {/* Telemetry Instruments Cluster */}
-            <MetricCards myState={myState} intermediate={currentIntermediate} />
-
+          {/* Column 2: Core Telemetry Cluster & Order Actuator */}
+          <div className="scada-col-order" style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem', minWidth: 0 }}>
             {/* Tactical Order Actuator Console */}
-            <OrderForm
-              currentRound={currentRound}
-              myState={myState}
-              peers={peers}
-              connectionStatus={connectionStatus}
-              onSubmitOrder={onSubmitOrder}
-              onSimulateRound={onSimulateRound}
-            />
+            <div className="scada-order-form-wrapper">
+              <OrderForm
+                currentRound={currentRound}
+                myState={myState}
+                peers={peers}
+                connectionStatus={connectionStatus}
+                onSubmitOrder={onSubmitOrder}
+                onSimulateRound={onSimulateRound}
+              />
+            </div>
+
+            {/* Telemetry Instruments Cluster */}
+            <div className="scada-metrics-wrapper">
+              <MetricCards myState={myState} intermediate={currentIntermediate} />
+            </div>
           </div>
 
-          {/* Column 3: Black Box Telemetry Ledger (Right) */}
-          <div style={{ display: 'flex', flexDirection: 'column', minWidth: 0 }}>
+          {/* Column 3: Black Box Telemetry Ledger */}
+          <div className="scada-col-history" style={{ display: 'flex', flexDirection: 'column', minWidth: 0 }}>
             <HistoryTable history={myState.history} />
           </div>
         </div>

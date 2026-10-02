@@ -141,14 +141,13 @@ export function OrderForm({
       <div className="scada-panel-body" style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
         <form noValidate onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
           {/* Main Numeric Actuator Controls */}
-          <div style={{ display: 'flex', alignItems: 'stretch', gap: '0.5rem' }}>
+          <div className="scada-actuator-row">
             {/* Decrement Steppers */}
             <button
               type="button"
               disabled={isLocked || isSubmitting}
               onClick={() => adjustValue(-5)}
-              className="btn-scada"
-              style={{ padding: '0.5rem 0.65rem', flexShrink: 0 }}
+              className="btn-scada scada-stepper-btn"
             >
               -5
             </button>
@@ -156,14 +155,13 @@ export function OrderForm({
               type="button"
               disabled={isLocked || isSubmitting}
               onClick={() => adjustValue(-1)}
-              className="btn-scada"
-              style={{ padding: '0.5rem 0.65rem', flexShrink: 0 }}
+              className="btn-scada scada-stepper-btn"
             >
               -1
             </button>
 
             {/* Central Big Number Input */}
-            <div style={{ flex: 1, position: 'relative' }}>
+            <div className="scada-actuator-input-container" style={{ flex: 1, position: 'relative' }}>
               <input
                 ref={inputRef}
                 type="number"
@@ -190,8 +188,7 @@ export function OrderForm({
               type="button"
               disabled={isLocked || isSubmitting}
               onClick={() => adjustValue(+1)}
-              className="btn-scada"
-              style={{ padding: '0.5rem 0.65rem', flexShrink: 0 }}
+              className="btn-scada scada-stepper-btn"
             >
               +1
             </button>
@@ -199,8 +196,7 @@ export function OrderForm({
               type="button"
               disabled={isLocked || isSubmitting}
               onClick={() => adjustValue(+5)}
-              className="btn-scada"
-              style={{ padding: '0.5rem 0.65rem', flexShrink: 0 }}
+              className="btn-scada scada-stepper-btn"
             >
               +5
             </button>
@@ -208,19 +204,18 @@ export function OrderForm({
               type="button"
               disabled={isLocked || isSubmitting}
               onClick={() => adjustValue(+10)}
-              className="btn-scada"
-              style={{ padding: '0.5rem 0.65rem', flexShrink: 0 }}
+              className="btn-scada scada-stepper-btn"
             >
               +10
             </button>
           </div>
 
           {/* Quick Presets Bar */}
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.35rem' }}>
+          <div className="scada-presets-container">
             <span style={{ fontSize: '0.68rem', fontFamily: 'var(--font-hud)', color: 'var(--text-muted)', letterSpacing: '0.05em' }}>
               BATCH PRESETS:
             </span>
-            <div style={{ display: 'flex', gap: '0.35rem' }}>
+            <div className="scada-presets-pills">
               {[0, 4, 8, 12, 16, 20].map((val) => (
                 <button
                   key={val}
@@ -230,7 +225,7 @@ export function OrderForm({
                   className="btn-scada"
                   style={{
                     padding: '0.2rem 0.5rem',
-                    fontSize: '0.72rem',
+                    fontSize: '0.75rem',
                     fontFamily: 'var(--font-mono)',
                     borderColor: orderValue === val.toString() ? 'var(--scada-cyan)' : undefined,
                   }}
@@ -246,7 +241,7 @@ export function OrderForm({
             type="submit"
             disabled={isLocked || isSubmitting}
             data-action="transmit-order"
-            className={`btn-scada ${isLocked ? '' : 'btn-scada-warning'}`}
+            className={`btn-scada scada-order-submit-btn ${isLocked ? '' : 'btn-scada-warning'}`}
             style={{
               padding: '0.85rem',
               fontSize: '1.05rem',

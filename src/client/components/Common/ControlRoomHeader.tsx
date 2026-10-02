@@ -43,27 +43,13 @@ export function ControlRoomHeader({
   }, []);
 
   return (
-    <header
-      style={{
-        width: '100%',
-        backgroundColor: 'var(--bg-panel-inset)',
-        borderBottom: '2px solid var(--border-panel)',
-        padding: '0.4rem 1.25rem',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        flexWrap: 'wrap',
-        gap: '0.75rem',
-        userSelect: 'none',
-        zIndex: 50,
-      }}
-    >
+    <header className="scada-header">
       {/* Left: Facility Branding & SCADA ID */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
         <div
           style={{
-            width: '34px',
-            height: '34px',
+            width: '32px',
+            height: '32px',
             borderRadius: 'var(--radius-xs)',
             background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)',
             border: '1px solid var(--border-panel-bright)',
@@ -72,27 +58,29 @@ export function ControlRoomHeader({
             justifyContent: 'center',
             color: 'var(--scada-cyan)',
             boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.1)',
+            flexShrink: 0,
           }}
         >
-          <IconBeer size={20} color="var(--scada-cyan)" />
+          <IconBeer size={18} color="var(--scada-cyan)" />
         </div>
 
         <div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
             <span
               style={{
                 fontFamily: 'var(--font-hud)',
-                fontSize: '1.05rem',
+                fontSize: '1rem',
                 fontWeight: 700,
-                letterSpacing: '0.12em',
+                letterSpacing: '0.1em',
                 color: '#ffffff',
                 textTransform: 'uppercase',
+                whiteSpace: 'nowrap',
               }}
             >
               SCADA CONTROL ROOM
             </span>
             <span
-              className="scada-badge"
+              className="scada-header-proto-badge scada-badge"
               style={{
                 fontSize: '0.65rem',
                 padding: '0.1rem 0.4rem',
@@ -101,19 +89,20 @@ export function ControlRoomHeader({
                 background: 'rgba(0, 240, 255, 0.08)',
               }}
             >
-              MIT BEER PROTOCOL v2.4
+              MIT v2.4
             </span>
           </div>
 
           <div
+            className="scada-header-sublabel"
             style={{
-              fontSize: '0.7rem',
+              fontSize: '0.68rem',
               fontFamily: 'var(--font-mono)',
               color: 'var(--text-muted)',
               display: 'flex',
               alignItems: 'center',
-              gap: '0.5rem',
-              marginTop: '0.1rem',
+              gap: '0.45rem',
+              marginTop: '0.05rem',
             }}
           >
             <span>FACILITY // LEMMA-EVAL</span>
@@ -124,58 +113,60 @@ export function ControlRoomHeader({
       </div>
 
       {/* Center: Live Chronometer & Round Status */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
         {currentRound !== undefined && totalRounds !== undefined && (
           <div
             style={{
               display: 'flex',
               alignItems: 'center',
-              gap: '0.5rem',
+              gap: '0.45rem',
               background: 'var(--bg-panel)',
               border: '1px solid var(--border-panel-bright)',
-              padding: '0.25rem 0.75rem',
+              padding: '0.2rem 0.65rem',
               borderRadius: 'var(--radius-xs)',
+              whiteSpace: 'nowrap',
             }}
           >
-            <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontFamily: 'var(--font-hud)', letterSpacing: '0.08em' }}>
-              ROUND CADENCE:
+            <span style={{ fontSize: '0.68rem', color: 'var(--text-muted)', fontFamily: 'var(--font-hud)', letterSpacing: '0.08em' }}>
+              ROUND:
             </span>
             <span
               className="metric-num"
               data-metric="current-round"
               style={{
-                fontSize: '1.15rem',
+                fontSize: '1.05rem',
                 fontWeight: 800,
                 color: 'var(--scada-amber)',
               }}
             >
               {String(currentRound).padStart(2, '0')}{' '}
-              <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>/ {totalRounds}</span>
+              <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>/ {totalRounds}</span>
             </span>
           </div>
         )}
 
-        {/* Master Clock */}
+        {/* Master Clock (Hidden on screens < 640px) */}
         <div
+          className="scada-header-clock"
           style={{
             display: 'flex',
             alignItems: 'center',
             gap: '0.45rem',
             background: 'var(--bg-panel)',
             border: '1px solid var(--border-panel)',
-            padding: '0.25rem 0.65rem',
+            padding: '0.2rem 0.55rem',
             borderRadius: 'var(--radius-xs)',
           }}
         >
-          <IconClock size={14} color="var(--scada-cyan)" />
-          <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontFamily: 'var(--font-hud)' }}>SYS.UTC</span>
+          <IconClock size={13} color="var(--scada-cyan)" />
+          <span style={{ fontSize: '0.68rem', color: 'var(--text-muted)', fontFamily: 'var(--font-hud)' }}>UTC</span>
           <span
             className="metric-num"
             style={{
-              fontSize: '0.85rem',
+              fontSize: '0.8rem',
               fontWeight: 700,
               color: 'var(--scada-cyan)',
-              minWidth: '78px',
+              minWidth: '72px',
             }}
           >
             {timeString || '00:00:00.0'}
@@ -184,14 +175,14 @@ export function ControlRoomHeader({
       </div>
 
       {/* Right: Telemetry Link & Role Identity */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
         {/* Connection LED */}
         <div
           style={{
             display: 'flex',
             alignItems: 'center',
-            gap: '0.4rem',
-            padding: '0.25rem 0.6rem',
+            gap: '0.35rem',
+            padding: '0.25rem 0.55rem',
             background: 'var(--bg-panel)',
             border: '1px solid var(--border-panel)',
             borderRadius: 'var(--radius-xs)',
@@ -209,8 +200,9 @@ export function ControlRoomHeader({
             }`}
           />
           <span
+            className="scada-header-status-label"
             style={{
-              fontSize: '0.72rem',
+              fontSize: '0.7rem',
               fontFamily: 'var(--font-hud)',
               fontWeight: 700,
               letterSpacing: '0.05em',
@@ -228,18 +220,18 @@ export function ControlRoomHeader({
             }}
           >
             {effectiveStatus === 'connected'
-              ? 'LINK 100% NOMINAL'
+              ? 'NOMINAL'
               : effectiveStatus === 'lobby'
-                ? 'BAY COMMISSIONED'
+                ? 'COMMISSIONED'
                 : effectiveStatus === 'standby'
-                  ? 'STANDBY // NO BAY'
+                  ? 'STANDBY'
                   : effectiveStatus === 'connecting'
-                    ? 'CONNECTING...'
+                    ? 'CONNECTING'
                     : effectiveStatus === 'reconnecting'
-                      ? 'RECONNECTING...'
+                      ? 'RECONNECTING'
                       : effectiveStatus === 'superseded'
-                        ? 'LINK SUPERSEDED'
-                        : 'LINK DISCONNECTED'}
+                        ? 'SUPERSEDED'
+                        : 'DISCONNECTED'}
           </span>
         </div>
 
@@ -249,18 +241,18 @@ export function ControlRoomHeader({
             style={{
               display: 'flex',
               alignItems: 'center',
-              gap: '0.35rem',
-              padding: '0.25rem 0.6rem',
+              gap: '0.3rem',
+              padding: '0.2rem 0.5rem',
               background: 'var(--bg-panel)',
               border: '1px solid var(--border-panel-bright)',
               borderRadius: 'var(--radius-xs)',
             }}
           >
-            <span style={{ fontSize: '0.68rem', color: 'var(--text-muted)', fontFamily: 'var(--font-hud)' }}>BAY:</span>
+            <span style={{ fontSize: '0.65rem', color: 'var(--text-muted)', fontFamily: 'var(--font-hud)' }}>BAY:</span>
             <span
               className="metric-num"
               style={{
-                fontSize: '0.825rem',
+                fontSize: '0.78rem',
                 fontWeight: 700,
                 color: 'var(--text-primary)',
                 letterSpacing: '0.05em',
@@ -275,9 +267,9 @@ export function ControlRoomHeader({
         {currentRole && (
           <span
             className={`scada-badge scada-badge-${currentRole}`}
-            style={{ fontSize: '0.8rem', padding: '0.25rem 0.65rem' }}
+            style={{ fontSize: '0.75rem', padding: '0.2rem 0.55rem' }}
           >
-            STATION // {currentRole}
+            {currentRole.toUpperCase()}
           </span>
         )}
 
@@ -288,16 +280,17 @@ export function ControlRoomHeader({
             onClick={onLeave}
             className="btn-scada"
             style={{
-              padding: '0.35rem 0.65rem',
-              fontSize: '0.75rem',
+              padding: '0.3rem 0.55rem',
+              fontSize: '0.72rem',
               background: 'rgba(255, 51, 102, 0.1)',
               borderColor: 'rgba(255, 51, 102, 0.35)',
               color: '#fca5a5',
+              minHeight: '34px',
             }}
             title="Disconnect Station & Return to Terminal Lobby"
           >
-            <IconLogOut size={13} color="#fca5a5" />
-            <span>DISENGAGE</span>
+            <IconLogOut size={12} color="#fca5a5" />
+            <span>EXIT</span>
           </button>
         )}
       </div>

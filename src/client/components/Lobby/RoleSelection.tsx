@@ -119,13 +119,7 @@ export function RoleSelection({
           Select your operational station. Multi-tab evaluation allows 4 simultaneous browser tabs to occupy distinct nodes.
         </p>
 
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
-            gap: '0.75rem',
-          }}
-        >
+        <div className="scada-role-grid">
           {ROLES.map((r) => {
             const isSelected = currentRole === r.role;
             const peer = peers?.[r.role];

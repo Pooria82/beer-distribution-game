@@ -111,7 +111,7 @@ export function BullwhipChart({ history, myRole }: BullwhipChartProps) {
         </div>
 
         {/* Telemetry Stats Strip */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}>
+        <div className="scada-chart-stats">
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', fontSize: '0.72rem', fontFamily: 'var(--font-mono)' }}>
             <span style={{ color: 'var(--text-muted)' }}>PEAK:</span>
             <strong style={{ color: 'var(--scada-cyan)' }}>{peakOrder}u</strong>
@@ -169,6 +169,7 @@ export function BullwhipChart({ history, myRole }: BullwhipChartProps) {
           <svg
             ref={svgRef}
             viewBox={`0 0 ${chartWidth} ${chartHeight}`}
+            onPointerDown={handlePointerMove}
             onPointerMove={handlePointerMove}
             onPointerLeave={handlePointerLeave}
             onMouseMove={handlePointerMove}

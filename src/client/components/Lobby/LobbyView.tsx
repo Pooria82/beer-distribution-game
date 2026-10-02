@@ -41,6 +41,26 @@ export function LobbyView({
 }: LobbyViewProps) {
   const [isSector1Open, setIsSector1Open] = useState(true);
   const [isSector3Open, setIsSector3Open] = useState(true);
+  const [mobileTab, setMobileTab] = useState<'stations' | 'room' | 'reviewer'>('stations');
+  const [isDesktop, setIsDesktop] = useState(() =>
+    typeof window !== 'undefined' ? window.innerWidth >= 1024 : true
+  );
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsDesktop(window.innerWidth >= 1024);
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  useEffect(() => {
+    if (!roomId) {
+      setMobileTab('room');
+    } else {
+      setMobileTab('stations');
+    }
+  }, [roomId]);
 
   const occupiedCount = peers
     ? Object.values(peers).filter((p) => p.isOccupied).length
@@ -208,88 +228,74 @@ export function LobbyView({
           </div>
         )}
 
-        {/* Full-Width Cockpit Sectors (Collapsible Sidebars on Sector 1 and Sector 3) */}
-        <div
-          style={{
-            flex: 1,
-            display: 'grid',
-            gridTemplateColumns: gridColumns,
-            gap: '1rem',
-            alignItems: 'stretch',
-            transition: 'grid-template-columns 200ms ease',
-          }}
-        >
-          {/* Sector 1: Session Management (Collapsible Sidebar) */}
-          <div style={{ display: 'flex', flexDirection: 'column', minWidth: 0 }}>
-            {isSector1Open ? (
+        {/* Mobile/Tablet Segmented Sector Selector */}
+        {!isDesktop && roomId && (
+          <div className="scada-lobby-mobile-tabs" style={{ display: 'flex' }}>
+            <button
+              type="button"
+              onClick={() => setMobileTab('stations')}
+              className={`scada-lobby-tab-btn ${mobileTab === 'stations' ? 'active' : ''}`}
+            >
+              ★ STATIONS ({occupiedCount}/4)
+            </button>
+            <button
+              type="button"
+              onClick={() => setMobileTab('room')}
+              className={`scada-lobby-tab-btn ${mobileTab === 'room' ? 'active' : ''}`}
+            >
+              BAY INFO
+            </button>
+            <button
+              type="button"
+              onClick={() => setMobileTab('reviewer')}
+              className={`scada-lobby-tab-btn ${mobileTab === 'reviewer' ? 'active' : ''}`}
+            >
+              1-CLICK TABS
+            </button>
+          </div>
+        )}
+
+        {/* Adaptive Cockpit Sectors: Responsive 1-Column on Mobile/Tablet vs 3-Column on Desktop */}
+        {!isDesktop ? (
+          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', width: '100%', minWidth: 0 }}>
+            {!roomId || mobileTab === 'room' ? (
               <RoomCreate
                 onRoomCreated={onRoomCreated}
                 onRoomJoined={onRoomJoined}
-                onToggleCollapse={() => setIsSector1Open(false)}
               />
+            ) : mobileTab === 'reviewer' ? (
+              <ReviewerQuickStart roomId={roomId} />
             ) : (
-              <div
-                onClick={() => setIsSector1Open(true)}
-                className="scada-panel"
-                style={{
-                  width: '44px',
-                  height: '100%',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'center',
-                  padding: '0.75rem 0.25rem',
-                  cursor: 'pointer',
-                  userSelect: 'none',
-                  background: 'var(--bg-panel-inset)',
-                  border: '1px solid var(--border-panel)',
-                  transition: 'all 150ms ease',
-                }}
-                title="Expand Sector 1 (Session Commissioning)"
-              >
-                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem' }}>
-                  <IconChevronRight size={16} color="var(--scada-cyan)" />
-                  <IconTerminal size={15} color="var(--scada-cyan)" />
-                </div>
-                <div
-                  style={{
-                    writingMode: 'vertical-rl',
-                    transform: 'rotate(180deg)',
-                    fontFamily: 'var(--font-hud)',
-                    fontSize: '0.75rem',
-                    fontWeight: 700,
-                    letterSpacing: '0.12em',
-                    color: 'var(--text-secondary)',
-                    marginTop: '1.5rem',
-                    whiteSpace: 'nowrap',
-                  }}
-                >
-                  SECTOR-01 // COMMISSIONING
-                </div>
-              </div>
+              <RoleSelection
+                currentRole={currentRole}
+                peers={peers}
+                onSelectRole={onSelectRole}
+                disabled={!roomId}
+              />
             )}
           </div>
-
-          {/* Sector 2: Station Dispatch (Center Main Cockpit) */}
-          <div style={{ display: 'flex', flexDirection: 'column', minWidth: 0 }}>
-            <RoleSelection
-              currentRole={currentRole}
-              peers={peers}
-              onSelectRole={onSelectRole}
-              disabled={!roomId}
-            />
-          </div>
-
-          {/* Sector 3: Reviewer 1-Click Multi-Tab Launcher (Collapsible Sidebar) */}
-          {roomId && (
+        ) : (
+          <div
+            style={{
+              flex: 1,
+              display: 'grid',
+              gridTemplateColumns: gridColumns,
+              gap: '1rem',
+              alignItems: 'stretch',
+              transition: 'grid-template-columns 200ms ease',
+            }}
+          >
+            {/* Sector 1: Session Management (Collapsible Sidebar) */}
             <div style={{ display: 'flex', flexDirection: 'column', minWidth: 0 }}>
-              {isSector3Open ? (
-                <ReviewerQuickStart
-                  roomId={roomId}
-                  onToggleCollapse={() => setIsSector3Open(false)}
+              {isSector1Open ? (
+                <RoomCreate
+                  onRoomCreated={onRoomCreated}
+                  onRoomJoined={onRoomJoined}
+                  onToggleCollapse={() => setIsSector1Open(false)}
                 />
               ) : (
                 <div
-                  onClick={() => setIsSector3Open(true)}
+                  onClick={() => setIsSector1Open(true)}
                   className="scada-panel"
                   style={{
                     width: '44px',
@@ -304,11 +310,11 @@ export function LobbyView({
                     border: '1px solid var(--border-panel)',
                     transition: 'all 150ms ease',
                   }}
-                  title="Expand Sector 3 (Reviewer 1-Click Harness)"
+                  title="Expand Sector 1 (Session Commissioning)"
                 >
                   <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem' }}>
-                    <IconChevronLeft size={16} color="var(--scada-cyan)" />
-                    <IconZap size={15} color="var(--scada-cyan)" />
+                    <IconChevronRight size={16} color="var(--scada-cyan)" />
+                    <IconTerminal size={15} color="var(--scada-cyan)" />
                   </div>
                   <div
                     style={{
@@ -323,13 +329,74 @@ export function LobbyView({
                       whiteSpace: 'nowrap',
                     }}
                   >
-                    SECTOR-03 // 4-BAY HARNESS
+                    SECTOR-01 // COMMISSIONING
                   </div>
                 </div>
               )}
             </div>
-          )}
-        </div>
+
+            {/* Sector 2: Station Dispatch (Center Main Cockpit) */}
+            <div style={{ display: 'flex', flexDirection: 'column', minWidth: 0 }}>
+              <RoleSelection
+                currentRole={currentRole}
+                peers={peers}
+                onSelectRole={onSelectRole}
+                disabled={!roomId}
+              />
+            </div>
+
+            {/* Sector 3: Reviewer 1-Click Multi-Tab Launcher (Collapsible Sidebar) */}
+            {roomId && (
+              <div style={{ display: 'flex', flexDirection: 'column', minWidth: 0 }}>
+                {isSector3Open ? (
+                  <ReviewerQuickStart
+                    roomId={roomId}
+                    onToggleCollapse={() => setIsSector3Open(false)}
+                  />
+                ) : (
+                  <div
+                    onClick={() => setIsSector3Open(true)}
+                    className="scada-panel"
+                    style={{
+                      width: '44px',
+                      height: '100%',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                      padding: '0.75rem 0.25rem',
+                      cursor: 'pointer',
+                      userSelect: 'none',
+                      background: 'var(--bg-panel-inset)',
+                      border: '1px solid var(--border-panel)',
+                      transition: 'all 150ms ease',
+                    }}
+                    title="Expand Sector 3 (Reviewer 1-Click Harness)"
+                  >
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem' }}>
+                      <IconChevronLeft size={16} color="var(--scada-cyan)" />
+                      <IconZap size={15} color="var(--scada-cyan)" />
+                    </div>
+                    <div
+                      style={{
+                        writingMode: 'vertical-rl',
+                        transform: 'rotate(180deg)',
+                        fontFamily: 'var(--font-hud)',
+                        fontSize: '0.75rem',
+                        fontWeight: 700,
+                        letterSpacing: '0.12em',
+                        color: 'var(--text-secondary)',
+                        marginTop: '1.5rem',
+                        whiteSpace: 'nowrap',
+                      }}
+                    >
+                      SECTOR-03 // 4-BAY HARNESS
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        )}
       </main>
 
       {/* Bottom Industrial Status Ticker with Dynamic State */}

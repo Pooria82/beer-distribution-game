@@ -108,13 +108,7 @@ export function CostSummary({
 
         {/* 4 Station Individual Breakdown */}
         {finalScores && (
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(4, 1fr)',
-              gap: '0.65rem',
-            }}
-          >
+          <div className="scada-cost-grid">
             {roleMetas.map((meta) => {
               const score = finalScores[meta.role] ?? 0;
               const isMe = meta.role === myRole;

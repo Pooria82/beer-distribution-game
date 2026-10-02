@@ -46,7 +46,7 @@ export function RoundReadinessBanner({
       }}
     >
       {/* Left: 4 Station Lockstep Readiness Pills */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem', flex: 1, minWidth: 0 }}>
         <span
           style={{
             fontFamily: 'var(--font-hud)',
@@ -54,11 +54,12 @@ export function RoundReadinessBanner({
             color: 'var(--text-muted)',
             letterSpacing: '0.08em',
             textTransform: 'uppercase',
-            marginRight: '0.25rem',
           }}
         >
           ROUND {String(currentRound).padStart(2, '0')} LOCKSTEP:
         </span>
+
+        <div className="scada-readiness-pills">
 
         {ROLES.map((r) => {
           const isMe = r.role === myRole;
@@ -117,6 +118,7 @@ export function RoundReadinessBanner({
             </div>
           );
         })}
+        </div>
       </div>
 
       {/* Right: Aggregate Readiness & Lockstep Sync Gauge */}

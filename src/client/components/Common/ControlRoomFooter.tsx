@@ -50,25 +50,9 @@ export function ControlRoomFooter({
   ];
 
   return (
-    <footer
-      style={{
-        width: '100%',
-        backgroundColor: '#05070b',
-        borderTop: '1px solid var(--border-panel)',
-        padding: '0.35rem 1rem',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        fontSize: '0.72rem',
-        fontFamily: 'var(--font-mono)',
-        color: 'var(--text-muted)',
-        userSelect: 'none',
-        overflow: 'hidden',
-        gap: '1rem',
-      }}
-    >
+    <footer className="scada-footer">
       {/* Left Dynamic Hardware Status */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexShrink: 0 }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', flexShrink: 0 }}>
         <span
           style={{
             display: 'flex',
@@ -99,19 +83,20 @@ export function ControlRoomFooter({
           </strong>
         </span>
         <span style={{ color: 'var(--border-panel-bright)' }}>|</span>
-        <span style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+        <span style={{ display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
           <IconCpu size={12} color="var(--scada-cyan)" />
-          <span>PORT: {port}</span>
+          <span>:{port}</span>
         </span>
         <span style={{ color: 'var(--border-panel-bright)' }}>|</span>
-        <span style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+        <span style={{ display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
           <IconDatabase size={12} color="var(--scada-amber)" />
-          <span>DB: SQLite-WAL</span>
+          <span>WAL</span>
         </span>
       </div>
 
       {/* Center Scrolling Telemetry Marquee */}
       <div
+        className="scada-footer-ticker-container"
         style={{
           flex: 1,
           minWidth: 0,
@@ -132,10 +117,10 @@ export function ControlRoomFooter({
       </div>
 
       {/* Right Technical Specification Label */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexShrink: 0 }}>
-        <span>LEMMA EVALUATION PROTOCOL</span>
+      <div className="scada-footer-meta-right" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexShrink: 0 }}>
+        <span>LEMMA EVALUATION</span>
         <span style={{ color: 'var(--border-panel-bright)' }}>|</span>
-        <span style={{ color: 'var(--text-secondary)' }}>MIT 1960 DYNAMICS</span>
+        <span style={{ color: 'var(--text-secondary)' }}>MIT DYNAMICS</span>
       </div>
     </footer>
   );

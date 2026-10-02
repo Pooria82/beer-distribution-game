@@ -58,7 +58,7 @@ export function HistoryTable({ history }: HistoryTableProps) {
       </div>
 
       <div
-        className="scada-panel-body"
+        className="scada-panel-body scada-table-container"
         style={{
           padding: 0,
           overflowX: 'auto',
@@ -66,6 +66,8 @@ export function HistoryTable({ history }: HistoryTableProps) {
           minHeight: '200px',
           overflowY: 'auto',
           width: '100%',
+          maxWidth: '100%',
+          WebkitOverflowScrolling: 'touch',
         }}
       >
         <table
