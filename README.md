@@ -4,10 +4,10 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.8-blue.svg)](https://www.typescriptlang.org/)
 [![React](https://img.shields.io/badge/React-19.0-61dafb.svg)](https://react.dev/)
 [![Node](https://img.shields.io/badge/Node->=22.0.0-green.svg)](https://nodejs.org/)
-[![Tests](https://img.shields.io/badge/Tests-56%20Passed%20(16%20files)-brightgreen.svg)]()
+[![Tests](https://img.shields.io/badge/Tests-78%20Passed%20(17%20files)-brightgreen.svg)]()
 [![License](https://img.shields.io/badge/License-MIT-purple.svg)](LICENSE)
 
-An enterprise-grade, authoritative turn-based multiplayer implementation of the classic MIT Beer Distribution Game. Engineered for Lemma's Senior Full-Stack evaluation, featuring pure Domain-Driven Design (DDD), Hexagonal Architecture (Ports and Adapters), server-enforced Fog of War, SQLite write-through crash recovery, and an ergonomic industrial SCADA cockpit interface.
+An enterprise-grade, authoritative turn-based multiplayer implementation of the classic MIT Beer Distribution Game. Engineered for Lemma's Senior Full-Stack evaluation, featuring pure Domain-Driven Design (DDD), Hexagonal Architecture (Ports and Adapters), server-enforced Fog of War, SQLite write-through crash recovery, and an ergonomic industrial SCADA cockpit interface with full mobile and tablet responsive architecture (320px to 1366px).
 
 ---
 
@@ -15,13 +15,14 @@ An enterprise-grade, authoritative turn-based multiplayer implementation of the 
 1. [⚡ Quick Start & Command Reference](#-quick-start--command-reference)
 2. [🧭 Reviewer Quick Guide (Evaluating in 2 Minutes)](#-reviewer-quick-guide-evaluating-in-2-minutes)
 3. [🏛️ Architectural Blueprint & Clean Hexagonal Design](#️-architectural-blueprint--clean-hexagonal-design)
-4. [🔄 Realtime Concurrency & Authoritative Lockstep Protocol](#-realtime-concurrency--authoritative-lockstep-protocol)
-5. [💾 SQLite Persistence & Crash Recovery Model](#-sqlite-persistence--crash-recovery-model)
-6. [🛡️ Information Hiding & Server-Side Fog of War](#️-information-hiding--server-side-fog-of-war)
-7. [📊 Automated Test Pyramid & Verification Suites](#-automated-test-pyramid--verification-suites)
-8. [⚖️ Architectural Trade-offs & Engineering Decisions](#️-architectural-trade-offs--engineering-decisions)
-9. [🔮 Future Extensibility](#-future-extensibility)
-10. [🤖 Statement on AI Collaboration](#-statement-on-ai-collaboration)
+4. [📱 Mobile & Tablet Responsive Architecture (320px to 1366px)](#-mobile--tablet-responsive-architecture-320px-to-1366px)
+5. [🔄 Realtime Concurrency & Authoritative Lockstep Protocol](#-realtime-concurrency--authoritative-lockstep-protocol)
+6. [💾 SQLite Persistence & Crash Recovery Model](#-sqlite-persistence--crash-recovery-model)
+7. [🛡️ Information Hiding & Server-Side Fog of War](#️-information-hiding--server-side-fog-of-war)
+8. [📊 Automated Test Pyramid & Verification Suites](#-automated-test-pyramid--verification-suites)
+9. [⚖️ Architectural Trade-offs & Engineering Decisions](#️-architectural-trade-offs--engineering-decisions)
+10. [🔮 Future Extensibility](#-future-extensibility)
+11. [🤖 Statement on AI Collaboration](#-statement-on-ai-collaboration)
 
 ---
 
@@ -33,7 +34,7 @@ The project satisfies all standard Node.js development, testing, and production 
 # 1. Install dependencies
 npm install
 
-# 2. Run automated test suite (56 unit, integration, e2e, security & stress tests)
+# 2. Run automated test suite (78 unit, integration, e2e, security, stress & responsive tests)
 npm test
 
 # 3. Compile production bundles (Client Vite SPA -> dist/client, Server tsup -> dist/server)
@@ -117,7 +118,33 @@ The codebase strictly adheres to **Hexagonal Architecture (Ports and Adapters)**
 2. **Ports (`src/server/ports/`)**: Pure contracts defining data access (`IGameRepository`) and session management.
 3. **Application Services (`src/server/services/`)**: Orchestrates room lifecycles, player claims, and race-condition-free turn advances.
 4. **Adapters (`src/server/`)**: Concrete implementations of transport (`WebSocketGateway`, `HttpServer`) and database storage (`SqliteGameRepository`).
-5. **Presentation (`src/client/`)**: Modern React 19 SPA styled with SCADA design tokens, scoped per-tab via `sessionStorage`.
+5. **Presentation (`src/client/`)**: Modern React 19 SPA styled with SCADA design tokens, scoped per-tab via `sessionStorage`, featuring full mobile and tablet responsive ergonomics (320px to 1366px).
+
+---
+
+## 📱 Mobile & Tablet Responsive Architecture (320px to 1366px)
+
+The user interface implements an adaptive layout architecture verified across 5 distinct viewport tiers (from 320px compact smartphones to 1366px ultrabooks):
+
+1. **Strict Zero-Overflow Defense:**
+   - Enforced `overflow-x: hidden; width: 100%; max-width: 100vw;` on `body`, `#root`, and `.scada-main-workspace`.
+   - Guaranteed `scrollWidth <= clientWidth` and `body.scrollWidth <= window.innerWidth` across all screens (Lobby, Active Game Cockpit, Results Debrief).
+2. **Touch Ergonomics & Apple HIG / WCAG 2.5.5:**
+   - Minimum `44x44px` interactive touch targets for buttons, steppers, and controls.
+   - Steppers (`-5`, `-1`, `+1`, `+5`, `+10`) re-arrange into an ergonomic touch keypad on small screens (`< 480px`).
+   - Order input explicitly styled with `font-size: 1.5rem` (`24px`, well above Safari's 16px threshold) to eliminate iOS auto-zoom.
+3. **Dynamic Viewport Height & Notch Support:**
+   - Layout containers use `min-height: 100dvh` (Dynamic Viewport Height) to eliminate jumps when mobile browser address bars expand/collapse.
+   - Safe areas protected via `padding-top: env(safe-area-inset-top)` and `padding-bottom: env(safe-area-inset-bottom)`.
+4. **Mobile Single-Column Tactical Priority Flow:**
+   - On screens `< 768px`, the 3-column cockpit transforms into a focused, single-column vertical flow prioritizing thumb-reach actions:
+     1. Lockstep Readiness Banner (`order: 0`)
+     2. Order Actuator Console (`order: 1` — immediate touch input)
+     3. Telemetry Metric Cards (`order: 2` — high-contrast 2-column grid)
+     4. Supply Chain Pipeline Topology (`order: 3` — horizontal scroll-safe chassis)
+     5. Black Box History Ledger (`order: 4` — touch-scrollable table)
+5. **Tactical Lobby Segmented Navigation:**
+   - Replaces multi-column squishing with a segmented control (`[★ STATIONS] [BAY INFO] [1-CLICK TABS]`) on tablets/mobiles (`< 1024px`), expanding to 3-column SCADA dispatch on desktop displays.
 
 ---
 
@@ -171,10 +198,12 @@ In accordance with MIT Beer Game dynamics, players must not see opponent invento
 
 ## 📊 Automated Test Pyramid & Verification Suites
 
-The repository features a multi-tiered test suite with **56 automated tests across 16 test files**, executing in under 2 seconds:
+The repository features a multi-tiered test suite with **78 automated tests across 17 test files**, executing in under 3 seconds:
 
 ```
                   ┌──────────────────────┐
+                  │ Responsive Viewport  │  (7 Viewports: 320px to 1366px)
+                  ├──────────────────────┤
                   │      E2E Tests       │  (Full 20-Round Simulation)
                   ├──────────────────────┤
                   │ Stress & Load Tests  │  (100 Rooms, 8,000 Orders)
@@ -198,6 +227,7 @@ The repository features a multi-tiered test suite with **56 automated tests acro
 | **Security Fuzzing** | `test/security/fuzz.test.ts` | 13 | Boundary bounds ($0 \le x \le 10,000$), corrupt JSON, prototype pollution |
 | **Wire Frame Audit** | `test/security/wire-audit.test.ts` | 2 | Wire-sniffing raw WS frames for zero opponent metric leakage |
 | **Stress & Performance** | `test/stress/load.test.ts` | 1 | 100 concurrent rooms, 8,000 orders, throughput > 12,000 tx/sec |
+| **Automated Viewports** | `test/integration/responsive_viewport.test.ts` | 22 | Headless Puppeteer verification across 7 viewports (320px–1366px), zero-overflow defense, iOS zoom immunity |
 
 ---
 
@@ -214,6 +244,9 @@ For detailed architectural rationale, inspect our Architecture Decision Records 
 3. **`sessionStorage` vs. Cookies for Local Multi-Tab Testing:**
    - *Decision:* Scope player credentials to browser `sessionStorage` with URL parameter hydration.
    - *Trade-off:* Prevents 4 tabs opened on `localhost:3000` from colliding or overwriting each other's credentials (which occurs when using root cookies or `localStorage`).
+4. **Mobile & Tablet Tactical Ergonomics (320px to 1366px):**
+   - *Decision:* Transform the desktop 3-column cockpit into an adaptive single-column flow prioritizing immediate action on smartphones, supported by 44x44px touch targets and dynamic viewport units (`100dvh`).
+   - *Trade-off:* Reorders secondary visual pipelines beneath primary order actuators on mobile, maximizing ergonomics and eliminating thumb stretch without compromising desktop data density.
 
 ---
 

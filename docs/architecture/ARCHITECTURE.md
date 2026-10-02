@@ -146,3 +146,38 @@ Evaluators typically inspect multi-player systems by opening 4 browser tabs on t
 1. **`sessionStorage` Partitioning:** Each browser tab maintains an isolated `sessionStorage` scope. Opening a new tab creates a fresh storage container.
 2. **URL Parameter Fallback:** Room links and 1-Click Launch links encode context parameters (e.g. `http://localhost:3000/?room=GAME-XYZ&role=retailer`), allowing seamless direct station initialization.
 3. **Session Reconnection:** When a tab is refreshed, `useGameSocket` retrieves the cryptographic token (`tok_...`) from `sessionStorage` and sends `{ type: "RECONNECT", playerToken }`, immediately restoring station control.
+
+---
+
+## 6. Mobile & Tablet Responsive Architecture (320px to 1366px)
+
+To deliver an industrial-grade user experience across all form factors, the presentation layer implements an adaptive responsive architecture verified across 5 distinct viewport tiers:
+
+```
+┌────────────────────────────────────────────────────────────────────────┐
+│                      Adaptive Breakpoint Spectrum                      │
+│                                                                        │
+│  [320px - 389px] Compact Mobile (iPhone SE, small Androids)            │
+│  [390px - 599px] Standard & Large Mobile (iPhone 14/15/16 Pro, Galaxy) │
+│  [600px - 767px] Foldables & 7" Phablets Portrait                      │
+│  [768px - 1023px] Tablets Portrait (iPad Mini, iPad 10.2", Air)        │
+│  [1024px - 1366px] Desktop & Large Tablets (iPad Pro, Ultrabooks)      │
+└────────────────────────────────────────────────────────────────────────┘
+```
+
+### 6.1 Layout Adaptations & Fluid Grids
+- **Desktop (`>= 1024px`):** Dense 3-column SCADA layout (Sector 1: Supply Chain Pipeline Canvas, Sector 2: Order Console & Telemetry Cards, Sector 3: Black Box History Ledger).
+- **Tablet (`768px - 1023px`):** 2-column or stacked grid focusing on active order entry and immediate telemetry.
+- **Mobile (`< 768px`):** Single-column layout with explicit flex order prioritization:
+  1. `order: 0`: Lockstep Readiness Banner
+  2. `order: 1`: Order Actuator Console (immediately within thumb reach)
+  3. `order: 2`: Telemetry Metric Cards (high-contrast 2-column grid)
+  4. `order: 3`: Supply Chain Pipeline Topology (scroll-safe chassis)
+  5. `order: 4`: Black Box History Ledger (touch-scrollable table)
+
+### 6.2 Touch Ergonomics & Standards Compliance
+- **Apple HIG & WCAG 2.5.5:** All primary buttons, steppers, and inputs enforce a minimum `44x44px` interactive touch envelope.
+- **iOS Safari Auto-Zoom Immunity:** Mobile order inputs are styled with `font-size: 1.5rem` (`24px`, well above Safari's 16px auto-zoom trigger threshold).
+- **Dynamic Viewport Height:** Root containers utilize `min-height: 100dvh` to eliminate visual jumping when mobile browser URL bars appear or collapse.
+- **Safe Area Insets:** Integrated `padding-top: env(safe-area-inset-top)` and `padding-bottom: env(safe-area-inset-bottom)` protect against device notches and home bars.
+- **Automated Puppeteer Matrix:** `test/integration/responsive_viewport.test.ts` validates zero horizontal overflow (`scrollWidth <= clientWidth` and `body.scrollWidth <= window.innerWidth`) across all 7 reference device viewports.
