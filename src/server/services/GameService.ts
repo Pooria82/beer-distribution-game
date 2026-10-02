@@ -138,6 +138,22 @@ export class GameService {
         };
       }
 
+      // Reconnect resilience: If game is in progress and role is already occupied,
+      // recover the registered session token so disconnected players can seamlessly resume.
+      if (game.getStatus() !== 'waiting' && game.getRoles()[role].getIsOccupied()) {
+        const existingSession = this.repository
+          .findPlayersByGameId(gameId)
+          .find((p) => p.role === role);
+
+        if (existingSession) {
+          return {
+            playerToken: existingSession.token,
+            game,
+            started: false,
+          };
+        }
+      }
+
       // Generate new cryptographic token if not provided (fresh player claiming role)
       const playerToken = `tok_${nanoid(16)}`;
 

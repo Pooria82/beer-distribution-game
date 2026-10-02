@@ -13,6 +13,35 @@ function getStorageKey(gameId: string, role: string): string {
   return `${STORAGE_PREFIX}token_${gameId}_${role}`;
 }
 
+function getStoredToken(gameId: string, role: string): string | null {
+  try {
+    return (
+      sessionStorage.getItem(getStorageKey(gameId, role)) ||
+      localStorage.getItem(getStorageKey(gameId, role))
+    );
+  } catch {
+    return null;
+  }
+}
+
+function persistToken(gameId: string, role: string, token: string): void {
+  try {
+    sessionStorage.setItem(getStorageKey(gameId, role), token);
+    localStorage.setItem(getStorageKey(gameId, role), token);
+  } catch {
+    // fallback if quota or security error
+  }
+}
+
+function removePersistedToken(gameId: string, role: string): void {
+  try {
+    sessionStorage.removeItem(getStorageKey(gameId, role));
+    localStorage.removeItem(getStorageKey(gameId, role));
+  } catch {
+    // fallback
+  }
+}
+
 export function useSession() {
   const [session, setSessionState] = useState<GameSession>(() => {
     if (typeof window === 'undefined') {
@@ -25,24 +54,29 @@ export function useSession() {
     const urlRole = params.get('role') as RoleType | null;
     const urlToken = params.get('token');
 
-    // 2. Check tab-scoped sessionStorage
-    const activeGameId = urlGameId || sessionStorage.getItem(`${STORAGE_PREFIX}active_game`);
-    const activeRole = urlRole || (sessionStorage.getItem(`${STORAGE_PREFIX}active_role`) as RoleType | null);
+    // 2. Check tab-scoped sessionStorage or persistent localStorage
+    const activeGameId =
+      urlGameId ||
+      sessionStorage.getItem(`${STORAGE_PREFIX}active_game`) ||
+      localStorage.getItem(`${STORAGE_PREFIX}active_game`);
+    const activeRole =
+      urlRole || (sessionStorage.getItem(`${STORAGE_PREFIX}active_role`) as RoleType | null);
 
     let activeToken: string | null = urlToken;
     if (!activeToken && activeGameId && activeRole) {
-      activeToken = sessionStorage.getItem(getStorageKey(activeGameId, activeRole));
+      activeToken = getStoredToken(activeGameId, activeRole);
     }
 
-    // Cache to sessionStorage if loaded from URL
+    // Cache to storage if loaded from URL
     if (activeGameId) {
       sessionStorage.setItem(`${STORAGE_PREFIX}active_game`, activeGameId);
+      localStorage.setItem(`${STORAGE_PREFIX}active_game`, activeGameId);
     }
     if (activeRole) {
       sessionStorage.setItem(`${STORAGE_PREFIX}active_role`, activeRole);
     }
     if (activeGameId && activeRole && activeToken) {
-      sessionStorage.setItem(getStorageKey(activeGameId, activeRole), activeToken);
+      persistToken(activeGameId, activeRole, activeToken);
     }
 
     return {
@@ -52,11 +86,12 @@ export function useSession() {
     };
   });
 
-  // Sync state changes with sessionStorage & URL bar
+  // Sync state changes with sessionStorage, localStorage & URL bar
   const setSession = useCallback((gameId: string, role: RoleType, token: string) => {
     sessionStorage.setItem(`${STORAGE_PREFIX}active_game`, gameId);
     sessionStorage.setItem(`${STORAGE_PREFIX}active_role`, role);
-    sessionStorage.setItem(getStorageKey(gameId, role), token);
+    localStorage.setItem(`${STORAGE_PREFIX}active_game`, gameId);
+    persistToken(gameId, role, token);
 
     // Update URL query parameters cleanly without reload
     const url = new URL(window.location.href);
@@ -70,6 +105,7 @@ export function useSession() {
 
   const setGameId = useCallback((gameId: string) => {
     sessionStorage.setItem(`${STORAGE_PREFIX}active_game`, gameId);
+    localStorage.setItem(`${STORAGE_PREFIX}active_game`, gameId);
     const url = new URL(window.location.href);
     url.searchParams.set('game', gameId);
     window.history.replaceState({}, '', url.toString());
@@ -77,7 +113,7 @@ export function useSession() {
     setSessionState((prev) => ({
       gameId,
       role: prev.role,
-      token: prev.role ? sessionStorage.getItem(getStorageKey(gameId, prev.role)) : null,
+      token: prev.role ? getStoredToken(gameId, prev.role) : null,
     }));
   }, []);
 
@@ -88,7 +124,7 @@ export function useSession() {
     window.history.replaceState({}, '', url.toString());
 
     setSessionState((prev) => {
-      const token = prev.gameId ? sessionStorage.getItem(getStorageKey(prev.gameId, role)) : null;
+      const token = prev.gameId ? getStoredToken(prev.gameId, role) : null;
       if (token) {
         url.searchParams.set('token', token);
       } else {
@@ -105,7 +141,7 @@ export function useSession() {
 
   const leaveStation = useCallback(() => {
     if (session.gameId && session.role) {
-      sessionStorage.removeItem(getStorageKey(session.gameId, session.role));
+      removePersistedToken(session.gameId, session.role);
     }
     sessionStorage.removeItem(`${STORAGE_PREFIX}active_role`);
 
@@ -127,10 +163,11 @@ export function useSession() {
   const clearSession = useCallback(() => {
     // Purge active station token and active pointers
     if (session.gameId && session.role) {
-      sessionStorage.removeItem(getStorageKey(session.gameId, session.role));
+      removePersistedToken(session.gameId, session.role);
     }
     sessionStorage.removeItem(`${STORAGE_PREFIX}active_game`);
     sessionStorage.removeItem(`${STORAGE_PREFIX}active_role`);
+    localStorage.removeItem(`${STORAGE_PREFIX}active_game`);
 
     // Clean all session-scoped beer_game storage keys
     const keysToRemove: string[] = [];

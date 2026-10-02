@@ -125,14 +125,23 @@ export function App() {
             setRoomError(null);
             setGameId(id);
           }}
-          onSelectRole={setRole}
+          onSelectRole={(role) => {
+            socket.clearError();
+            setRoomError(null);
+            setRole(role);
+          }}
           onLeaveRoom={() => {
+            socket.clearError();
             if (session.role) {
               leaveStation();
             } else {
               setRoomError(null);
               clearSession();
             }
+          }}
+          onClearError={() => {
+            socket.clearError();
+            setRoomError(null);
           }}
           error={socket.error || roomError}
         />

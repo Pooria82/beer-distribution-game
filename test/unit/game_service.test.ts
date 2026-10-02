@@ -124,4 +124,19 @@ describe('GameService & Room Mutex', () => {
 
     expect(() => service.reconnectPlayer('non-existent-token')).toThrow(UnauthorizedPlayerError);
   });
+
+  it('seamlessly recovers session when reconnecting to occupied role in an active game without token', async () => {
+    const { gameId } = await service.createGame('RECONNECT-ACTIVE');
+    const p1 = await service.joinGame(gameId, 'retailer');
+    await service.joinGame(gameId, 'wholesaler');
+    await service.joinGame(gameId, 'distributor');
+    await service.joinGame(gameId, 'factory'); // Game transitions to in_progress!
+
+    // Player closes tab and re-joins retailer without presenting existingToken
+    const reconnected = await service.joinGame(gameId, 'retailer');
+    expect(reconnected.playerToken).toBe(p1.playerToken);
+    expect(reconnected.started).toBe(false);
+    expect(reconnected.game.getStatus()).toBe('in_progress');
+  });
 });
+

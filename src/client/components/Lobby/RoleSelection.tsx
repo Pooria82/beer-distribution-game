@@ -7,7 +7,7 @@ import {
   IconCheck,
   IconRadio,
   IconCrosshair,
-  IconLock,
+  IconZap,
 } from '../Common/Icons.js';
 
 export interface RoleSelectionProps {
@@ -106,7 +106,6 @@ export function RoleSelection({
             const isSelected = currentRole === r.role;
             const peer = peers?.[r.role];
             const isOccupied = peer?.isOccupied ?? false;
-            const isOccupiedByOther = isOccupied && !isSelected;
 
             return (
               <div
@@ -175,9 +174,9 @@ export function RoleSelection({
                       className={`scada-led ${
                         isSelected
                           ? 'scada-led-nominal'
-                          : isOccupiedByOther
-                            ? 'scada-led-warn'
-                            : 'scada-led-nominal'
+                          : isOccupied
+                            ? 'scada-led-nominal'
+                            : 'scada-led-warn'
                       }`}
                       style={{ width: '6px', height: '6px' }}
                     />
@@ -187,12 +186,12 @@ export function RoleSelection({
                         fontFamily: 'var(--font-mono)',
                         color: isSelected
                           ? 'var(--scada-green)'
-                          : isOccupiedByOther
-                            ? 'var(--scada-amber)'
+                          : isOccupied
+                            ? 'var(--scada-cyan)'
                             : 'var(--text-muted)',
                       }}
                     >
-                      {isSelected ? 'YOUR STATION' : isOccupiedByOther ? 'OCCUPIED' : 'VACANT'}
+                      {isSelected ? 'YOUR STATION' : isOccupied ? 'OCCUPIED' : 'VACANT'}
                     </span>
                   </div>
                 </div>
@@ -230,15 +229,13 @@ export function RoleSelection({
                 <button
                   type="button"
                   onClick={() => onSelectRole(r.role)}
-                  disabled={disabled || isOccupiedByOther}
-                  className={`btn-scada ${isSelected ? 'btn-scada-primary' : ''}`}
+                  disabled={disabled}
+                  className={`btn-scada ${isSelected ? 'btn-scada-primary' : isOccupied ? 'btn-scada-cyan' : ''}`}
                   style={{
                     width: '100%',
                     padding: '0.45rem',
                     fontSize: '0.8rem',
-                    borderColor: isSelected ? r.color : undefined,
-                    cursor: isOccupiedByOther ? 'not-allowed' : undefined,
-                    opacity: isOccupiedByOther ? 0.5 : 1,
+                    borderColor: isSelected ? r.color : isOccupied ? 'var(--scada-cyan)' : undefined,
                   }}
                 >
                   {isSelected ? (
@@ -246,10 +243,10 @@ export function RoleSelection({
                       <IconCheck size={14} color="#ffffff" />
                       <span>YOUR STATION</span>
                     </>
-                  ) : isOccupiedByOther ? (
+                  ) : isOccupied ? (
                     <>
-                      <IconLock size={13} color="var(--scada-amber)" />
-                      <span style={{ color: 'var(--scada-amber)' }}>SLOT OCCUPIED</span>
+                      <IconZap size={13} color="var(--scada-cyan)" />
+                      <span>RECONNECT / RESUME</span>
                     </>
                   ) : (
                     <>

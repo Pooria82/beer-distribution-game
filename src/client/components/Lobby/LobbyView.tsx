@@ -18,6 +18,7 @@ export interface LobbyViewProps {
   readonly onRoomJoined: (roomId: string) => void;
   readonly onSelectRole: (role: RoleType) => void;
   readonly onLeaveRoom: () => void;
+  readonly onClearError?: () => void;
   readonly error?: string | null | undefined;
 }
 
@@ -30,6 +31,7 @@ export function LobbyView({
   onRoomJoined,
   onSelectRole,
   onLeaveRoom,
+  onClearError,
   error,
 }: LobbyViewProps) {
   const occupiedCount = peers
@@ -75,14 +77,33 @@ export function LobbyView({
               borderRadius: 'var(--radius-xs)',
               display: 'flex',
               alignItems: 'center',
-              gap: '0.6rem',
+              justifyContent: 'space-between',
+              gap: '0.75rem',
               color: '#fecaca',
               fontSize: '0.825rem',
               fontFamily: 'var(--font-mono)',
             }}
           >
-            <IconAlertTriangle size={18} color="var(--scada-red)" />
-            <span>[CRITICAL TELEMETRY FAULT] {error}</span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+              <IconAlertTriangle size={18} color="var(--scada-red)" />
+              <span>[CRITICAL TELEMETRY FAULT] {error}</span>
+            </div>
+            {onClearError && (
+              <button
+                type="button"
+                onClick={onClearError}
+                className="btn-scada"
+                style={{
+                  padding: '0.2rem 0.6rem',
+                  fontSize: '0.7rem',
+                  background: 'rgba(0, 0, 0, 0.4)',
+                  borderColor: 'rgba(255, 51, 102, 0.5)',
+                  color: '#ffffff',
+                }}
+              >
+                DISMISS
+              </button>
+            )}
           </div>
         )}
 
