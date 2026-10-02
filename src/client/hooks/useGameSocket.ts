@@ -157,6 +157,12 @@ export function useGameSocket(options: UseGameSocketOptions) {
 
           case 'ERROR_ALERT': {
             setError(msg.message);
+            if (msg.code === 'UNAUTHORIZED_PLAYER') {
+              setView(null);
+              isIntentionalCloseRef.current = true;
+              setConnectionStatus('disconnected');
+              ws.close();
+            }
             break;
           }
 

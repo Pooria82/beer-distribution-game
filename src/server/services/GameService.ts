@@ -112,20 +112,26 @@ export class GameService {
     return mutex.runExclusive(() => {
       const game = this.getGame(gameId);
 
-      // Verify if player is reconnecting with an existing valid session token for this role
+      // Verify if player is presenting a session token
       if (existingToken) {
         const session = this.repository.findPlayerByToken(existingToken);
-        if (session && session.gameId === gameId && session.role === role) {
-          return {
-            playerToken: existingToken,
-            game,
-            started: false,
-          };
+        if (!session) {
+          throw new UnauthorizedPlayerError(`Invalid or unrecognized session token: ${existingToken}`);
         }
+        if (session.gameId !== gameId || session.role !== role) {
+          throw new UnauthorizedPlayerError(
+            `Session token belongs to room "${session.gameId}" and role "${session.role}", not "${role}" in room "${gameId}"`,
+          );
+        }
+        return {
+          playerToken: existingToken,
+          game,
+          started: false,
+        };
       }
 
-      // Generate new token if not provided
-      const playerToken = existingToken ?? `tok_${nanoid(16)}`;
+      // Generate new cryptographic token if not provided (fresh player claiming role)
+      const playerToken = `tok_${nanoid(16)}`;
 
       // Claim role on domain engine
       const started = game.claimRole(role);
